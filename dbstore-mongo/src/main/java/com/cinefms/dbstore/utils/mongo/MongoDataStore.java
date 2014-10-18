@@ -14,29 +14,28 @@ import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
 
+import com.cinefms.dbstore.api.DBStoreBinary;
+import com.cinefms.dbstore.api.DBStoreEntity;
+import com.cinefms.dbstore.api.DBStoreQuery;
+import com.cinefms.dbstore.api.DataStore;
+import com.cinefms.dbstore.api.exceptions.DatabaseException;
+import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
+import com.cinefms.dbstore.cache.api.DBStoreCache;
+import com.cinefms.dbstore.cache.api.DBStoreCacheFactory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
-import com.skjlls.utils.cache.SkjllsCache;
-import com.skjlls.utils.cache.SkjllsCacheFactory;
-import com.skjlls.utils.db.SkjllsBinary;
-import com.skjlls.utils.db.SkjllsDataStore;
-import com.skjlls.utils.db.SkjllsEntity;
-import com.skjlls.utils.db.SkjllsQuery;
-import com.skjlls.utils.db.exceptions.DatabaseException;
-import com.skjlls.utils.db.exceptions.EntityNotFoundException;
-import com.skjlls.utils.metrics.MetricUtil;
 
-public class MongoDataStore implements SkjllsDataStore {
+public class MongoDataStore implements DataStore {
 
 	private static Log log = LogFactory.getLog(MongoDataStore.class);
 
 	private MongoService mongoService;
 
-	private SkjllsCacheFactory cacheFactory;
+	private DBStoreCacheFactory cacheFactory;
 	
 	private boolean cacheQueries = false;
 	private boolean cacheObjects = false;
@@ -44,7 +43,7 @@ public class MongoDataStore implements SkjllsDataStore {
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
 	private Map<String, GridFS> buckets = new HashMap<String, GridFS>();
 
-	private SkjllsQueryMongojackTranslator fqtl = new SkjllsQueryMongojackTranslator();
+	private QueryMongojackTranslator fqtl = new QueryMongojackTranslator();
 
 	private <T> JacksonDBCollection<T, String> getCollection(Class<T> clazz) {
 		try {
@@ -70,8 +69,8 @@ public class MongoDataStore implements SkjllsDataStore {
 		return out;
 	}
 
-	@Override
-	public void storeBinary(String bucket, SkjllsBinary binary) throws DatabaseException {
+	
+	public void storeBinary(String bucket, DBStoreBinary binary) throws DatabaseException {
 		try {
 			GridFS gfs = getBucket(bucket);
 			gfs.remove(binary.getId());
@@ -90,8 +89,8 @@ public class MongoDataStore implements SkjllsDataStore {
 		}
 	}
 
-	@Override
-	public SkjllsBinary getBinary(String bucket, String filename) throws DatabaseException {
+	
+	public DBStoreBinary getBinary(String bucket, String filename) throws DatabaseException {
 		try {
 			GridFS gfs = getBucket(bucket);
 			GridFSDBFile f = gfs.findOne(filename);
@@ -104,7 +103,7 @@ public class MongoDataStore implements SkjllsDataStore {
 		}
 	}
 
-	@Override
+	
 	public void deleteBinary(String bucket, String id) throws DatabaseException {
 		try {
 			GridFS gfs = getBucket(bucket);
@@ -114,13 +113,13 @@ public class MongoDataStore implements SkjllsDataStore {
 		}
 	}
 
-	@Override
-	public <T extends SkjllsEntity> T findObject(Class<T> clazz, SkjllsQuery query) {
+	
+	public <T extends DBStoreEntity> T findObject(Class<T> clazz, DBStoreQuery query) {
 		
-		MetricUtil.start("mongo_db.findobject."+clazz.getSimpleName());
+		
 		String key = query.toString();
 		List<String> ids = null;
-		SkjllsCache cache = getQueryCache(clazz); 
+		DBStoreCache cache = getQueryCache(clazz); 
 		if(cache != null) {
 			ids = cache.getList(key, String.class);
 		}
@@ -140,20 +139,20 @@ public class MongoDataStore implements SkjllsDataStore {
 			}
 		}
 		
-		MetricUtil.end("mongo_db.findobject."+clazz.getSimpleName());
+		
 		if (ids.size() > 0) {
 			return getObject(clazz, ids.get(0));
 		}
 		return null;
 	}
 
-	@Override
-	public <T extends SkjllsEntity> List<T> findObjects(Class<T> clazz, SkjllsQuery query) throws EntityNotFoundException {
+	
+	public <T extends DBStoreEntity> List<T> findObjects(Class<T> clazz, DBStoreQuery query) throws EntityNotFoundException {
 		
-		MetricUtil.start("mongo_db.findobjects."+clazz.getSimpleName());
+		
 		String key = query.toString();
 		List<String> ids = null;
-		SkjllsCache cache = getQueryCache(clazz); 
+		DBStoreCache cache = getQueryCache(clazz); 
 		if(cache !=null) {
 			ids = cache.getList(key, String.class);
 		}
@@ -204,15 +203,15 @@ public class MongoDataStore implements SkjllsDataStore {
 
 		log.debug("returning " + out.size() + " matches for query ("+ clazz.getCanonicalName() + ":" + query.toString() + ")");
 		
-		MetricUtil.end("mongo_db.findobjects."+clazz.getSimpleName());
+		
 		return out;
 	}
 
-	@Override
-	public <T extends SkjllsEntity> T getObject(Class<T> clazz, String id) {
+	
+	public <T extends DBStoreEntity> T getObject(Class<T> clazz, String id) {
 		
-		MetricUtil.start("mongo_db.getobject."+clazz.getSimpleName());
-		SkjllsCache cache = getObjectCache(clazz);
+		
+		DBStoreCache cache = getObjectCache(clazz);
 		T out = null;
 		if(cache!=null) {
 			out = cache.get(id, clazz);
@@ -225,29 +224,29 @@ public class MongoDataStore implements SkjllsDataStore {
 				cache.put(id,out);
 			}
 		}
-		MetricUtil.end("mongo_db.getobject."+clazz.getSimpleName());
+		
 		return out;
 	}
 	
 
-	@Override
-	public <T extends SkjllsEntity> boolean deleteObject(T object) throws DatabaseException {
+	
+	public <T extends DBStoreEntity> boolean deleteObject(T object) throws DatabaseException {
 		if(object!=null && object.getId()!=null) {
 			return deleteObject(object.getClass(),object.getId());
 		}
 		return false;
 	}
 
-	@Override
-	public <T extends SkjllsEntity> boolean deleteObject(Class<T> clazz, String id) throws DatabaseException {
+	
+	public <T extends DBStoreEntity> boolean deleteObject(Class<T> clazz, String id) throws DatabaseException {
 		
 		try {
 			getCollection(clazz).removeById(id);
-			SkjllsCache objectCache = getObjectCache(clazz);
+			DBStoreCache objectCache = getObjectCache(clazz);
 			if(objectCache!=null) {
 				objectCache.remove(id);
 			}
-			SkjllsCache queryCache = getQueryCache(clazz);
+			DBStoreCache queryCache = getQueryCache(clazz);
 			if(queryCache!=null) {
 				queryCache.removeAll();
 			}
@@ -258,10 +257,10 @@ public class MongoDataStore implements SkjllsDataStore {
 		}
 	}
 
-	@Override
+	
 	@SuppressWarnings("unchecked")
-	public <T extends SkjllsEntity> T saveObject(T object) throws EntityNotFoundException {
-		MetricUtil.start("mongo_db.saveobjects."+object.getClass().getName());
+	public <T extends DBStoreEntity> T saveObject(T object) throws EntityNotFoundException {
+		
 		
 		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(object.getClass());
 		if (object.getId() == null) {
@@ -271,30 +270,30 @@ public class MongoDataStore implements SkjllsDataStore {
 		String id = wr.getSavedId();
 		T out = (T) getObject(object.getClass(), id);
 		
-		SkjllsCache objectCache = getObjectCache(object.getClass());
+		DBStoreCache objectCache = getObjectCache(object.getClass());
 		if(objectCache!=null) {
 			log.debug("updating object cache for: "+id);
 			objectCache.remove(out.getId());
 			//objectCache.put(out.getId(), out);
 		}
-		SkjllsCache queryCache = getQueryCache(object.getClass());
+		DBStoreCache queryCache = getQueryCache(object.getClass());
 		if(queryCache!=null) {
 			queryCache.removeAll();
 		}
 		
-		MetricUtil.end("mongo_db.saveobjects."+object.getClass().getName());
+		
 		return (T)getObject(object.getClass(), object.getId());
 	}
 
 	
-	private SkjllsCache getObjectCache(Class<? extends SkjllsEntity> clazz) {
+	private DBStoreCache getObjectCache(Class<? extends DBStoreEntity> clazz) {
 		if(cacheFactory!=null && cacheObjects) {
 			return cacheFactory.getCache(clazz.getCanonicalName()+":object");
 		}
 		return null;
 	}
 	
-	private SkjllsCache getQueryCache(Class<? extends SkjllsEntity> clazz) {
+	private DBStoreCache getQueryCache(Class<? extends DBStoreEntity> clazz) {
 		if(cacheFactory!=null && cacheQueries) {
 			return cacheFactory.getCache(clazz.getCanonicalName()+":query");
 		}
@@ -309,11 +308,11 @@ public class MongoDataStore implements SkjllsDataStore {
 		this.mongoService = mongoService;
 	}
 
-	public SkjllsCacheFactory getCacheFactory() {
+	public DBStoreCacheFactory getDBStoreCacheFactory() {
 		return cacheFactory;
 	}
 
-	public void setCacheFactory(SkjllsCacheFactory cacheFactory) {
+	public void setDBStoreCacheFactory(DBStoreCacheFactory cacheFactory) {
 		this.cacheFactory = cacheFactory;
 	}
 

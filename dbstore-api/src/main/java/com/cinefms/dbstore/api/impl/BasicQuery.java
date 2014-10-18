@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cinefms.dbstore.api.OrderBy;
-import com.cinefms.dbstore.api.Query;
+import com.cinefms.dbstore.api.DBStoreQuery;
 import com.cinefms.dbstore.api.exceptions.MalformedQueryException;
 
 
-public class BasicQuery implements Query {
+public class BasicQuery implements DBStoreQuery {
 
-	private List<Query> conditions = new ArrayList<Query>();
+	private List<DBStoreQuery> conditions = new ArrayList<DBStoreQuery>();
 	private String key;
 	private Object value;
 	private OPERATOR operator;
@@ -25,7 +25,7 @@ public class BasicQuery implements Query {
 	private BasicQuery() {
 	}
 	
-	private BasicQuery(List<Query> conditions, OPERATOR operator, String key, COMPARATOR comparator, Object value, List<OrderBy> orderBy, int start, int max) {
+	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator, String key, COMPARATOR comparator, Object value, List<OrderBy> orderBy, int start, int max) {
 		super();
 		this.conditions = conditions;
 		this.operator = operator;
@@ -43,7 +43,7 @@ public class BasicQuery implements Query {
 		this.value = value;
 	}
 	
-	private BasicQuery(List<Query> conditions, OPERATOR operator) {
+	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator) {
 		this.conditions = conditions;
 		this.operator = operator;
 	}
@@ -52,7 +52,7 @@ public class BasicQuery implements Query {
 		return operator;
 	}
 
-	public List<Query> getNested() {
+	public List<DBStoreQuery> getNested() {
 		return Collections.unmodifiableList(conditions);
 	}
 
@@ -68,26 +68,26 @@ public class BasicQuery implements Query {
 		return value;
 	}
 
-	private Query add(String key, COMPARATOR c, Object value) throws MalformedQueryException {
+	private DBStoreQuery add(String key, COMPARATOR c, Object value) throws MalformedQueryException {
 		if(key == null) {
 			throw new MalformedQueryException(MalformedQueryException.ERROR_CODE.KEY_MUST_NOT_BE_NULL);
 		}
-		List<Query> q = new ArrayList<Query>(getNested());
+		List<DBStoreQuery> q = new ArrayList<DBStoreQuery>(getNested());
 		q.add(new BasicQuery(key, c, value));
 		return new BasicQuery(q,OPERATOR.AND);
 	} 
 
-	public Query in(String key, List<?> values) throws MalformedQueryException {
+	public DBStoreQuery in(String key, List<?> values) throws MalformedQueryException {
 		return add(key,COMPARATOR.IN,values);
 	}
 	
 	
-	public Query in(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery in(String key, Object value) throws MalformedQueryException {
 		return in(key, new Object[] { value });
 	}
 	
 	
-	public Query in(String key, Object[] values) throws MalformedQueryException {
+	public DBStoreQuery in(String key, Object[] values) throws MalformedQueryException {
 		List<Object> os = new ArrayList<Object>();
 		for(Object o : values) {
 			os.add(o);
@@ -96,95 +96,95 @@ public class BasicQuery implements Query {
 	}
 	
 	
-	public Query contains(String key, String value) throws MalformedQueryException {
+	public DBStoreQuery contains(String key, String value) throws MalformedQueryException {
 		return add(key, COMPARATOR.CONTAINS, value);
 	}
 
 	
-	public Query eq(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery eq(String key, Object value) throws MalformedQueryException {
 		return add(key, COMPARATOR.EQ, value);
 	}
 	
 	
-	public Query lte(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery lte(String key, Object value) throws MalformedQueryException {
 		return add(key, COMPARATOR.LTE, value);
 	}
 
 	
-	public Query lt(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery lt(String key, Object value) throws MalformedQueryException {
 		return add(key, COMPARATOR.LT, value);
 	}
 
 	
-	public Query gte(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery gte(String key, Object value) throws MalformedQueryException {
 		return add(key, COMPARATOR.GTE, value);
 	}
 
 	
-	public Query gt(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery gt(String key, Object value) throws MalformedQueryException {
 		return add(key, COMPARATOR.GT, value);
 	}
 
 	
-	public Query ne(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery ne(String key, Object value) throws MalformedQueryException {
 		return add(key, COMPARATOR.NE, value);
 	}
 
 	
-	public Query and(List<Query> queries) {
-		List<Query> qp = new ArrayList<Query>(getNested());
+	public DBStoreQuery and(List<DBStoreQuery> queries) {
+		List<DBStoreQuery> qp = new ArrayList<DBStoreQuery>(getNested());
 		qp.add(new BasicQuery(queries,OPERATOR.AND));
 		return new BasicQuery(qp,OPERATOR.AND);
 	}	
 	
 	
-	public Query and(Query... queries) {
-		List<Query> task = new ArrayList<Query>();
-		for(Query q : queries) {
+	public DBStoreQuery and(DBStoreQuery... queries) {
+		List<DBStoreQuery> task = new ArrayList<DBStoreQuery>();
+		for(DBStoreQuery q : queries) {
 			task.add(q);
 		}
 		return and(task);
 	}
 
 	
-	public Query or(List<Query> queries) {
-		List<Query> qp = new ArrayList<Query>(getNested());
+	public DBStoreQuery or(List<DBStoreQuery> queries) {
+		List<DBStoreQuery> qp = new ArrayList<DBStoreQuery>(getNested());
 		qp.add(new BasicQuery(queries,OPERATOR.OR));
 		return new BasicQuery(qp,OPERATOR.AND);
 	}
 	
 	
-	public Query or(Query... queries) {
-		List<Query> task = new ArrayList<Query>();
-		for(Query q : queries) {
+	public DBStoreQuery or(DBStoreQuery... queries) {
+		List<DBStoreQuery> task = new ArrayList<DBStoreQuery>();
+		for(DBStoreQuery q : queries) {
 			task.add(q);
 		}
 		return or(task);
 	}
 
-	public static Query createQuery() {
+	public static DBStoreQuery createQuery() {
 		return new BasicQuery();
 	}
 	
 	
-	public Query order(String order, boolean asc) {
+	public DBStoreQuery order(String order, boolean asc) {
 		List<OrderBy> ne = new ArrayList<OrderBy>(getOrderBy());
 		ne.add(new OrderBy(order,asc));
 		return new BasicQuery(getNested(),operator,key,comparator,value,ne,start,max);
 	}
 
 	
-	public Query order(String order) {
+	public DBStoreQuery order(String order) {
 		return order(order,true);
 	}
 	
 	
-	public Query start(int start) {
+	public DBStoreQuery start(int start) {
 		return new BasicQuery(getNested(),operator,key,comparator,value,getOrderBy(),start,max);
 	}
 
 	
-	public Query max(int max) {
+	public DBStoreQuery max(int max) {
 		return new BasicQuery(getNested(),operator,key,comparator,value,getOrderBy(),start,max);
 	}
 
@@ -237,9 +237,9 @@ public class BasicQuery implements Query {
 			out.append(' ');
 			out.append(value);
 		} else {
-			List<Query> n = getNested();
+			List<DBStoreQuery> n = getNested();
 			out.append('(');
-			for(Query fq : n) {
+			for(DBStoreQuery fq : n) {
 				if(n.indexOf(fq)>0) {
 					switch (operator) {
 					case AND:

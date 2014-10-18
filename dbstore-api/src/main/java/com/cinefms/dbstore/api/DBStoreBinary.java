@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-public interface Binary {
+public interface DBStoreBinary {
 
 	public String getId();
 	public int getLength();

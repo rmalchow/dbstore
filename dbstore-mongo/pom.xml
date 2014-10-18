@@ -1,12 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<artifactId>dbstore-mongo</artifactId>
+	<packaging>jar</packaging>
 	<parent>
-		<groupId>com.skjlls</groupId>
-		<artifactId>skjlls-utils</artifactId>
+		<groupId>com.cinefms</groupId>
+		<artifactId>dbstore</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>skjlls-utils-db-mongo</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>org.mongodb</groupId>
@@ -29,18 +30,13 @@
 			<version>2.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.skjlls</groupId>
-			<artifactId>skjlls-utils-db</artifactId>
+			<groupId>com.cinefms</groupId>
+			<artifactId>dbstore-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>com.skjlls</groupId>
-			<artifactId>skjlls-utils-cache</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.skjlls</groupId>
-			<artifactId>skjlls-utils-metrics</artifactId>
+			<groupId>com.cinefms</groupId>
+			<artifactId>dbstore-cache-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

@@ -5,12 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.cinefms.dbstore.api.Entity;
+import com.cinefms.dbstore.api.DBStoreEntity;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Reference {
 
-	public Class<Entity> value();
+	public Class<DBStoreEntity> value();
 	
 }

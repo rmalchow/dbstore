@@ -9,18 +9,18 @@ import org.apache.commons.logging.LogFactory;
 import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;
 
+import com.cinefms.dbstore.api.DBStoreQuery;
+import com.cinefms.dbstore.api.DBStoreQuery.OPERATOR;
+import com.cinefms.dbstore.api.OrderBy;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.skjlls.utils.db.SkjllsOrderBy;
-import com.skjlls.utils.db.SkjllsQuery;
-import com.skjlls.utils.db.SkjllsQuery.OPERATOR;
 
 
-public class SkjllsQueryMongojackTranslator {
+public class QueryMongojackTranslator {
 	
-	private static Log log = LogFactory.getLog(SkjllsQueryMongojackTranslator.class);
+	private static Log log = LogFactory.getLog(QueryMongojackTranslator.class);
 	
-	public Query translate(SkjllsQuery in) {
+	public Query translate(DBStoreQuery in) {
 		Query q = DBQuery.empty();
 		if(in.getField()!=null) {
 			switch (in.getComparator()) {
@@ -59,9 +59,9 @@ public class SkjllsQueryMongojackTranslator {
 				break;
 			}
 		} else {
-			List<SkjllsQuery> n = in.getNested();
+			List<DBStoreQuery> n = in.getNested();
 			Query[] mq = new Query[n.size()];
-			for(SkjllsQuery fq : n) {
+			for(DBStoreQuery fq : n) {
 				mq[n.indexOf(fq)] = translate(fq);
 			}
 			if(in.getOperator()==OPERATOR.AND) {
@@ -75,12 +75,12 @@ public class SkjllsQueryMongojackTranslator {
 		return q;
 	}
 
-	public DBObject translateOrderBy(SkjllsQuery query) {
+	public DBObject translateOrderBy(DBStoreQuery query) {
 		if(query.getOrderBy()==null) {
 			return null;
 		}
 		BasicDBObject out = new BasicDBObject();
-		for(SkjllsOrderBy ob : query.getOrderBy()) {
+		for(OrderBy ob : query.getOrderBy()) {
 			out.append(ob.getField(), ob.isAsc()?1:-1);
 		}
 		return out;

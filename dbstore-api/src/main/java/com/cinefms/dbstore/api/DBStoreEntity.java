@@ -3,7 +3,7 @@ package com.cinefms.dbstore.api;
 import javax.persistence.Id;
 
 
-public abstract class Entity {
+public abstract class DBStoreEntity {
 
 	@Id
 	private String id;
