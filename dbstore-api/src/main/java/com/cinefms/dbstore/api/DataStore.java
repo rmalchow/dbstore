@@ -25,7 +25,7 @@ public interface DataStore {
 
 	public abstract void storeBinary(String bucket, DBStoreBinary binary) throws DatabaseException;
 	
-	
+	public void addListener(DBStoreListener listener);
 	
 	
 }

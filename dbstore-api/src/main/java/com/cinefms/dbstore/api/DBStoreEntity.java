@@ -1,20 +1,12 @@
 package com.cinefms.dbstore.api;
 
-import javax.persistence.Id;
 
 
-public abstract class DBStoreEntity {
+public interface DBStoreEntity {
 
-	@Id
-	private String id;
+	public String getId();
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
+	public void setId(String id);
 	
 
 }

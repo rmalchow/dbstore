@@ -16,6 +16,7 @@ import org.mongojack.WriteResult;
 
 import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
+import com.cinefms.dbstore.api.DBStoreListener;
 import com.cinefms.dbstore.api.DBStoreQuery;
 import com.cinefms.dbstore.api.DataStore;
 import com.cinefms.dbstore.api.exceptions.DatabaseException;
@@ -41,10 +42,13 @@ public class MongoDataStore implements DataStore {
 	private boolean cacheObjects = false;
 	
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
+	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<String, List<DBStoreListener>>();
 	private Map<String, GridFS> buckets = new HashMap<String, GridFS>();
 
 	private QueryMongojackTranslator fqtl = new QueryMongojackTranslator();
 
+	private List<DBStoreListener> listeners = new ArrayList<DBStoreListener>(); 
+	
 	private <T> JacksonDBCollection<T, String> getCollection(Class<T> clazz) {
 		try {
 			@SuppressWarnings("unchecked")
@@ -60,6 +64,20 @@ public class MongoDataStore implements DataStore {
 		}
 	}
 
+	private List<DBStoreListener> getListeners(Class<? extends DBStoreEntity> clazz) {
+		List<DBStoreListener> out = listenerMap.get(clazz.getCanonicalName());
+		if(out == null) {
+			List<DBStoreListener> lx = new ArrayList<DBStoreListener>();
+			for(DBStoreListener l : listeners) {
+				if(l.supports(clazz)) {
+					lx.add(l);
+				}
+			}
+			out = new ArrayList<DBStoreListener>(lx);
+		}
+		return out;
+	}
+	
 	private GridFS getBucket(String bucket) throws UnknownHostException {
 		GridFS out = buckets.get(bucket);
 		if (out == null) {
@@ -115,7 +133,6 @@ public class MongoDataStore implements DataStore {
 
 	
 	public <T extends DBStoreEntity> T findObject(Class<T> clazz, DBStoreQuery query) {
-		
 		
 		String key = query.toString();
 		List<String> ids = null;
@@ -210,7 +227,6 @@ public class MongoDataStore implements DataStore {
 	
 	public <T extends DBStoreEntity> T getObject(Class<T> clazz, String id) {
 		
-		
 		DBStoreCache cache = getObjectCache(clazz);
 		T out = null;
 		if(cache!=null) {
@@ -240,6 +256,15 @@ public class MongoDataStore implements DataStore {
 	
 	public <T extends DBStoreEntity> boolean deleteObject(Class<T> clazz, String id) throws DatabaseException {
 		
+		DBStoreEntity entity = getObject(clazz, id);
+		if(id==null) {
+			return false;
+		}
+		
+		for(DBStoreListener l : getListeners(clazz)) {
+			l.beforeDelete(entity);
+		}
+		
 		try {
 			getCollection(clazz).removeById(id);
 			DBStoreCache objectCache = getObjectCache(clazz);
@@ -250,7 +275,9 @@ public class MongoDataStore implements DataStore {
 			if(queryCache!=null) {
 				queryCache.removeAll();
 			}
-			
+			for(DBStoreListener l : getListeners(clazz)) {
+				l.deleted(entity);
+			}
 			return true;
 		} catch (Exception e) {
 			throw new DatabaseException(e);
@@ -261,6 +288,9 @@ public class MongoDataStore implements DataStore {
 	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> T saveObject(T object) throws EntityNotFoundException {
 		
+		for(DBStoreListener l : getListeners(object.getClass())) {
+			l.beforeSave(object);
+		}
 		
 		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(object.getClass());
 		if (object.getId() == null) {
@@ -274,15 +304,18 @@ public class MongoDataStore implements DataStore {
 		if(objectCache!=null) {
 			log.debug("updating object cache for: "+id);
 			objectCache.remove(out.getId());
-			//objectCache.put(out.getId(), out);
 		}
+
 		DBStoreCache queryCache = getQueryCache(object.getClass());
 		if(queryCache!=null) {
 			queryCache.removeAll();
 		}
 		
-		
-		return (T)getObject(object.getClass(), object.getId());
+		out = (T)getObject(object.getClass(), object.getId());
+		for(DBStoreListener l : getListeners(object.getClass())) {
+			l.saved(out);
+		}
+		return out; 
 	}
 
 	
@@ -333,7 +366,9 @@ public class MongoDataStore implements DataStore {
 	}
 
 	
-	
+	public void addListener(DBStoreListener listener) {
+		this.listeners.add(listener);
+	}
 	
 
 }
