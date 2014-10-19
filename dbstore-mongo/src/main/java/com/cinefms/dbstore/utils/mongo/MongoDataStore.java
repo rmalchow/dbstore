@@ -19,7 +19,7 @@ import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
 import com.cinefms.dbstore.api.DBStoreQuery;
 import com.cinefms.dbstore.api.DataStore;
-import com.cinefms.dbstore.api.exceptions.DatabaseException;
+import com.cinefms.dbstore.api.exceptions.DBStoreException;
 import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
 import com.cinefms.dbstore.cache.api.DBStoreCache;
 import com.cinefms.dbstore.cache.api.DBStoreCacheFactory;
@@ -88,7 +88,7 @@ public class MongoDataStore implements DataStore {
 	}
 
 	
-	public void storeBinary(String bucket, DBStoreBinary binary) throws DatabaseException {
+	public void storeBinary(String bucket, DBStoreBinary binary) throws DBStoreException {
 		try {
 			GridFS gfs = getBucket(bucket);
 			gfs.remove(binary.getId());
@@ -103,12 +103,12 @@ public class MongoDataStore implements DataStore {
 			f.setFilename(binary.getId());
 			f.save();
 		} catch (Exception e) {
-			throw new DatabaseException(e);
+			throw new DBStoreException(e);
 		}
 	}
 
 	
-	public DBStoreBinary getBinary(String bucket, String filename) throws DatabaseException {
+	public DBStoreBinary getBinary(String bucket, String filename) throws DBStoreException {
 		try {
 			GridFS gfs = getBucket(bucket);
 			GridFSDBFile f = gfs.findOne(filename);
@@ -117,17 +117,17 @@ public class MongoDataStore implements DataStore {
 			}
 			return new MongoFSBinary(f);
 		} catch (Exception e) {
-			throw new DatabaseException(e);
+			throw new DBStoreException(e);
 		}
 	}
 
 	
-	public void deleteBinary(String bucket, String id) throws DatabaseException {
+	public void deleteBinary(String bucket, String id) throws DBStoreException {
 		try {
 			GridFS gfs = getBucket(bucket);
 			gfs.remove(id);
 		} catch (Exception e) {
-			throw new DatabaseException(e);
+			throw new DBStoreException(e);
 		}
 	}
 
@@ -246,7 +246,7 @@ public class MongoDataStore implements DataStore {
 	
 
 	
-	public <T extends DBStoreEntity> boolean deleteObject(T object) throws DatabaseException {
+	public <T extends DBStoreEntity> boolean deleteObject(T object) throws DBStoreException {
 		if(object!=null && object.getId()!=null) {
 			return deleteObject(object.getClass(),object.getId());
 		}
@@ -254,7 +254,7 @@ public class MongoDataStore implements DataStore {
 	}
 
 	
-	public <T extends DBStoreEntity> boolean deleteObject(Class<T> clazz, String id) throws DatabaseException {
+	public <T extends DBStoreEntity> boolean deleteObject(Class<T> clazz, String id) throws DBStoreException {
 		
 		DBStoreEntity entity = getObject(clazz, id);
 		if(id==null) {
@@ -280,7 +280,7 @@ public class MongoDataStore implements DataStore {
 			}
 			return true;
 		} catch (Exception e) {
-			throw new DatabaseException(e);
+			throw new DBStoreException(e);
 		}
 	}
 

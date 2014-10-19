@@ -1,13 +1,13 @@
 package com.cinefms.dbstore.api.exceptions;
 
-public class EntityNotFoundException extends Exception {
+public class EntityNotFoundException extends DBStoreException {
 
 	private static final long serialVersionUID = -1726052637799309086L;
 	private String object;
 	private String id;
 
 	public EntityNotFoundException(String object, String id) {
-		super();
+		super(null);
 		this.object = object;
 		this.id = id;
 	}

@@ -1,7 +1,7 @@
 package com.cinefms.dbstore.api.exceptions;
 
 
-public class MalformedQueryException extends Exception {
+public class MalformedQueryException extends RuntimeException {
 
 	private static final long serialVersionUID = 162642578926546833L;
 	
@@ -16,10 +16,10 @@ public class MalformedQueryException extends Exception {
 	}
 	
 	public MalformedQueryException() {
-		super(ERROR_CODE.FIELD_MISSING.toString());
+		super(ERROR_CODE.FIELD_MISSING.toString(),null);
 	}
 	
 	public MalformedQueryException(ERROR_CODE code) {
-		super(code.toString());
+		super(code.toString(),null);
 	}
 }
