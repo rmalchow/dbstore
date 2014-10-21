@@ -35,7 +35,6 @@ public class MongoDataStore implements DataStore {
 	private static Log log = LogFactory.getLog(MongoDataStore.class);
 
 	private MongoService mongoService;
-
 	private DBStoreCacheFactory cacheFactory;
 	
 	private boolean cacheQueries = false;
@@ -320,15 +319,15 @@ public class MongoDataStore implements DataStore {
 
 	
 	private DBStoreCache getObjectCache(Class<? extends DBStoreEntity> clazz) {
-		if(cacheFactory!=null && cacheObjects) {
-			return cacheFactory.getCache(clazz.getCanonicalName()+":object");
+		if(getCacheFactory()!=null && cacheObjects) {
+			return getCacheFactory().getCache(clazz.getCanonicalName()+":object");
 		}
 		return null;
 	}
 	
 	private DBStoreCache getQueryCache(Class<? extends DBStoreEntity> clazz) {
-		if(cacheFactory!=null && cacheQueries) {
-			return cacheFactory.getCache(clazz.getCanonicalName()+":query");
+		if(getCacheFactory()!=null && cacheQueries) {
+			return getCacheFactory().getCache(clazz.getCanonicalName()+":query");
 		}
 		return null;
 	}
@@ -342,11 +341,11 @@ public class MongoDataStore implements DataStore {
 	}
 
 	public DBStoreCacheFactory getDBStoreCacheFactory() {
-		return cacheFactory;
+		return getCacheFactory();
 	}
 
 	public void setDBStoreCacheFactory(DBStoreCacheFactory cacheFactory) {
-		this.cacheFactory = cacheFactory;
+		this.setCacheFactory(cacheFactory);
 	}
 
 	public boolean isCacheQueries() {
@@ -368,6 +367,14 @@ public class MongoDataStore implements DataStore {
 	
 	public void addListener(DBStoreListener listener) {
 		this.listeners.add(listener);
+	}
+
+	public DBStoreCacheFactory getCacheFactory() {
+		return cacheFactory;
+	}
+
+	public void setCacheFactory(DBStoreCacheFactory cacheFactory) {
+		this.cacheFactory = cacheFactory;
 	}
 	
 
