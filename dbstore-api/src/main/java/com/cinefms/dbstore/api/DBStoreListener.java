@@ -4,11 +4,11 @@ public interface DBStoreListener {
 	
 	public boolean supports(Class<? extends DBStoreEntity> clazz);
 
-	public void beforeSave(DBStoreEntity o);
-	public void saved(DBStoreEntity o);
+	public void beforeSave(String db, DBStoreEntity o);
+	public void saved(String db, DBStoreEntity o);
 	
-	public void beforeDelete(DBStoreEntity o);
-	public void deleted(DBStoreEntity o);
+	public void beforeDelete(String db, DBStoreEntity o);
+	public void deleted(String db, DBStoreEntity o);
 	
 
 }

@@ -14,7 +14,7 @@ public interface DBStoreQuery {
 		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN
 	};
 
-	
+	public String getDatabase();
 	
 	public OPERATOR getOperator(); 
 	public List<DBStoreQuery> getNested(); 

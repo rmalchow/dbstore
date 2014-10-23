@@ -1,6 +1,8 @@
 package com.cinefms.dbstore.utils.mongo;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -13,7 +15,8 @@ public class MongoService {
 	private String dbName;
 
 	private MongoClient client;
-	private DB db;
+	
+	private Map<String,DB> dbs = new HashMap<String, DB>();
 	
 	public MongoClient getClient() throws UnknownHostException {
 		if(client == null) {
@@ -23,13 +26,19 @@ public class MongoService {
 	}
 	
 	public DB getDb() throws UnknownHostException {
-		if(this.db == null) {
-			this.db = getClient().getDB(getDbName());
-		}
-		this.db.setWriteConcern(WriteConcern.ACKNOWLEDGED);
-		return db;
+		return getDb(getDbName());
 	}
 
+	public DB getDb(String db) throws UnknownHostException {
+		DB out = dbs.get(db);
+		if(out == null) {
+			out = getClient().getDB(db);
+			out.setWriteConcern(WriteConcern.ACKNOWLEDGED);
+			dbs.put(db, out);
+		}
+		return out;
+	}
+	
 	public String getHost() {
 		return host;
 	}

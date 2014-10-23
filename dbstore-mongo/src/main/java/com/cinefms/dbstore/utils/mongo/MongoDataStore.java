@@ -24,6 +24,7 @@ import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
 import com.cinefms.dbstore.cache.api.DBStoreCache;
 import com.cinefms.dbstore.cache.api.DBStoreCacheFactory;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
@@ -37,6 +38,9 @@ public class MongoDataStore implements DataStore {
 	private MongoService mongoService;
 	private DBStoreCacheFactory cacheFactory;
 	
+	private String defaultDb;
+	private String dbPrefix;
+	
 	private boolean cacheQueries = false;
 	private boolean cacheObjects = false;
 	
@@ -48,19 +52,35 @@ public class MongoDataStore implements DataStore {
 
 	private List<DBStoreListener> listeners = new ArrayList<DBStoreListener>(); 
 	
-	private <T> JacksonDBCollection<T, String> getCollection(Class<T> clazz) {
+	private DB getDB(String db) throws UnknownHostException {
+		db = db==null?defaultDb:dbPrefix+"_"+db;
+		return getMongoService().getDb(db);
+	}
+	
+	private <T> JacksonDBCollection<T, String> getCollection(String db, Class<T> clazz) {
 		try {
+			String key = db+":"+clazz.getCanonicalName();
 			@SuppressWarnings("unchecked")
-			JacksonDBCollection<T, String> out = (JacksonDBCollection<T, String>) collections.get(clazz.getCanonicalName());
+			JacksonDBCollection<T, String> out = (JacksonDBCollection<T, String>) collections.get(key);
 			if (out == null) {
-				DBCollection dbc = getMongoService().getDb().getCollection(clazz.getCanonicalName());
+				DBCollection dbc = null;
+				getDB(db).getCollection(clazz.getCanonicalName());
 				out = JacksonDBCollection.wrap(dbc, clazz, String.class);
-				collections.put(clazz.getCanonicalName(), out);
+				collections.put(key, out);
 			}
 			return out;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private GridFS getBucket(String db, String bucket) throws UnknownHostException {
+		GridFS out = buckets.get(bucket);
+		if (out == null) {
+			out = new GridFS(getDB(db), bucket);
+			buckets.put(bucket, out);
+		}
+		return out;
 	}
 
 	private List<DBStoreListener> getListeners(Class<? extends DBStoreEntity> clazz) {
@@ -77,19 +97,9 @@ public class MongoDataStore implements DataStore {
 		return out;
 	}
 	
-	private GridFS getBucket(String bucket) throws UnknownHostException {
-		GridFS out = buckets.get(bucket);
-		if (out == null) {
-			out = new GridFS(getMongoService().getDb(), bucket);
-			buckets.put(bucket, out);
-		}
-		return out;
-	}
-
-	
-	public void storeBinary(String bucket, DBStoreBinary binary) throws DBStoreException {
+	public void storeBinary(String db, String bucket, DBStoreBinary binary) throws DBStoreException {
 		try {
-			GridFS gfs = getBucket(bucket);
+			GridFS gfs = getBucket(db,bucket);
 			gfs.remove(binary.getId());
 			GridFSInputFile f = gfs.createFile(binary.getInputStream());
 			DBObject md = new BasicDBObject();
@@ -107,9 +117,9 @@ public class MongoDataStore implements DataStore {
 	}
 
 	
-	public DBStoreBinary getBinary(String bucket, String filename) throws DBStoreException {
+	public DBStoreBinary getBinary(String db, String bucket, String filename) throws DBStoreException {
 		try {
-			GridFS gfs = getBucket(bucket);
+			GridFS gfs = getBucket(db,bucket);
 			GridFSDBFile f = gfs.findOne(filename);
 			if (f == null) {
 				return null;
@@ -121,9 +131,9 @@ public class MongoDataStore implements DataStore {
 	}
 
 	
-	public void deleteBinary(String bucket, String id) throws DBStoreException {
+	public void deleteBinary(String db, String bucket, String id) throws DBStoreException {
 		try {
-			GridFS gfs = getBucket(bucket);
+			GridFS gfs = getBucket(db,bucket);
 			gfs.remove(id);
 		} catch (Exception e) {
 			throw new DBStoreException(e);
@@ -131,11 +141,11 @@ public class MongoDataStore implements DataStore {
 	}
 
 	
-	public <T extends DBStoreEntity> T findObject(Class<T> clazz, DBStoreQuery query) {
+	public <T extends DBStoreEntity> T findObject(String db, Class<T> clazz, DBStoreQuery query) {
 		
 		String key = query.toString();
 		List<String> ids = null;
-		DBStoreCache cache = getQueryCache(clazz); 
+		DBStoreCache cache = getQueryCache(db,clazz); 
 		if(cache != null) {
 			ids = cache.getList(key, String.class);
 		}
@@ -143,7 +153,7 @@ public class MongoDataStore implements DataStore {
 			Query q = fqtl.translate(query);
 			DBObject o = fqtl.translateOrderBy(query);
 			ids = new ArrayList<String>();
-			List<T> ts = getCollection(clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
+			List<T> ts = getCollection(db,clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
 			if (ts != null) {
 				ids = new ArrayList<String>();
 				for (T t : ts) {
@@ -157,18 +167,18 @@ public class MongoDataStore implements DataStore {
 		
 		
 		if (ids.size() > 0) {
-			return getObject(clazz, ids.get(0));
+			return getObject(db, clazz, ids.get(0));
 		}
 		return null;
 	}
 
 	
-	public <T extends DBStoreEntity> List<T> findObjects(Class<T> clazz, DBStoreQuery query) throws EntityNotFoundException {
-		
+	public <T extends DBStoreEntity> List<T> findObjects(String db, Class<T> clazz, DBStoreQuery query) throws EntityNotFoundException {
 		
 		String key = query.toString();
 		List<String> ids = null;
-		DBStoreCache cache = getQueryCache(clazz); 
+		DBStoreCache cache = getQueryCache(db,clazz); 
+		
 		if(cache !=null) {
 			ids = cache.getList(key, String.class);
 		}
@@ -182,8 +192,7 @@ public class MongoDataStore implements DataStore {
 
 			log.debug(" ---> LIMIT (" + skip + ":" + max + ")");
 
-			DBCursor<T> c = getCollection(clazz).find(q,
-					new BasicDBObject("id", null));
+			DBCursor<T> c = getCollection(db,clazz).find(q,new BasicDBObject("id", null));
 
 			if (o != null) {
 				c = c.sort(o);
@@ -195,8 +204,7 @@ public class MongoDataStore implements DataStore {
 				c = c.limit(max);
 			}
 			List<T> x = c.toArray();
-			log.debug("-- db query: found " + x.size() + " matches for query ("
-					+ clazz.getCanonicalName() + ":" + query.toString() + ")");
+			log.debug("-- db query: found " + x.size() + " matches for query ("+ clazz.getCanonicalName() + ":" + query.toString() + ")");
 			for (T t : x) {
 				ids.add(t.getId());
 			}
@@ -211,7 +219,7 @@ public class MongoDataStore implements DataStore {
 		}
 		List<T> out = new ArrayList<T>();
 		for (String s : ids) {
-			T t = getObject(clazz, s);
+			T t = getObject(db, clazz, s);
 			if (t != null) {
 				out.add(t);
 			}
@@ -224,9 +232,9 @@ public class MongoDataStore implements DataStore {
 	}
 
 	
-	public <T extends DBStoreEntity> T getObject(Class<T> clazz, String id) {
+	public <T extends DBStoreEntity> T getObject(String db, Class<T> clazz, String id) {
 		
-		DBStoreCache cache = getObjectCache(clazz);
+		DBStoreCache cache = getObjectCache(db,clazz);
 		T out = null;
 		if(cache!=null) {
 			out = cache.get(id, clazz);
@@ -234,7 +242,7 @@ public class MongoDataStore implements DataStore {
 		}
 		if (out == null) {
 			log.debug(" result from cache [NULL], checking DB ... ");
-			out = getCollection(clazz).findOneById(id);
+			out = getCollection(db,clazz).findOneById(id);
 			if (out != null && cache != null) {
 				cache.put(id,out);
 			}
@@ -245,37 +253,37 @@ public class MongoDataStore implements DataStore {
 	
 
 	
-	public <T extends DBStoreEntity> boolean deleteObject(T object) throws DBStoreException {
+	public <T extends DBStoreEntity> boolean deleteObject(String db, T object) throws DBStoreException {
 		if(object!=null && object.getId()!=null) {
-			return deleteObject(object.getClass(),object.getId());
+			return deleteObject(db,object.getClass(), object.getId());
 		}
 		return false;
 	}
 
 	
-	public <T extends DBStoreEntity> boolean deleteObject(Class<T> clazz, String id) throws DBStoreException {
+	public <T extends DBStoreEntity> boolean deleteObject(String db, Class<T> clazz, String id) throws DBStoreException {
 		
-		DBStoreEntity entity = getObject(clazz, id);
+		DBStoreEntity entity = getObject(db, clazz, id);
 		if(id==null) {
 			return false;
 		}
 		
 		for(DBStoreListener l : getListeners(clazz)) {
-			l.beforeDelete(entity);
+			l.beforeDelete(db, entity);
 		}
 		
 		try {
-			getCollection(clazz).removeById(id);
-			DBStoreCache objectCache = getObjectCache(clazz);
+			getCollection(db,clazz).removeById(id);
+			DBStoreCache objectCache = getObjectCache(db,clazz);
 			if(objectCache!=null) {
 				objectCache.remove(id);
 			}
-			DBStoreCache queryCache = getQueryCache(clazz);
+			DBStoreCache queryCache = getQueryCache(db,clazz);
 			if(queryCache!=null) {
 				queryCache.removeAll();
 			}
 			for(DBStoreListener l : getListeners(clazz)) {
-				l.deleted(entity);
+				l.deleted(db, entity);
 			}
 			return true;
 		} catch (Exception e) {
@@ -285,53 +293,64 @@ public class MongoDataStore implements DataStore {
 
 	
 	@SuppressWarnings("unchecked")
-	public <T extends DBStoreEntity> T saveObject(T object) throws EntityNotFoundException {
+	public <T extends DBStoreEntity> T saveObject(String db, T object) throws EntityNotFoundException {
 		
 		for(DBStoreListener l : getListeners(object.getClass())) {
-			l.beforeSave(object);
+			l.beforeSave(db, object);
 		}
 		
-		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(object.getClass());
+		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,object.getClass());
+
 		if (object.getId() == null) {
 			object.setId(ObjectId.get().toString());
 		}
+		
 		WriteResult<T, String> wr = coll.save(object);
 		String id = wr.getSavedId();
-		T out = (T) getObject(object.getClass(), id);
+		T out = (T) getObject(db, object.getClass(), id);
 		
-		DBStoreCache objectCache = getObjectCache(object.getClass());
+		DBStoreCache objectCache = getObjectCache(db,object.getClass());
 		if(objectCache!=null) {
 			log.debug("updating object cache for: "+id);
 			objectCache.remove(out.getId());
 		}
 
-		DBStoreCache queryCache = getQueryCache(object.getClass());
+		DBStoreCache queryCache = getQueryCache(db,object.getClass());
 		if(queryCache!=null) {
 			queryCache.removeAll();
 		}
 		
-		out = (T)getObject(object.getClass(), object.getId());
+		out = (T)getObject(db, object.getClass(), object.getId());
 		for(DBStoreListener l : getListeners(object.getClass())) {
-			l.saved(out);
+			l.saved(db, out);
 		}
 		return out; 
 	}
 
-	
+	/**
 	private DBStoreCache getObjectCache(Class<? extends DBStoreEntity> clazz) {
-		if(getCacheFactory()!=null && cacheObjects) {
-			return getCacheFactory().getCache(clazz.getCanonicalName()+":object");
-		}
-		return null;
+		return getObjectCache("", clazz);
 	}
 	
 	private DBStoreCache getQueryCache(Class<? extends DBStoreEntity> clazz) {
-		if(getCacheFactory()!=null && cacheQueries) {
-			return getCacheFactory().getCache(clazz.getCanonicalName()+":query");
+		return getQueryCache("", clazz);
+	}
+	**/
+
+	private DBStoreCache getObjectCache(String db, Class<? extends DBStoreEntity> clazz) {
+		if(getCacheFactory()!=null && cacheObjects) {
+			return getCacheFactory().getCache(db+":"+clazz.getCanonicalName()+":object");
 		}
 		return null;
 	}
-
+	
+	private DBStoreCache getQueryCache(String db, Class<? extends DBStoreEntity> clazz) {
+		if(getCacheFactory()!=null && cacheQueries) {
+			return getCacheFactory().getCache(db+":"+clazz.getCanonicalName()+":query");
+		}
+		return null;
+	}
+	
 	public MongoService getMongoService() {
 		return mongoService;
 	}
@@ -375,6 +394,22 @@ public class MongoDataStore implements DataStore {
 
 	public void setCacheFactory(DBStoreCacheFactory cacheFactory) {
 		this.cacheFactory = cacheFactory;
+	}
+
+	public String getDefaultDb() {
+		return defaultDb;
+	}
+
+	public void setDefaultDb(String defaultDb) {
+		this.defaultDb = defaultDb;
+	}
+
+	public String getDbPrefix() {
+		return dbPrefix;
+	}
+
+	public void setDbPrefix(String dbPrefix) {
+		this.dbPrefix = dbPrefix;
 	}
 	
 

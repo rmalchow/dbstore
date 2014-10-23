@@ -7,6 +7,7 @@ import java.util.List;
 import com.cinefms.dbstore.api.OrderBy;
 import com.cinefms.dbstore.api.DBStoreQuery;
 import com.cinefms.dbstore.api.exceptions.MalformedQueryException;
+import com.cinefms.dbstore.api.exceptions.MalformedQueryException.ERROR_CODE;
 
 
 public class BasicQuery implements DBStoreQuery {
@@ -17,16 +18,25 @@ public class BasicQuery implements DBStoreQuery {
 	private OPERATOR operator;
 	private COMPARATOR comparator;
 	
+	private String database;
+	
 	private List<OrderBy> orderBy = new ArrayList<OrderBy>();
 	private int start=0;
 	private int max=-1;
 	
 	
 	private BasicQuery() {
+		Thread.dumpStack();
+	}
+	
+	private BasicQuery(String database) {
+		Thread.dumpStack();
+		this.database = database;
 	}
 	
 	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator, String key, COMPARATOR comparator, Object value, List<OrderBy> orderBy, int start, int max) {
 		super();
+		Thread.dumpStack();
 		this.conditions = conditions;
 		this.operator = operator;
 		this.key = key;
@@ -38,12 +48,15 @@ public class BasicQuery implements DBStoreQuery {
 	}
 	
 	private BasicQuery(String key, COMPARATOR comparator, Object value) {
+		Thread.dumpStack();
 		this.key = key;
 		this.comparator = comparator;
 		this.value = value;
 	}
 	
-	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator) {
+	private BasicQuery(String database, List<DBStoreQuery> conditions, OPERATOR operator) {
+		Thread.dumpStack();
+		this.database = database;
 		this.conditions = conditions;
 		this.operator = operator;
 	}
@@ -74,7 +87,7 @@ public class BasicQuery implements DBStoreQuery {
 		}
 		List<DBStoreQuery> q = new ArrayList<DBStoreQuery>(getNested());
 		q.add(new BasicQuery(key, c, value));
-		return new BasicQuery(q,OPERATOR.AND);
+		return new BasicQuery(this.database,q,OPERATOR.AND);
 	} 
 
 	public DBStoreQuery in(String key, List<?> values) throws MalformedQueryException {
@@ -133,14 +146,17 @@ public class BasicQuery implements DBStoreQuery {
 	
 	public DBStoreQuery and(List<DBStoreQuery> queries) {
 		List<DBStoreQuery> qp = new ArrayList<DBStoreQuery>(getNested());
-		qp.add(new BasicQuery(queries,OPERATOR.AND));
-		return new BasicQuery(qp,OPERATOR.AND);
+		qp.add(new BasicQuery(this.database,queries,OPERATOR.AND));
+		return new BasicQuery(this.database,qp,OPERATOR.AND);
 	}	
 	
 	
 	public DBStoreQuery and(DBStoreQuery... queries) {
 		List<DBStoreQuery> task = new ArrayList<DBStoreQuery>();
 		for(DBStoreQuery q : queries) {
+			if((q.getDatabase()+"").compareTo(database+"") != 0) {
+				throw new MalformedQueryException(ERROR_CODE.SUB_QUERIES_CANNOT_USE_OTHER_DB);
+			}
 			task.add(q);
 		}
 		return and(task);
@@ -149,8 +165,8 @@ public class BasicQuery implements DBStoreQuery {
 	
 	public DBStoreQuery or(List<DBStoreQuery> queries) {
 		List<DBStoreQuery> qp = new ArrayList<DBStoreQuery>(getNested());
-		qp.add(new BasicQuery(queries,OPERATOR.OR));
-		return new BasicQuery(qp,OPERATOR.AND);
+		qp.add(new BasicQuery(this.database,queries,OPERATOR.OR));
+		return new BasicQuery(this.database,qp,OPERATOR.AND);
 	}
 	
 	
@@ -164,6 +180,11 @@ public class BasicQuery implements DBStoreQuery {
 
 	public static DBStoreQuery createQuery() {
 		return new BasicQuery();
+	}
+
+	public static DBStoreQuery createQuery(String database) {
+		DBStoreQuery out = new BasicQuery(database);
+		return out;
 	}
 	
 	
@@ -269,7 +290,19 @@ public class BasicQuery implements DBStoreQuery {
 		if(start!=0 || max != -1) {
 			out.append(" LIMIT ("+start+","+max+")");
 		}
+		if(database!=null) {
+			out.append(" @ ");
+			out.append(database);
+		}
 		return out.toString();
+	}
+
+	public String getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(String database) {
+		this.database = database;
 	}
 	
 	
