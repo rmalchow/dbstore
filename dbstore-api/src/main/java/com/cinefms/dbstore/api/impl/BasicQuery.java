@@ -26,17 +26,14 @@ public class BasicQuery implements DBStoreQuery {
 	
 	
 	private BasicQuery() {
-		Thread.dumpStack();
 	}
 	
 	private BasicQuery(String database) {
-		Thread.dumpStack();
 		this.database = database;
 	}
 	
 	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator, String key, COMPARATOR comparator, Object value, List<OrderBy> orderBy, int start, int max) {
 		super();
-		Thread.dumpStack();
 		this.conditions = conditions;
 		this.operator = operator;
 		this.key = key;
@@ -48,14 +45,12 @@ public class BasicQuery implements DBStoreQuery {
 	}
 	
 	private BasicQuery(String key, COMPARATOR comparator, Object value) {
-		Thread.dumpStack();
 		this.key = key;
 		this.comparator = comparator;
 		this.value = value;
 	}
 	
 	private BasicQuery(String database, List<DBStoreQuery> conditions, OPERATOR operator) {
-		Thread.dumpStack();
 		this.database = database;
 		this.conditions = conditions;
 		this.operator = operator;
