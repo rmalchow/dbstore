@@ -63,10 +63,20 @@ public class MongoDataStore implements DataStore {
 			@SuppressWarnings("unchecked")
 			JacksonDBCollection<T, String> out = (JacksonDBCollection<T, String>) collections.get(key);
 			if (out == null) {
-				DBCollection dbc = null;
-				getDB(db).getCollection(clazz.getCanonicalName());
+				log.info("============================================================");
+				log.info("==");
+				log.info("== DB COLLECTION NOT CREATED .... (creating...) ");
+				log.info("==");
+				log.info("==  CLAZZ IS: "+clazz.getCanonicalName());
+				log.info("== DBNAME IS: "+db);
+				DB d = getDB(db);
+				log.info("==     DB IS: "+d);
+				DBCollection dbc = d.getCollection(clazz.getCanonicalName());
+				log.info("==    DBC IS: "+dbc);
 				out = JacksonDBCollection.wrap(dbc, clazz, String.class);
 				collections.put(key, out);
+				log.info("==");
+				log.info("============================================================");
 			}
 			return out;
 		} catch (Exception e) {
