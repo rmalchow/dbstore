@@ -53,7 +53,7 @@ public class MongoDataStore implements DataStore {
 	private List<DBStoreListener> listeners = new ArrayList<DBStoreListener>(); 
 	
 	private DB getDB(String db) throws UnknownHostException {
-		db = db==null?defaultDb:dbPrefix+"_"+db;
+		db = db==null?defaultDb:(dbPrefix==null?"":(dbPrefix+"_"))+db;
 		return getMongoService().getDb(db);
 	}
 	
@@ -273,8 +273,12 @@ public class MongoDataStore implements DataStore {
 	
 	public <T extends DBStoreEntity> boolean deleteObject(String db, Class<T> clazz, String id) throws DBStoreException {
 		
-		DBStoreEntity entity = getObject(db, clazz, id);
 		if(id==null) {
+			return false;
+		}
+
+		DBStoreEntity entity = getObject(db, clazz, id);
+		if(entity==null) {
 			return false;
 		}
 		
@@ -316,7 +320,7 @@ public class MongoDataStore implements DataStore {
 		}
 		
 		WriteResult<T, String> wr = coll.save(object);
-		String id = wr.getSavedId();
+		String id = wr.getDbObject().get("_id").toString();
 		T out = (T) getObject(db, object.getClass(), id);
 		
 		DBStoreCache objectCache = getObjectCache(db,object.getClass());
