@@ -19,11 +19,14 @@ import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
 import com.cinefms.dbstore.api.DBStoreQuery;
 import com.cinefms.dbstore.api.DataStore;
+import com.cinefms.dbstore.api.annotations.Index;
+import com.cinefms.dbstore.api.annotations.Indexes;
 import com.cinefms.dbstore.api.exceptions.DBStoreException;
 import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
 import com.cinefms.dbstore.cache.api.DBStoreCache;
 import com.cinefms.dbstore.cache.api.DBStoreCacheFactory;
 import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -56,6 +59,27 @@ public class MongoDataStore implements DataStore {
 		db = db==null?defaultDb:(dbPrefix==null?"":(dbPrefix+"_"))+db;
 		return getMongoService().getDb(db);
 	}
+
+	private <T> DBCollection initializeCollection(DB db, Class<T> clazz) {
+		DBCollection dbc = db.getCollection(clazz.getCanonicalName());
+		if(clazz.getAnnotation(Indexes.class)!=null) {
+			for(Index i : clazz.getAnnotation(Indexes.class).value()) {
+
+				BasicDBObjectBuilder idx = BasicDBObjectBuilder.start();
+				for(String f : i.fields()) {
+					idx = idx.add(f, 1);
+				}
+
+				BasicDBObjectBuilder options =  BasicDBObjectBuilder.start();
+				if(i.unique()) {
+					options.add("unique", true);
+				}
+				dbc.ensureIndex(idx.get(),options.get());
+			}
+		}
+		
+		return dbc;
+	}
 	
 	private <T> JacksonDBCollection<T, String> getCollection(String db, Class<T> clazz) {
 		try {
@@ -71,7 +95,7 @@ public class MongoDataStore implements DataStore {
 				log.info("== DBNAME IS: "+db);
 				DB d = getDB(db);
 				log.info("==     DB IS: "+d);
-				DBCollection dbc = d.getCollection(clazz.getCanonicalName());
+				DBCollection dbc = initializeCollection(d, clazz);
 				log.info("==    DBC IS: "+dbc);
 				out = JacksonDBCollection.wrap(dbc, clazz, String.class);
 				collections.put(key, out);
