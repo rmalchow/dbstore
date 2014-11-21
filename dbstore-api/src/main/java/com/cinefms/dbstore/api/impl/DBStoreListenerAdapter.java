@@ -17,6 +17,9 @@ public abstract class DBStoreListenerAdapter<T> implements DBStoreListener {
 	protected void doAfterSaved(String db, T o) {
 	}
 
+	protected void doUpdate(String db, T oldEntity, T newEntity) {
+	}
+	
 	protected void doBeforeDelete(String db, T o) {
 	}
 
@@ -31,6 +34,10 @@ public abstract class DBStoreListenerAdapter<T> implements DBStoreListener {
 		doBeforeSave(db, (T)o);
 	}
 
+	public void update(String db, DBStoreEntity oldEntity, DBStoreEntity newEntity) {
+		doUpdate(db, (T)oldEntity, (T)newEntity);
+	}
+	
 	public void saved(String db, DBStoreEntity o) {
 		doAfterSaved(db, (T)o);
 	}

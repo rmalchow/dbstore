@@ -339,8 +339,12 @@ public class MongoDataStore implements DataStore {
 		
 		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,object.getClass());
 
+		T old = null;
+		
 		if (object.getId() == null) {
 			object.setId(ObjectId.get().toString());
+		} else {
+			old = coll.findOneById(object.getId());
 		}
 		
 		WriteResult<T, String> wr = coll.save(object);
@@ -359,6 +363,11 @@ public class MongoDataStore implements DataStore {
 		}
 		
 		out = (T)getObject(db, object.getClass(), object.getId());
+		if(old!=null) {
+			for(DBStoreListener l : getListeners(object.getClass())) {
+				l.updated(db, old, out);
+			}
+		}
 		for(DBStoreListener l : getListeners(object.getClass())) {
 			l.saved(db, out);
 		}
