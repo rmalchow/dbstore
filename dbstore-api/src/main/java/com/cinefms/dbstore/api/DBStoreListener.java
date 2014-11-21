@@ -5,6 +5,7 @@ public interface DBStoreListener {
 	public boolean supports(Class<? extends DBStoreEntity> clazz);
 
 	public void beforeSave(String db, DBStoreEntity o);
+	public void updated(String db, DBStoreEntity oldEntity, DBStoreEntity newEntity);
 	public void saved(String db, DBStoreEntity o);
 	
 	public void beforeDelete(String db, DBStoreEntity o);
