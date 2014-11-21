@@ -2,15 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cinefms.dbstore</groupId>
 	<artifactId>dbstore</artifactId>
-<<<<<<< HEAD
-<<<<<<< HEAD
-	<version>0.0.27</version>
-=======
-	<version>0.1.0-SNAPSHOT</version>
->>>>>>> develop
-=======
 	<version>0.1.1-SNAPSHOT</version>
->>>>>>> develop
 	<packaging>pom</packaging>
 	<modules>
 		<module>dbstore-api</module>

@@ -5,15 +5,7 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-<<<<<<< HEAD
-<<<<<<< HEAD
-		<version>0.0.27</version>
-=======
-		<version>0.1.0-SNAPSHOT</version>
->>>>>>> develop
-=======
 		<version>0.1.1-SNAPSHOT</version>
->>>>>>> develop
 	</parent>
 	<dependencies>
 		<dependency>
