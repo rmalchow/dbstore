@@ -26,12 +26,12 @@
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-cache-api</artifactId>
-			<version>${project.version}</version>
+			<version>0.1.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-redis</artifactId>
-			<version>${project.version}</version>
+			<version>0.1.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
