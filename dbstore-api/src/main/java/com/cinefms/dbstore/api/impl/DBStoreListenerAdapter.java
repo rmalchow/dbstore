@@ -3,7 +3,7 @@ package com.cinefms.dbstore.api.impl;
 import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
 
-public abstract class DBStoreListenerAdapter<T> implements DBStoreListener {
+public abstract class DBStoreListenerAdapter<T extends DBStoreEntity> implements DBStoreListener {
 	
 	private Class<T> clazz;
 	
@@ -34,7 +34,7 @@ public abstract class DBStoreListenerAdapter<T> implements DBStoreListener {
 		doBeforeSave(db, (T)o);
 	}
 
-	public void update(String db, DBStoreEntity oldEntity, DBStoreEntity newEntity) {
+	public void updated(String db, DBStoreEntity oldEntity, DBStoreEntity newEntity) {
 		doUpdate(db, (T)oldEntity, (T)newEntity);
 	}
 	
