@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.cinefms.dbstore.api.OrderBy;
 import com.cinefms.dbstore.api.DBStoreQuery;
+import com.cinefms.dbstore.api.OrderBy;
 import com.cinefms.dbstore.api.exceptions.MalformedQueryException;
-import com.cinefms.dbstore.api.exceptions.MalformedQueryException.ERROR_CODE;
 
 
 public class BasicQuery implements DBStoreQuery {
@@ -18,18 +17,12 @@ public class BasicQuery implements DBStoreQuery {
 	private OPERATOR operator;
 	private COMPARATOR comparator;
 	
-	private String database;
-	
 	private List<OrderBy> orderBy = new ArrayList<OrderBy>();
 	private int start=0;
 	private int max=-1;
 	
 	
 	private BasicQuery() {
-	}
-	
-	private BasicQuery(String database) {
-		this.database = database;
 	}
 	
 	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator, String key, COMPARATOR comparator, Object value, List<OrderBy> orderBy, int start, int max) {
@@ -50,8 +43,7 @@ public class BasicQuery implements DBStoreQuery {
 		this.value = value;
 	}
 	
-	private BasicQuery(String database, List<DBStoreQuery> conditions, OPERATOR operator) {
-		this.database = database;
+	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator) {
 		this.conditions = conditions;
 		this.operator = operator;
 	}
@@ -82,7 +74,7 @@ public class BasicQuery implements DBStoreQuery {
 		}
 		List<DBStoreQuery> q = new ArrayList<DBStoreQuery>(getNested());
 		q.add(new BasicQuery(key, c, value));
-		return new BasicQuery(this.database,q,OPERATOR.AND);
+		return new BasicQuery(q,OPERATOR.AND);
 	} 
 
 	public DBStoreQuery in(String key, List<?> values) throws MalformedQueryException {
@@ -141,17 +133,14 @@ public class BasicQuery implements DBStoreQuery {
 	
 	public DBStoreQuery and(List<DBStoreQuery> queries) {
 		List<DBStoreQuery> qp = new ArrayList<DBStoreQuery>(getNested());
-		qp.add(new BasicQuery(this.database,queries,OPERATOR.AND));
-		return new BasicQuery(this.database,qp,OPERATOR.AND);
+		qp.add(new BasicQuery(queries,OPERATOR.AND));
+		return new BasicQuery(qp,OPERATOR.AND);
 	}	
 	
 	
 	public DBStoreQuery and(DBStoreQuery... queries) {
 		List<DBStoreQuery> task = new ArrayList<DBStoreQuery>();
 		for(DBStoreQuery q : queries) {
-			if((q.getDatabase()+"").compareTo(database+"") != 0) {
-				throw new MalformedQueryException(ERROR_CODE.SUB_QUERIES_CANNOT_USE_OTHER_DB);
-			}
 			task.add(q);
 		}
 		return and(task);
@@ -160,8 +149,8 @@ public class BasicQuery implements DBStoreQuery {
 	
 	public DBStoreQuery or(List<DBStoreQuery> queries) {
 		List<DBStoreQuery> qp = new ArrayList<DBStoreQuery>(getNested());
-		qp.add(new BasicQuery(this.database,queries,OPERATOR.OR));
-		return new BasicQuery(this.database,qp,OPERATOR.AND);
+		qp.add(new BasicQuery(queries,OPERATOR.OR));
+		return new BasicQuery(qp,OPERATOR.AND);
 	}
 	
 	
@@ -177,12 +166,6 @@ public class BasicQuery implements DBStoreQuery {
 		return new BasicQuery();
 	}
 
-	public static DBStoreQuery createQuery(String database) {
-		DBStoreQuery out = new BasicQuery(database);
-		return out;
-	}
-	
-	
 	public DBStoreQuery order(String order, boolean asc) {
 		List<OrderBy> ne = new ArrayList<OrderBy>(getOrderBy());
 		ne.add(new OrderBy(order,asc));
@@ -219,6 +202,9 @@ public class BasicQuery implements DBStoreQuery {
 		return max;
 	}
 
+	public DBStoreQuery elemMatch(String key, DBStoreQuery value) {
+		return add(key, COMPARATOR.ELEM_MATCH, value);
+	}
 	
 	public String toString() {
 		StringBuffer out = new StringBuffer();
@@ -246,6 +232,9 @@ public class BasicQuery implements DBStoreQuery {
 				break;
 			case NE:
 				out.append("!=");
+				break;
+			case ELEM_MATCH:
+				out.append("==");
 				break;
 			default:
 				break;
@@ -285,20 +274,9 @@ public class BasicQuery implements DBStoreQuery {
 		if(start!=0 || max != -1) {
 			out.append(" LIMIT ("+start+","+max+")");
 		}
-		if(database!=null) {
-			out.append(" @ ");
-			out.append(database);
-		}
 		return out.toString();
 	}
 
-	public String getDatabase() {
-		return database;
-	}
-
-	public void setDatabase(String database) {
-		this.database = database;
-	}
 	
 	
 

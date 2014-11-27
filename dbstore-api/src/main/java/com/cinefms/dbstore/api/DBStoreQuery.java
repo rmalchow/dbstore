@@ -11,11 +11,9 @@ public interface DBStoreQuery {
 	};
 	
 	public static enum COMPARATOR {
-		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN
+		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN, ELEM_MATCH
 	};
 
-	public String getDatabase();
-	
 	public OPERATOR getOperator(); 
 	public List<DBStoreQuery> getNested(); 
 
@@ -41,6 +39,7 @@ public interface DBStoreQuery {
 	public DBStoreQuery gte(String key, Object value) throws MalformedQueryException;
 	public DBStoreQuery gt(String key, Object value) throws MalformedQueryException;
 	public DBStoreQuery ne(String key, Object value) throws MalformedQueryException;
+	public DBStoreQuery elemMatch(String key, DBStoreQuery q);
 
 	public DBStoreQuery and(DBStoreQuery... queries);
 	public DBStoreQuery and(List<DBStoreQuery> queries);
@@ -51,6 +50,9 @@ public interface DBStoreQuery {
 	public DBStoreQuery order(String order, boolean asc);
 	public DBStoreQuery start(int start);
 	public DBStoreQuery max(int max);
+
+	
+	
 	
 	
 }

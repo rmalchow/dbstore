@@ -42,6 +42,9 @@ public class QueryMongojackTranslator {
 			case NE:
 				q = q.notEquals(in.getField(), in.getValue());
 				break;
+			case ELEM_MATCH:
+				q = q.elemMatch(in.getField(), translate((DBStoreQuery)in.getValue()));
+				break;
 			case CONTAINS:
 				try {
 					q = q.regex(in.getField(), Pattern.compile((String)in.getValue(),Pattern.CASE_INSENSITIVE));
