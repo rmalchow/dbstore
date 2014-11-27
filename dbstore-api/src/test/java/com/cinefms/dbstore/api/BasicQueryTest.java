@@ -88,22 +88,12 @@ public class BasicQueryTest {
 	}
 
 	@Test
-	public void testSimpleQueryGTWithDatabase() throws MalformedQueryException {
-		DBStoreQuery q = BasicQuery.createQuery("nase").gt("A", "B");
-		System.err.println("---- : "+q.getDatabase()+" / "+q.hashCode());
-		Assert.assertEquals("(A > B) @ nase", q.toString());
-	}
-	
-	@Test(expected=MalformedQueryException.class)
-	public void testSimpleQueryGTWithDatabaseError() throws MalformedQueryException {
-		DBStoreQuery q = BasicQuery.createQuery("nase").gt("A", "B");
-		q.and(BasicQuery.createQuery("nase2").gt("A", "B"));
-	}
-	
-	@Test
-	public void testSort() throws MalformedQueryException {
-		DBStoreQuery DBStoreQuery = BasicQuery.createQuery().order("a").order("b");
-		Assert.assertEquals(2, DBStoreQuery.getOrderBy().size());
+	public void testElemMatchDatabase() throws MalformedQueryException {
+		DBStoreQuery q1 = BasicQuery.createQuery().eq("A", "B");
+		DBStoreQuery q2 = BasicQuery.createQuery().eq("X", "Z");
+		q1 = q1.elemMatch("M", q2);
+		
+		Assert.assertEquals("(A == B AND M == (X == Z))", q1.toString());
 	}
 	
 	
