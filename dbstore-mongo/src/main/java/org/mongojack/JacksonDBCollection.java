@@ -37,6 +37,7 @@ import org.mongojack.internal.util.IdHandler;
 import org.mongojack.internal.util.IdHandlerFactory;
 import org.mongojack.internal.util.SerializationUtils;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -144,6 +145,7 @@ public class JacksonDBCollection<T, K> {
         } else {
             this.features = features;
         }
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         dbCollection.setDBEncoderFactory(new JacksonEncoderFactory(
                 objectMapper, this));
     }
