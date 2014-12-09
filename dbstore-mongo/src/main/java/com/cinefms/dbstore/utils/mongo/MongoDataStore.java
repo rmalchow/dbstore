@@ -365,26 +365,15 @@ public class MongoDataStore implements DataStore {
 		}
 		
 		out = (T)getObject(db, object.getClass(), object.getId());
-		if(old!=null) {
-			for(DBStoreListener l : getListeners(object.getClass())) {
-				l.updated(db, old, out);
-			}
-		}
 		for(DBStoreListener l : getListeners(object.getClass())) {
-			l.created(db, out);
+			if(old!=null) {
+				l.updated(db, old, out);
+			} else {
+				l.created(db, out);
+			}
 		}
 		return out; 
 	}
-
-	/**
-	private DBStoreCache getObjectCache(Class<? extends DBStoreEntity> clazz) {
-		return getObjectCache("", clazz);
-	}
-	
-	private DBStoreCache getQueryCache(Class<? extends DBStoreEntity> clazz) {
-		return getQueryCache("", clazz);
-	}
-	**/
 
 	private DBStoreCache getObjectCache(String db, Class<? extends DBStoreEntity> clazz) {
 		if(getCacheFactory()!=null && cacheObjects) {
