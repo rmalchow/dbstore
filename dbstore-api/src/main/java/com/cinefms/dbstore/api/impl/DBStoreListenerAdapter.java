@@ -27,5 +27,8 @@ public abstract class DBStoreListenerAdapter<T extends DBStoreEntity> implements
 	public void deleted(String db, DBStoreEntity o) {
 	}
 
+	public void created(String db, DBStoreEntity o) {
+	}
+	
 
 }
