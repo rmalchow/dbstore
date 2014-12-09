@@ -343,7 +343,9 @@ public class MongoDataStore implements DataStore {
 		
 		if (object.getId() == null) {
 			object.setId(ObjectId.get().toString());
+			log.debug(object.getClass()+" / saving, id is null, set to: "+object.getId());
 		} else {
+			log.debug(object.getClass()+" / saving, id is: "+object.getId());
 			old = coll.findOneById(object.getId());
 		}
 		

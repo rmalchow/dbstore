@@ -11,43 +11,21 @@ public abstract class DBStoreListenerAdapter<T extends DBStoreEntity> implements
 		this.clazz = clazz;
 	}
 
-	protected void doBeforeSave(String db, T o) {
-	}
-
-	protected void doAfterSaved(String db, T o) {
-	}
-
-	protected void doUpdate(String db, T oldEntity, T newEntity) {
-	}
-	
-	protected void doBeforeDelete(String db, T o) {
-	}
-
-	protected void doAfterDeleted(String db, T o) {
-	}
-
 	public boolean supports(Class<? extends DBStoreEntity> clazz) {
-		return this.clazz == clazz;
+		return clazz==this.clazz;
 	}
 
 	public void beforeSave(String db, DBStoreEntity o) {
-		doBeforeSave(db, (T)o);
 	}
 
 	public void updated(String db, DBStoreEntity oldEntity, DBStoreEntity newEntity) {
-		doUpdate(db, (T)oldEntity, (T)newEntity);
-	}
-	
-	public void saved(String db, DBStoreEntity o) {
-		doAfterSaved(db, (T)o);
 	}
 
 	public void beforeDelete(String db, DBStoreEntity o) {
-		doBeforeDelete(db, (T)o);
 	}
 
 	public void deleted(String db, DBStoreEntity o) {
-		doAfterDeleted(db, (T)o);
 	}
+
 
 }
