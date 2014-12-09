@@ -371,7 +371,7 @@ public class MongoDataStore implements DataStore {
 			}
 		}
 		for(DBStoreListener l : getListeners(object.getClass())) {
-			l.saved(db, out);
+			l.created(db, out);
 		}
 		return out; 
 	}
