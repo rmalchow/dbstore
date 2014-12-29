@@ -10,6 +10,7 @@
 		<module>dbstore-cache-memcached</module>
 		<module>dbstore-redis</module>
 		<module>dbstore-mongo</module>
+		<module>dbstore-cache-ehcache</module>
 	</modules>
 	<properties>
 		<junit.version>4.11</junit.version>
