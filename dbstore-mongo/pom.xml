@@ -5,7 +5,11 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
+<<<<<<< HEAD
 		<version>0.2.4</version>
+=======
+		<version>0.3.0-SNAPSHOT</version>
+>>>>>>> develop
 	</parent>
 	<dependencies>
 		<dependency>
@@ -16,12 +20,20 @@
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-api</artifactId>
+<<<<<<< HEAD
 			<version>0.2.4</version>
+=======
+			<version>0.3.0-SNAPSHOT</version>
+>>>>>>> develop
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-cache-api</artifactId>
+<<<<<<< HEAD
 			<version>0.2.4</version>
+=======
+			<version>0.3.0-SNAPSHOT</version>
+>>>>>>> develop
 		</dependency>
         <dependency>
             <groupId>commons-io</groupId>
