@@ -3,9 +3,12 @@
 	<groupId>com.cinefms.dbstore</groupId>
 	<artifactId>dbstore</artifactId>
 <<<<<<< HEAD
+<<<<<<< HEAD
 	<version>0.2.4</version>
 =======
 	<version>0.3.0-SNAPSHOT</version>
+>>>>>>> develop
+=======
 >>>>>>> develop
 	<packaging>pom</packaging>
 	<modules>
