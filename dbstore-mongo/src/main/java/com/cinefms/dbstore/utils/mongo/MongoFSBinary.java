@@ -20,8 +20,8 @@ public class MongoFSBinary implements DBStoreBinary {
 		this.f = f;
 	}
 
-	public int getLength() {
-		return (int) f.getLength();
+	public long getLength() {
+		return f.getLength();
 	}
 
 	public InputStream getInputStream() {
