@@ -8,7 +8,7 @@ import java.util.Map;
 public interface DBStoreBinary {
 
 	public String getId();
-	public int getLength();
+	public long getLength();
 	public InputStream getInputStream();
 	public Map<String,Object> getMetaData();
 

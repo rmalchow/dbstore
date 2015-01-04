@@ -12,7 +12,7 @@ import com.cinefms.dbstore.api.DBStoreBinary;
 public class BasicBinary implements DBStoreBinary {
 
 	private String id;
-	private int length = -1;
+	private long length = -1;
 	private InputStream is;
 	private Map<String,Object> metaData = new HashMap<String, Object>();
 	
@@ -20,7 +20,7 @@ public class BasicBinary implements DBStoreBinary {
 		this(id,new ByteArrayInputStream(data),data.length);
 	}
 	
-	public BasicBinary(String id, InputStream is, int length) {
+	public BasicBinary(String id, InputStream is, long length) {
 		this.id = id;
 		this.is = is;
 		this.length = length;
@@ -32,7 +32,7 @@ public class BasicBinary implements DBStoreBinary {
 	}
 
 	
-	public int getLength() {
+	public long getLength() {
 		return length;
 	}
 
