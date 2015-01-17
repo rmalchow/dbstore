@@ -143,6 +143,7 @@ public class MongoDataStore implements DataStore {
 				}
 			}
 			f.setMetaData(md);
+			f.setId(binary.getId());
 			f.setFilename(binary.getId());
 			f.save();
 		} catch (Exception e) {
