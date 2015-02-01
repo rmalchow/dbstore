@@ -33,6 +33,7 @@ import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
+import com.mongodb.util.Hash;
 
 public class MongoDataStore implements DataStore {
 
@@ -47,8 +48,8 @@ public class MongoDataStore implements DataStore {
 	private boolean cacheQueries = false;
 	private boolean cacheObjects = false;
 	
-	private DBStoreCache objectCache;
-	private DBStoreCache queryCache;
+	private Map<Class<?>,DBStoreCache> objectCaches = new HashMap<Class<?>, DBStoreCache>();
+	private Map<Class<?>,DBStoreCache> queryCaches = new HashMap<Class<?>, DBStoreCache>();
 	
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
 	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<String, List<DBStoreListener>>();
@@ -380,10 +381,14 @@ public class MongoDataStore implements DataStore {
 	}
 
 	private DBStoreCache getObjectCache(String db, Class<? extends DBStoreEntity> clazz) {
+		DBStoreCache objectCache = objectCaches.get(clazz);
 		if(objectCache==null && getCacheFactory()!=null && cacheObjects) {
 			synchronized(this) {
 				if(objectCache==null) {
 					objectCache = getCacheFactory().getCache(db+":"+clazz.getCanonicalName()+":object");
+					if(objectCache!=null) {
+						objectCaches.put(clazz,objectCache);
+					}
 				}
 			}
 		}
@@ -391,10 +396,14 @@ public class MongoDataStore implements DataStore {
 	}
 	
 	private DBStoreCache getQueryCache(String db, Class<? extends DBStoreEntity> clazz) {
+		DBStoreCache queryCache = queryCaches.get(clazz);
 		if(queryCache==null && getCacheFactory()!=null && cacheQueries) {
 			synchronized(this) {
 				if(queryCache==null) {
 					queryCache = getCacheFactory().getCache(db+":"+clazz.getCanonicalName()+":query");
+					if(queryCache!=null) {
+						queryCaches.put(clazz,queryCache);
+					}
 				}
 			}
 		}
