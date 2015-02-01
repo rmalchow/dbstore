@@ -17,9 +17,16 @@ public class EhCacheFactory  implements DBStoreCacheFactory {
 	public DBStoreCache getCache(String cachename) {
 		Cache c = cacheManager.getCache(cachename);
 		if(c==null) {
-			c = new Cache(cachename, maxElementsInMemory, false, false, timeToLiveSeconds, timeToIdleSeconds);
-			cacheManager.addCache(c);
-			c = cacheManager.getCache(cachename);
+			try {
+				c = new Cache(cachename, maxElementsInMemory, false, false, timeToLiveSeconds, timeToIdleSeconds);
+				try {
+					cacheManager.addCache(c);
+				} catch (Exception e) {
+				}
+				c = cacheManager.getCache(cachename);
+			} catch (Exception e) {
+				return null;
+			}
 		}
 		return new EhCache(c);
 	}
