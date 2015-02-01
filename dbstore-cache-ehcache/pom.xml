@@ -3,22 +3,14 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-<<<<<<< HEAD
-		<version>0.3.5-SNAPSHOT</version>
-=======
 		<version>0.4.0</version>
->>>>>>> develop
 	</parent>
 	<artifactId>dbstore-cache-ehcache</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-cache-api</artifactId>
-<<<<<<< HEAD
-			<version>0.3.5-SNAPSHOT</version>
-=======
 			<version>0.4.0</version>
->>>>>>> develop
 		</dependency>
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
