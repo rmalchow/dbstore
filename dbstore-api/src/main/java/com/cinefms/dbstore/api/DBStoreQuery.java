@@ -11,7 +11,7 @@ public interface DBStoreQuery {
 	};
 	
 	public static enum COMPARATOR {
-		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN, ELEM_MATCH
+		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN, ALL, ELEM_MATCH
 	};
 
 	public OPERATOR getOperator(); 
@@ -30,6 +30,9 @@ public interface DBStoreQuery {
 	public DBStoreQuery in(String key, Object value) throws MalformedQueryException;
 	public DBStoreQuery in(String key, List<?> values) throws MalformedQueryException;
 	public DBStoreQuery in(String key, Object[] values) throws MalformedQueryException;
+
+	public DBStoreQuery all(String key, List<?> values) throws MalformedQueryException;
+	public DBStoreQuery all(String key, Object[] values) throws MalformedQueryException;
 	
 	public DBStoreQuery contains(String key, String value) throws MalformedQueryException;
 	
