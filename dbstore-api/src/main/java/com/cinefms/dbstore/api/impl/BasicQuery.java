@@ -77,17 +77,31 @@ public class BasicQuery implements DBStoreQuery {
 		return new BasicQuery(q,OPERATOR.AND);
 	} 
 
-	public DBStoreQuery in(String key, List<?> values) throws MalformedQueryException {
-		return add(key,COMPARATOR.IN,values);
-	}
-	
-	
 	public DBStoreQuery in(String key, Object value) throws MalformedQueryException {
 		return in(key, new Object[] { value });
 	}
 	
 	
+	public DBStoreQuery in(String key, List<?> values) throws MalformedQueryException {
+		return add(key,COMPARATOR.IN,values);
+	}
+	
+	
 	public DBStoreQuery in(String key, Object[] values) throws MalformedQueryException {
+		List<Object> os = new ArrayList<Object>();
+		for(Object o : values) {
+			os.add(o);
+		}
+		return in(key,os);
+	}
+	
+	
+	public DBStoreQuery all(String key, List<?> values) throws MalformedQueryException {
+		return add(key,COMPARATOR.ALL,values);
+	}
+	
+	
+	public DBStoreQuery all(String key, Object[] values) throws MalformedQueryException {
 		List<Object> os = new ArrayList<Object>();
 		for(Object o : values) {
 			os.add(o);

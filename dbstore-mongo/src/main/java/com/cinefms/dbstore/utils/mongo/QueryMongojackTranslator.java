@@ -58,6 +58,9 @@ public class QueryMongojackTranslator {
 				log.debug(" ##### "+in.getField()+" --- "+in.getValue().getClass());
 				q = q.in(in.getField(), (Collection<?>)in.getValue());
 				break;
+			case ALL:
+				q = q.all(in.getField(), (Collection<?>)in.getValue());
+				break;
 			default:
 				break;
 			}
