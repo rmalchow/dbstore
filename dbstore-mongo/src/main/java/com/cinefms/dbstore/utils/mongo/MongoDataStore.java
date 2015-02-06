@@ -48,8 +48,8 @@ public class MongoDataStore implements DataStore {
 	private boolean cacheQueries = false;
 	private boolean cacheObjects = false;
 	
-	private Map<Class<?>,DBStoreCache> objectCaches = new HashMap<Class<?>, DBStoreCache>();
-	private Map<Class<?>,DBStoreCache> queryCaches = new HashMap<Class<?>, DBStoreCache>();
+	private Map<String,DBStoreCache> objectCaches = new HashMap<String, DBStoreCache>();
+	private Map<String,DBStoreCache> queryCaches = new HashMap<String, DBStoreCache>();
 	
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
 	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<String, List<DBStoreListener>>();
@@ -78,10 +78,10 @@ public class MongoDataStore implements DataStore {
 				if(i.unique()) {
 					options.add("unique", true);
 				}
-				dbc.ensureIndex(idx.get(),options.get());
+				log.info(" === CREATING INDEX: "+idx.get()+" ==== ");
+				dbc.createIndex(idx.get(),options.get());
 			}
 		}
-		
 		return dbc;
 	}
 	
@@ -381,13 +381,14 @@ public class MongoDataStore implements DataStore {
 	}
 
 	private DBStoreCache getObjectCache(String db, Class<? extends DBStoreEntity> clazz) {
-		DBStoreCache objectCache = objectCaches.get(clazz);
+		String key = db+":"+clazz.getCanonicalName()+":object";
+		DBStoreCache objectCache = objectCaches.get(key);
 		if(objectCache==null && getCacheFactory()!=null && cacheObjects) {
 			synchronized(this) {
 				if(objectCache==null) {
-					objectCache = getCacheFactory().getCache(db+":"+clazz.getCanonicalName()+":object");
+					objectCache = getCacheFactory().getCache(key);
 					if(objectCache!=null) {
-						objectCaches.put(clazz,objectCache);
+						objectCaches.put(key,objectCache);
 					}
 				}
 			}
@@ -396,13 +397,14 @@ public class MongoDataStore implements DataStore {
 	}
 	
 	private DBStoreCache getQueryCache(String db, Class<? extends DBStoreEntity> clazz) {
-		DBStoreCache queryCache = queryCaches.get(clazz);
+		String key = db+":"+clazz.getCanonicalName()+":query";
+		DBStoreCache queryCache = queryCaches.get(key);
 		if(queryCache==null && getCacheFactory()!=null && cacheQueries) {
 			synchronized(this) {
 				if(queryCache==null) {
-					queryCache = getCacheFactory().getCache(db+":"+clazz.getCanonicalName()+":query");
+					queryCache = getCacheFactory().getCache(key);
 					if(queryCache!=null) {
-						queryCaches.put(clazz,queryCache);
+						queryCaches.put(key,queryCache);
 					}
 				}
 			}
