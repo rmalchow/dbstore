@@ -3,7 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cinefms.dbstore</groupId>
 	<artifactId>dbstore</artifactId>
+<<<<<<< HEAD
 	<version>0.4.5</version>
+=======
+	<version>0.4.5-SNAPSHOT</version>
+>>>>>>> develop
 	<packaging>pom</packaging>
 	<modules>
 		<module>dbstore-api</module>
