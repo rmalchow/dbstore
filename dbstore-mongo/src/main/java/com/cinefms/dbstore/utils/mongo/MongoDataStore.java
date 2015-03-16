@@ -212,6 +212,11 @@ public class MongoDataStore implements DataStore {
 	}
 
 	
+	public <T extends DBStoreEntity> int countObjects(String db, Class<T> clazz, DBStoreQuery query) throws EntityNotFoundException {
+		Query q = fqtl.translate(query);
+		return getCollection(db,clazz).find(q).count();
+	}
+
 	public <T extends DBStoreEntity> List<T> findObjects(String db, Class<T> clazz, DBStoreQuery query) throws EntityNotFoundException {
 		
 		String key = query.toString();

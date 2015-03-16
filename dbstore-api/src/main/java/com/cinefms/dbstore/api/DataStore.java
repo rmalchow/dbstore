@@ -17,6 +17,8 @@ public interface DataStore {
 
 	public <T extends DBStoreEntity> List<T> findObjects(String db, Class<T> clazz, DBStoreQuery query) throws DBStoreException, EntityNotFoundException;
 
+	public <T extends DBStoreEntity> int countObjects(String db, Class<T> clazz, DBStoreQuery query) throws DBStoreException, EntityNotFoundException;
+	
 	public <T extends DBStoreEntity> T findObject(String db, Class<T> clazz, DBStoreQuery query) throws DBStoreException;
 
 	public abstract void deleteBinary(String db, String bucket, String id) throws DBStoreException;
