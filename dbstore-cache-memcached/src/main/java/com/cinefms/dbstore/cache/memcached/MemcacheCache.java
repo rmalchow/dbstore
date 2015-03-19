@@ -38,53 +38,34 @@ public class MemcacheCache implements DBStoreCache, MessageListener<CacheUpdate>
 		this.namespace = cachename;
 		this.redisson = redisson;
 		this.mapper = mapper;
+		this.topic = redisson.getTopic("_cache:"+namespace+"_updates");
+		this.topic.addListener(this);
+		this.atomicLong = redisson.getAtomicLong("_cache:"+namespace+"_generation");
 		log.info("created memcached cache with namespace: "+namespace+", generation: "+getGeneration());
 	}
 
 	public String getName() {
-		return null;
+		return namespace;
 	}
 	
 	public void onMessage(CacheUpdate update) {
 		log.debug(" ####################################################" );
 		log.debug(" ### cache update received for: "+update.getNamespace()+" / "+update.getNewGeneration());
 		log.debug(" ####################################################" );
-		generation = null;
-		atomicLong = null;
-	}
-	
-	public RAtomicLong getAtomicLong() {
-		if(topic==null) {			
-			topic = redisson.getTopic("_cache:"+namespace+"_updates");
-			topic.addListener(this);
+		if(this.generation.longValue()!=update.getNewGeneration().longValue()) {
+			this.generation = update.getNewGeneration();
 		}
-		if(atomicLong==null) {
-			atomicLong = redisson.getAtomicLong("_caches:"+namespace+":_generation");
-		}
-		return atomicLong;
 	}
 	
 	public long getGeneration() {
-		if(generation==null) {
-			log.info("generation not set, getting ... ");
-			if(redisson!=null) {
-				generation = getAtomicLong().get();
-				log.info("success! ");
-			} else {
-				generation = 0l;
-			}
-		}
 		return generation.longValue();
 	}
-	
 
 	public void removeAll() {
-		Long n = getAtomicLong().incrementAndGet();
-		generation = null;
-		atomicLong = null;
+		generation = atomicLong.incrementAndGet();
 		CacheUpdate cu = new CacheUpdate();
 		cu.setNamespace(namespace);
-		cu.setNewGeneration(n);
+		cu.setNewGeneration(generation);
 		topic.publish(cu);
 	}
 
