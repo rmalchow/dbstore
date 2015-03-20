@@ -5,6 +5,6 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-		<version>0.4.8</version>
+		<version>0.4.9-SNAPSHOT</version>
 	</parent>
 </project>
