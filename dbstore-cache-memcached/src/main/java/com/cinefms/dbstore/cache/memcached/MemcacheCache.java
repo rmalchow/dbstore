@@ -28,7 +28,7 @@ public class MemcacheCache implements DBStoreCache, MessageListener<CacheUpdate>
 	
 	private MemcachedClient memcachedClient;
 	private String namespace;
-	private Long generation;
+	private long generation;
 	private RAtomicLong atomicLong;
 	private RTopic<CacheUpdate> topic;
 	private int time;
@@ -41,7 +41,9 @@ public class MemcacheCache implements DBStoreCache, MessageListener<CacheUpdate>
 		this.topic = redisson.getTopic("_cache:"+namespace+"_updates");
 		this.topic.addListener(this);
 		this.atomicLong = redisson.getAtomicLong("_cache:"+namespace+"_generation");
-		log.info("created memcached cache with namespace: "+namespace+", generation: "+getGeneration());
+		log.info("created memcached cache with namespace: "+namespace+", atomicLong: "+atomicLong);
+		this.generation = atomicLong.get();
+		log.info("created memcached cache with namespace: "+namespace+", generation: "+this.generation);
 	}
 
 	public String getName() {
@@ -52,13 +54,13 @@ public class MemcacheCache implements DBStoreCache, MessageListener<CacheUpdate>
 		log.debug(" ####################################################" );
 		log.debug(" ### cache update received for: "+update.getNamespace()+" / "+update.getNewGeneration());
 		log.debug(" ####################################################" );
-		if(this.generation.longValue()!=update.getNewGeneration().longValue()) {
-			this.generation = update.getNewGeneration();
+		if(this.generation!=update.getNewGeneration().longValue()) {
+			this.generation = atomicLong.get();
 		}
 	}
 	
 	public long getGeneration() {
-		return generation.longValue();
+		return generation;
 	}
 
 	public void removeAll() {
