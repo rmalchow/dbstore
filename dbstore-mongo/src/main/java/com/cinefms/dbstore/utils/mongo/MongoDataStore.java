@@ -188,7 +188,10 @@ public class MongoDataStore implements DataStore {
 		if(cache != null) {
 			ids = cache.getList(key, String.class);
 		}
-		if (ids == null) {
+		if(ids!=null) {
+			log.info(" -----> cache returned a list: "+ids);
+		} else if (ids == null) {
+			log.info(" -----> cache returned a list: "+ids);
 			Query q = fqtl.translate(query);
 			DBObject o = fqtl.translateOrderBy(query);
 			ids = new ArrayList<String>();
