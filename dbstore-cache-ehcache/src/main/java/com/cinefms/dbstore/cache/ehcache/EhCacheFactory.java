@@ -8,7 +8,7 @@ import com.cinefms.dbstore.cache.api.DBStoreCacheFactory;
 
 public class EhCacheFactory  implements DBStoreCacheFactory {
 
-	private CacheManager cacheManager;
+	private CacheManager cacheManager ;
 	
 	private int timeToLiveSeconds = 3600;
 	private int timeToIdleSeconds = 3600;

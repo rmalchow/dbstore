@@ -189,9 +189,9 @@ public class MongoDataStore implements DataStore {
 			ids = cache.getList(key, String.class);
 		}
 		if(ids!=null) {
-			log.info(" -----> cache returned a list: "+ids);
+			log.debug(" -----> cache hit! "+ids.size()+" elements in list!");
 		} else if (ids == null) {
-			log.info(" -----> cache returned a list: "+ids);
+			log.debug(" -----> cache miss!");
 			Query q = fqtl.translate(query);
 			DBObject o = fqtl.translateOrderBy(query);
 			ids = new ArrayList<String>();
@@ -222,59 +222,37 @@ public class MongoDataStore implements DataStore {
 
 	public <T extends DBStoreEntity> List<T> findObjects(String db, Class<T> clazz, DBStoreQuery query) throws EntityNotFoundException {
 		
-		String key = query.toString();
-		List<String> ids = null;
-		DBStoreCache cache = getQueryCache(db,clazz); 
-		
-		if(cache !=null) {
-			ids = cache.getList(key, String.class);
-		}
-		if (ids == null) {
-			log.debug("getting from datastore (not in cache ...)");
-			Query q = fqtl.translate(query);
-			DBObject o = fqtl.translateOrderBy(query);
-			ids = new ArrayList<String>();
-			int skip = query.getStart();
-			int max = query.getMax();
-
-			log.debug(" ---> LIMIT (" + skip + ":" + max + ")");
-
-			DBCursor<T> c = getCollection(db,clazz).find(q,new BasicDBObject("id", null));
-
-			if (o != null) {
-				c = c.sort(o);
-			}
-			if (skip != 0) {
-				c = c.skip(skip);
-			}
-			if (max != -1) {
-				c = c.limit(max);
-			}
-			List<T> x = c.toArray();
-			log.debug("-- db query: found " + x.size() + " matches for query ("+ clazz.getCanonicalName() + ":" + query.toString() + ")");
-			for (T t : x) {
-				ids.add(t.getId());
-			}
-			
-			if(cache!=null) {
-				cache.put(key, ids);
-			}
-
-		} else {
-			log.debug("getting from datastore (in cache ...)");
-			log.debug("-- cached: found " + ids.size() + " results for query: "+ query.toString());
-		}
 		List<T> out = new ArrayList<T>();
-		for (String s : ids) {
-			T t = getObject(db, clazz, s);
-			if (t != null) {
-				out.add(t);
-			}
-		}
+		
+		log.debug(" -----> cache miss!");
+		log.debug("getting from datastore (not in cache ...)");
+		Query q = fqtl.translate(query);
+		DBObject o = fqtl.translateOrderBy(query);
 
+		int skip = query.getStart();
+		int max = query.getMax();
+
+		log.debug(" ---> LIMIT (" + skip + ":" + max + ")");
+
+		DBCursor<T> c = getCollection(db,clazz).find(q);
+		
+		if (o != null) {
+			c = c.sort(o);
+		}
+		if (skip != 0) {
+			c = c.skip(skip);
+		}
+		if (max != -1) {
+			c = c.limit(max);
+		}
+		List<T> x = c.toArray();
+		
+		log.debug("-- db query: found " + x.size() + " matches for query ("+ clazz.getCanonicalName() + ":" + query.toString() + ")");
+		for (T t : x) {
+			out.add(t);
+		}
+			
 		log.debug("returning " + out.size() + " matches for query ("+ clazz.getCanonicalName() + ":" + query.toString() + ")");
-		
-		
 		return out;
 	}
 

@@ -76,7 +76,6 @@ public class QueryMongojackTranslator {
 			if(in.getOperator()==OPERATOR.OR) {
 				q = q.or(mq);
 			}
-
 		}
 		return q;
 	}
