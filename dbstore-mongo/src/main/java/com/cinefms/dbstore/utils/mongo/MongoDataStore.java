@@ -127,11 +127,15 @@ public class MongoDataStore implements DataStore {
 			List<DBStoreListener> lx = new ArrayList<DBStoreListener>();
 			for(DBStoreListener l : listeners) {
 				if(l.supports(clazz)) {
+					log.debug("listeners on "+clazz+": "+l.getClass()+" supports");
 					lx.add(l);
+				} else {
+					log.debug("listeners on "+clazz+": "+l.getClass()+" does not support");
 				}
 			}
 			out = new ArrayList<DBStoreListener>(lx);
 		}
+		log.debug("listeners on "+clazz+": "+out.size());
 		return out;
 	}
 	
