@@ -298,6 +298,7 @@ public class MongoDataStore implements DataStore {
 		}
 		
 		for(DBStoreListener l : getListeners(clazz)) {
+			log.debug("firing 'beforeDelete' for: "+clazz+" / "+id);
 			l.beforeDelete(db, entity);
 		}
 		
@@ -312,6 +313,7 @@ public class MongoDataStore implements DataStore {
 				queryCache.removeAll();
 			}
 			for(DBStoreListener l : getListeners(clazz)) {
+				log.debug("firing 'delete' for: "+clazz+" / "+id);
 				l.deleted(db, entity);
 			}
 			return true;
@@ -325,6 +327,7 @@ public class MongoDataStore implements DataStore {
 	public <T extends DBStoreEntity> T saveObject(String db, T object) throws EntityNotFoundException {
 		
 		for(DBStoreListener l : getListeners(object.getClass())) {
+			log.debug("firing 'beforeSave' for: "+object.getClass()+" / "+object.getId());
 			l.beforeSave(db, object);
 		}
 		
@@ -358,8 +361,10 @@ public class MongoDataStore implements DataStore {
 		out = (T)getObject(db, object.getClass(), object.getId());
 		for(DBStoreListener l : getListeners(object.getClass())) {
 			if(old!=null) {
+				log.debug("firing 'updated' for: "+object.getClass()+" / "+out.getId());
 				l.updated(db, old, out);
 			} else {
+				log.debug("firing 'create' for: "+object.getClass()+" / "+out.getId());
 				l.created(db, out);
 			}
 		}
