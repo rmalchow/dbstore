@@ -19,6 +19,7 @@
 		<jackson.version>2.2.3</jackson.version>
 		<spymemcached.version>2.11.4</spymemcached.version>
 		<redisson.version>1.1.5</redisson.version>
+		<spring.version>4.1.1.RELEASE</spring.version>
 	</properties>
 	<licenses>
 		<license>
@@ -55,7 +56,12 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>4.1.1.RELEASE</version>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -101,8 +107,8 @@
 				<configuration>
 					<compilerVersion>${maven.compiler.version}</compilerVersion>
 					<fork>true</fork>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 		</plugins>

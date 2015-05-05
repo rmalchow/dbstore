@@ -33,7 +33,6 @@ import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
-import com.mongodb.util.Hash;
 
 public class MongoDataStore implements DataStore {
 
