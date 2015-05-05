@@ -18,10 +18,12 @@ public abstract class QueueConsumer<T> {
 	private RedissonQueue<T> queue;
 	
 	private String queueName;
+	
+	private int threads = 0;
 
 	@PostConstruct
 	public void init() {
-		this.queue = (RedissonQueue<T>)redisson.getQueue(getQueueName());
+		this.queue = (RBlockingQueue<T>)redisson.getQueue(getQueueName());
 	}
 	
 	
@@ -30,7 +32,7 @@ public abstract class QueueConsumer<T> {
 
 	public void poll() {
 		do {
-			T t = queue.poll();
+			T t = queue.
 			if(t!=null) {
 				try {
 					receive(t);
