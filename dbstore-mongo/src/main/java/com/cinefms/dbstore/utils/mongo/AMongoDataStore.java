@@ -63,7 +63,7 @@ public abstract class AMongoDataStore {
 		return getMongoService().getDb(db);
 	}
 
-	public abstract String getCollectionName(Class clazz);
+	public abstract String getCollectionName(Class<?> clazz);
 	
 	
 	private <T> DBCollection initializeCollection(DB db, Class<T> clazz) {
