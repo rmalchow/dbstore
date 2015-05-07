@@ -2,17 +2,22 @@ package com.cinefms.dbstore.redis;
 
 import org.redisson.Config;
 import org.redisson.Redisson;
+import org.redisson.codec.RedissonCodec;
 import org.springframework.beans.factory.FactoryBean;
+
+import com.cinefms.dbstore.redis.util.LenientJsonCodec;
 
 public class RedissonFactory implements FactoryBean<Redisson> {
 
 	private boolean singleton = true;
 	private String singleServer;
 	private String auth;
+	private RedissonCodec codec = new LenientJsonCodec(); 
 
 	public Redisson getObject() throws Exception {
 		Config config = new Config();
 		config.useSingleServer().setAddress(singleServer).setRetryAttempts(3);
+		config.setCodec(codec);
 		Redisson redisson = Redisson.create(config);
 		return redisson;
 	}
@@ -47,6 +52,14 @@ public class RedissonFactory implements FactoryBean<Redisson> {
 
 	public static void main(String[] args) {
 
+	}
+
+	public RedissonCodec getCodec() {
+		return codec;
+	}
+
+	public void setCodec(RedissonCodec codec) {
+		this.codec = codec;
 	}
 
 }
