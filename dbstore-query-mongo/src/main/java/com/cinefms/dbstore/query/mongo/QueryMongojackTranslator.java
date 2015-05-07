@@ -1,4 +1,4 @@
-package com.cinefms.dbstore.utils.mongo;
+package com.cinefms.dbstore.query.mongo;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,9 +9,9 @@ import org.apache.commons.logging.LogFactory;
 import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;
 
-import com.cinefms.dbstore.api.DBStoreQuery;
-import com.cinefms.dbstore.api.DBStoreQuery.OPERATOR;
-import com.cinefms.dbstore.api.OrderBy;
+import com.cinefms.dbstore.query.api.DBStoreQuery;
+import com.cinefms.dbstore.query.api.DBStoreQuery.OPERATOR;
+import com.cinefms.dbstore.query.api.impl.OrderBy;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 

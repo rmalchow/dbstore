@@ -1,4 +1,4 @@
-package com.cinefms.dbstore.api.exceptions;
+package com.cinefms.dbstore.query.api.exceptions;
 
 
 public class MalformedQueryException extends RuntimeException {

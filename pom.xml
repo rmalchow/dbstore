@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cinefms.dbstore</groupId>
 	<artifactId>dbstore</artifactId>
-	<version>0.5.2-SNAPSHOT</version>
+	<version>0.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>dbstore-api</module>
@@ -12,6 +12,9 @@
 		<module>dbstore-redis</module>
 		<module>dbstore-mongo</module>
 		<module>dbstore-cache-ehcache</module>
+		<module>dbstore-query-api</module>
+		<module>dbstore-query-mongo</module>
+		<module>dbstore-mongo-fork</module>
 	</modules>
 	<properties>
 		<junit.version>4.11</junit.version>

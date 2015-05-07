@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cinefms.dbstore.api.exceptions.DBStoreException;
 import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
+import com.cinefms.dbstore.query.api.DBStoreQuery;
 
 public interface DataStore {
 

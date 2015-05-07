@@ -1,8 +1,9 @@
-package com.cinefms.dbstore.api;
+package com.cinefms.dbstore.query.api;
 
 import java.util.List;
 
-import com.cinefms.dbstore.api.exceptions.MalformedQueryException;
+import com.cinefms.dbstore.query.api.exceptions.MalformedQueryException;
+import com.cinefms.dbstore.query.api.impl.OrderBy;
 
 public interface DBStoreQuery {
 

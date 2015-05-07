@@ -1,16 +1,17 @@
 package com.cinefms.dbstore.api;
 
-import static com.cinefms.dbstore.api.impl.BasicQuery.createQuery;
+import static com.cinefms.dbstore.query.api.impl.BasicQuery.createQuery;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.cinefms.dbstore.api.DBStoreQuery.COMPARATOR;
-import com.cinefms.dbstore.api.DBStoreQuery.OPERATOR;
-import com.cinefms.dbstore.api.exceptions.MalformedQueryException;
-import com.cinefms.dbstore.api.impl.BasicQuery;
+import com.cinefms.dbstore.query.api.DBStoreQuery;
+import com.cinefms.dbstore.query.api.DBStoreQuery.COMPARATOR;
+import com.cinefms.dbstore.query.api.DBStoreQuery.OPERATOR;
+import com.cinefms.dbstore.query.api.exceptions.MalformedQueryException;
+import com.cinefms.dbstore.query.api.impl.BasicQuery;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasicQueryTest {

@@ -1,12 +1,11 @@
-package com.cinefms.dbstore.api.impl;
+package com.cinefms.dbstore.query.api.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.cinefms.dbstore.api.DBStoreQuery;
-import com.cinefms.dbstore.api.OrderBy;
-import com.cinefms.dbstore.api.exceptions.MalformedQueryException;
+import com.cinefms.dbstore.query.api.DBStoreQuery;
+import com.cinefms.dbstore.query.api.exceptions.MalformedQueryException;
 
 
 public class BasicQuery implements DBStoreQuery {

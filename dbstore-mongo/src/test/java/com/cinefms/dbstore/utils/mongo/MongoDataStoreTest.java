@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.cinefms.dbstore.api.impl.BasicQuery;
+import com.cinefms.dbstore.query.api.impl.BasicQuery;
 import com.cinefms.dbstore.utils.mongo.util.TestObject1;
 import com.cinefms.dbstore.utils.mongo.util.TestObject1A;
 import com.cinefms.dbstore.utils.mongo.util.TestObject1B;

@@ -1,4 +1,4 @@
-package com.cinefms.dbstore.api;
+package com.cinefms.dbstore.query.api.impl;
 
 public class OrderBy {
 	
