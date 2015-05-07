@@ -23,7 +23,6 @@ public abstract class QueueConsumer<T> {
 
 	@PostConstruct
 	public void init() {
-		this.queue = (RBlockingQueue<T>)redisson.getQueue(getQueueName());
 	}
 	
 	
@@ -31,18 +30,6 @@ public abstract class QueueConsumer<T> {
 	
 
 	public void poll() {
-		do {
-			T t = queue.
-			if(t!=null) {
-				try {
-					receive(t);
-				} catch (Exception e) {
-					log.error("error polling from queue "+getQueueName()+": ",e);
-				}
-		    } else {
-		    	break;
-		    }
-		} while(true);
 	}
 	
 	
