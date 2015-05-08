@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-		<version>0.6.4</version>
+		<version>0.6.5-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -26,12 +26,12 @@
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-cache-api</artifactId>
-			<version>0.6.4</version>
+			<version>0.6.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-redis</artifactId>
-			<version>0.6.4</version>
+			<version>0.6.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
