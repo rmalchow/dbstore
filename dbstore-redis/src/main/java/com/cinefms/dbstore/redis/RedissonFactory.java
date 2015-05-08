@@ -1,5 +1,7 @@
 package com.cinefms.dbstore.redis;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.redisson.Config;
 import org.redisson.Redisson;
 import org.redisson.codec.RedissonCodec;
@@ -9,12 +11,15 @@ import com.cinefms.dbstore.redis.util.LenientJsonCodec;
 
 public class RedissonFactory implements FactoryBean<Redisson> {
 
+	private static Log log = LogFactory.getLog(RedissonFactory.class);
+	
 	private boolean singleton = true;
 	private String singleServer;
 	private String auth;
 	private RedissonCodec codec = new LenientJsonCodec(); 
 
 	public Redisson getObject() throws Exception {
+		log.info("### REDISSON FACTORY - CREATING ... ");
 		Config config = new Config();
 		config.useSingleServer().setAddress(singleServer).setRetryAttempts(3);
 		config.setCodec(codec);

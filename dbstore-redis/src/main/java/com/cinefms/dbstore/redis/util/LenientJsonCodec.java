@@ -17,6 +17,10 @@ public class LenientJsonCodec extends JsonJacksonCodec {
 	
 	private ObjectMapper mapper;
 	
+	public LenientJsonCodec() {
+		log.info("### LENIENT JSON CODEC INSTANTIATED .... ");
+	}
+	
 	@PostConstruct
 	protected void init() {
 		if(mapper==null) {
@@ -26,7 +30,6 @@ public class LenientJsonCodec extends JsonJacksonCodec {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 		mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,false);
 		log.info("### INITIALIZED LENIENT JSON CODEC FOR REDIS ... ");
-		
 		super.init(mapper);
 	}
 
