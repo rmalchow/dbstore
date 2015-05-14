@@ -17,6 +17,7 @@ import org.mongojack.DBQuery.Query;
 import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
+import com.cinefms.dbstore.api.DataStore;
 import com.cinefms.dbstore.api.annotations.Index;
 import com.cinefms.dbstore.api.annotations.Indexes;
 import com.cinefms.dbstore.api.exceptions.DBStoreException;
@@ -34,7 +35,7 @@ import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 
-public abstract class AMongoDataStore {
+public abstract class AMongoDataStore implements DataStore {
 
 	private static Log log = LogFactory.getLog(MongoDataStore.class);
 
@@ -285,7 +286,6 @@ public abstract class AMongoDataStore {
 	}
 	
 
-	
 	public <T extends DBStoreEntity> boolean deleteObject(String db, T object) throws DBStoreException {
 		if(object!=null && object.getId()!=null) {
 			return deleteObject(db,object.getClass(), object.getId());
@@ -293,6 +293,12 @@ public abstract class AMongoDataStore {
 		return false;
 	}
 
+	@Override
+	public <T extends DBStoreEntity> void deleteObjects(String db, Class<T> clazz, DBStoreQuery query) throws DBStoreException {
+		Query q = fqtl.translate(query);
+		getCollection(db,clazz).remove(q);
+	}
+	
 	
 	public <T extends DBStoreEntity> boolean deleteObject(String db, Class<T> clazz, String id) throws DBStoreException {
 		

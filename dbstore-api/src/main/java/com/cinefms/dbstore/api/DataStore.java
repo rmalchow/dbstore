@@ -14,6 +14,8 @@ public interface DataStore {
 
 	public <T extends DBStoreEntity> boolean deleteObject(String db, T object) throws DBStoreException;
 
+	public <T extends DBStoreEntity> void deleteObjects(String db, Class<T> type, DBStoreQuery query) throws DBStoreException;
+	
 	public <T extends DBStoreEntity> T getObject(String db, Class<T> clazz, String id) throws DBStoreException;
 
 	public <T extends DBStoreEntity> List<T> findObjects(String db, Class<T> clazz, DBStoreQuery query) throws DBStoreException, EntityNotFoundException;
@@ -29,6 +31,6 @@ public interface DataStore {
 	public abstract void storeBinary(String db, String bucket, DBStoreBinary binary) throws DBStoreException;
 	
 	public void addListener(DBStoreListener listener);
-	
+
 	
 }
