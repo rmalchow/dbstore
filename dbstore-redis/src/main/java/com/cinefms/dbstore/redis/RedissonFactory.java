@@ -13,7 +13,7 @@ public class RedissonFactory implements FactoryBean<Redisson> {
 
 	private static Log log = LogFactory.getLog(RedissonFactory.class);
 	
-	private boolean singleton = true;
+	private boolean singleton = false;
 	private String singleServer;
 	private String auth;
 	private RedissonCodec codec = new LenientJsonCodec(); 
