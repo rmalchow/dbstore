@@ -45,6 +45,7 @@ public interface DBStoreQuery {
 	public DBStoreQuery ne(String key, Object value) throws MalformedQueryException;
 	public DBStoreQuery elemMatch(String key, DBStoreQuery q);
 
+
 	public DBStoreQuery and(DBStoreQuery... queries);
 	public DBStoreQuery and(List<DBStoreQuery> queries);
 	public DBStoreQuery or(DBStoreQuery... queries);

@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.redisson.Config;
 import org.redisson.Redisson;
+import org.redisson.SingleServerConfig;
 import org.redisson.codec.RedissonCodec;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -21,7 +22,10 @@ public class RedissonFactory implements FactoryBean<Redisson> {
 	public Redisson getObject() throws Exception {
 		log.info("### REDISSON FACTORY - CREATING ... ");
 		Config config = new Config();
-		config.useSingleServer().setAddress(singleServer).setRetryAttempts(3);
+		SingleServerConfig ssc = config.useSingleServer().setAddress(singleServer).setRetryAttempts(3);
+		if(auth!=null) {
+			ssc.setPassword(auth);
+		}
 		config.setCodec(codec);
 		Redisson redisson = Redisson.create(config);
 		return redisson;
