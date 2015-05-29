@@ -47,18 +47,16 @@
 		<repository>
 			<id>skjlls-release</id>
 			<name>skjlls release repo</name>
-			<url>https://infra.skjlls.com/nexus/content/repositories/releases/</url>
+			<url>https://infra.skjlls.com/nexus/content/repositories/releases-oss/</url>
 			<uniqueVersion>false</uniqueVersion>
 		</repository>
 		<snapshotRepository>
 			<id>skjlls-snapshot</id>
 			<name>skjlls snapshot repo</name>
-			<url>https://infra.skjlls.com/nexus/content/repositories/snapshots/</url>
+			<url>https://infra.skjlls.com/nexus/content/repositories/snapshots-oss/</url>
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
-
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
