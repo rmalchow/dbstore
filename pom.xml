@@ -45,12 +45,16 @@
 	</scm>
 	<distributionManagement>
 		<repository>
-			<id>apitester-release</id>
-			<url>https://infra.cinefms.com/nexus/content/repositories/apitester-release/</url>
+			<id>skjlls-release</id>
+			<name>skjlls release repo</name>
+			<url>https://infra.skjlls.com/nexus/content/repositories/releases/</url>
+			<uniqueVersion>false</uniqueVersion>
 		</repository>
 		<snapshotRepository>
-			<id>apitester-snapshot</id>
-			<url>https://infra.cinefms.com/nexus/content/repositories/apitester-snapshot/</url>
+			<id>skjlls-snapshot</id>
+			<name>skjlls snapshot repo</name>
+			<url>https://infra.skjlls.com/nexus/content/repositories/snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
 
