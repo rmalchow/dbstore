@@ -1,5 +1,7 @@
 package com.cinefms.dbstore.cache.ehcache;
 
+import javax.annotation.PostConstruct;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
@@ -15,15 +17,16 @@ public class EhCacheFactory  implements DBStoreCacheFactory {
 	private int maxElementsInMemory = 10000;
 
 	public DBStoreCache getCache(String cachename) {
-		Cache c = cacheManager.getCache(cachename);
+		CacheManager cm = getCacheManager();
+		Cache c = cm.getCache(cachename);
 		if(c==null) {
 			try {
 				c = new Cache(cachename, maxElementsInMemory, false, false, timeToLiveSeconds, timeToIdleSeconds);
 				try {
-					cacheManager.addCache(c);
+					cm.addCache(c);
 				} catch (Exception e) {
 				}
-				c = cacheManager.getCache(cachename);
+				c = cm.getCache(cachename);
 			} catch (Exception e) {
 				return null;
 			}
@@ -31,6 +34,14 @@ public class EhCacheFactory  implements DBStoreCacheFactory {
 		return new EhCache(c);
 	}
 
+	private CacheManager getCacheManager() {
+		if(cacheManager==null) {
+			cacheManager = CacheManager.create();
+		}
+		return cacheManager;
+	}
+	
+	@PostConstruct
 	public void init() {
 		cacheManager = CacheManager.create();
 		
