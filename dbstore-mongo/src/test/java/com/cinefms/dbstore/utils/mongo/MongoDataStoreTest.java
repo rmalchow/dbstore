@@ -28,8 +28,7 @@ public class MongoDataStoreTest {
 		dataStoreName = ("__junit_test_"+Math.random()).replaceAll("\\.", "_");
 		MongoService ms = new MongoService();
 		ms.setDbName(dataStoreName);
-		ms.setHost("127.0.0.1");
-		ms.setPort(27017);
+		ms.setHosts("127.0.0.1:27017");
 		mds = new MongoDataStore();
 		mds.setMongoService(ms);
 		mds.setDbPrefix(dataStoreName+"_prefix");
