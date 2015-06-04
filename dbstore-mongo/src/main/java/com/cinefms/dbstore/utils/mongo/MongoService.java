@@ -33,17 +33,22 @@ public class MongoService {
 			log.info("##############################################################");
 			log.info("##  ");
 			log.info("##  CONNECTING A NEW CLIENT!");
-			log.info("##  ");
-			log.info("##  SERVERS: "+servers.size());
-			log.info("##  ---------------------------");
-			for(ServerAddress server : servers) {
-				log.info("##  "+server.getHost()+":"+server.getPort());
+			if(servers.size()==1) {
+				log.info("##  ");
+				log.info("##  SINGLE-SERVER!");
+				client = new MongoClient(servers.get(0)); 
+			} else {
+				log.info("##  ");
+				log.info("##  SERVERS: "+servers.size());
+				log.info("##  ---------------------------");
+				for(ServerAddress server : servers) {
+					log.info("##  "+server.getHost()+":"+server.getPort());
+				}
+				log.info("##  ---------------------------");
+				client = new MongoClient(servers);
 			}
-			log.info("##  ---------------------------");
 			log.info("##  ");
 			log.info("##  ");
-			log.info("##  ");
-			client = new MongoClient(servers);
 			log.info("##############################################################");
 		}
 		return client;
