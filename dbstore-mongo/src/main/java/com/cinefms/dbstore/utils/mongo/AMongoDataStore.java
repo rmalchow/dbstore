@@ -201,10 +201,12 @@ public abstract class AMongoDataStore implements DataStore {
 			log.debug(" -----> cache hit! "+ids.size()+" elements in list!");
 		} else if (ids == null) {
 			log.debug(" -----> cache miss!");
+	
 			Query q = fqtl.translate(query);
 			DBObject o = fqtl.translateOrderBy(query);
 			ids = new ArrayList<String>();
 			List<T> ts = getCollection(db,clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
+			
 			if (ts != null) {
 				ids = new ArrayList<String>();
 				for (T t : ts) {

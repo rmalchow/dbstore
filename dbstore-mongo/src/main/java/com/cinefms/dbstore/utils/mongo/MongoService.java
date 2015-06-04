@@ -6,13 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 
 public class MongoService {
 
+	private static Log log = LogFactory.getLog(MongoService.class);
+	
 	private int port=27017;
 	private String dbName;
 	private String hosts;
@@ -23,7 +29,22 @@ public class MongoService {
 	
 	public MongoClient getClient() throws UnknownHostException {
 		if(client == null) {
-			client = new MongoClient(getServers());
+			List<ServerAddress> servers = getServers();
+			log.info("##############################################################");
+			log.info("##  ");
+			log.info("##  CONNECTING A NEW CLIENT!");
+			log.info("##  ");
+			log.info("##  SERVERS: "+servers.size());
+			log.info("##  ---------------------------");
+			for(ServerAddress server : servers) {
+				log.info("##  "+server.getHost()+":"+server.getPort());
+			}
+			log.info("##  ---------------------------");
+			log.info("##  ");
+			log.info("##  ");
+			log.info("##  ");
+			client = new MongoClient(servers);
+			log.info("##############################################################");
 		}
 		return client;
 	}
@@ -50,7 +71,8 @@ public class MongoService {
 		DB out = dbs.get(db);
 		if(out == null) {
 			out = getClient().getDB(db);
-			out.setWriteConcern(WriteConcern.ACKNOWLEDGED);
+			out.setReadPreference(ReadPreference.secondaryPreferred());
+			out.setWriteConcern(WriteConcern.JOURNALED);
 			dbs.put(db, out);
 		}
 		return out;
