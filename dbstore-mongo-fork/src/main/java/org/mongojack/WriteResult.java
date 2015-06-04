@@ -170,60 +170,6 @@ public class WriteResult<T, K> {
     }
 
     /**
-     * Gets the last result from getLastError()
-     * 
-     * @return The last error
-     */
-    public CommandResult getCachedLastError() {
-        return writeResult.getCachedLastError();
-
-    }
-
-    /**
-     * Gets the last {@link com.mongodb.WriteConcern} used when calling
-     * getLastError()
-     * 
-     * @return The last write concern.
-     */
-    public WriteConcern getLastConcern() {
-        return writeResult.getLastConcern();
-
-    }
-
-    /**
-     * calls {@link WriteResult#getLastError(com.mongodb.WriteConcern)} with
-     * concern=null
-     * 
-     * @return The last error
-     */
-    public synchronized CommandResult getLastError() {
-        return writeResult.getLastError();
-    }
-
-    /**
-     * This method does following: - returns the existing CommandResult if
-     * concern is null or less strict than the concern it was obtained with -
-     * otherwise attempts to obtain a CommandResult by calling getLastError with
-     * the concern
-     * 
-     * @param concern
-     *            the concern
-     * @return The last error for the concern
-     */
-    public synchronized CommandResult getLastError(WriteConcern concern) {
-        return writeResult.getLastError(concern);
-    }
-
-    /**
-     * Gets the error String ("err" field)
-     * 
-     * @return The error string
-     */
-    public String getError() {
-        return writeResult.getError();
-    }
-
-    /**
      * Gets the "n" field, which contains the number of documents affected in
      * the write operation.
      * 
@@ -234,24 +180,23 @@ public class WriteResult<T, K> {
     }
 
     /**
-     * Gets a field
-     * 
-     * @param name
-     *            field name
-     * @return The value
+     * Gets the _id value of an upserted document that resulted from this write.  Note that for MongoDB servers prior to version 2.6,
+     * this method will return null unless the _id of the upserted document was of type ObjectId.
+     *
+     * @return the value of the _id of an upserted document
      */
-    public Object getField(String name) {
-        return writeResult.getField(name);
+    public Object getUpsertedId() {
+        return writeResult.getUpsertedId();
     }
 
+
     /**
-     * Returns whether or not the result is lazy, meaning that getLastError was
-     * not called automatically
-     * 
-     * @return if it's lazy
+     * Returns true if this write resulted in an update of an existing document.
+     *
+     * @return whether the write resulted in an update of an existing document.
      */
-    public boolean isLazy() {
-        return writeResult.isLazy();
+    public boolean isUpdateOfExisting() {
+        return writeResult.isUpdateOfExisting();
     }
 
     @Override

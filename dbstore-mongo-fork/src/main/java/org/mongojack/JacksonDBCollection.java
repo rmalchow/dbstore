@@ -37,7 +37,6 @@ import org.mongojack.internal.util.IdHandler;
 import org.mongojack.internal.util.IdHandlerFactory;
 import org.mongojack.internal.util.SerializationUtils;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -145,7 +144,6 @@ public class JacksonDBCollection<T, K> {
         } else {
             this.features = features;
         }
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         dbCollection.setDBEncoderFactory(new JacksonEncoderFactory(
                 objectMapper, this));
     }
@@ -1039,7 +1037,7 @@ public class JacksonDBCollection<T, K> {
      * @throws MongoException
      *             If an error occurred
      */
-    public final void createIndex(final DBObject keys) throws MongoException {
+    public void createIndex(DBObject keys) throws MongoException {
         dbCollection.createIndex(keys);
     }
 
@@ -1067,12 +1065,12 @@ public class JacksonDBCollection<T, K> {
      *            name of field to index on
      */
     @Deprecated
-    public final void ensureIndex(final String name) {
+    public void ensureIndex(String name) {
         ensureIndex(new BasicDBObject(name, 1));
     }
 
     /**
-     * calls {@link DBCollection#ensureIndex(com.mongodb.DBObject, com.mongodb.DBObject)} with default options
+     * calls {@link DBCollection#createIndex(com.mongodb.DBObject, com.mongodb.DBObject)} with default options
      * 
      * @param keys
      *            an object with a key set of the fields desired for the index
@@ -1080,12 +1078,12 @@ public class JacksonDBCollection<T, K> {
      *             If an error occurred
      */
     @Deprecated
-    public final void ensureIndex(final DBObject keys) throws MongoException {
-        dbCollection.ensureIndex(keys);
+    public void ensureIndex(DBObject keys) throws MongoException {
+        dbCollection.createIndex(keys);
     }
 
     /**
-     * calls {@link DBCollection#ensureIndex(com.mongodb.DBObject, java.lang.String, boolean)} with unique=false
+     * calls {@link DBCollection#createIndex(com.mongodb.DBObject, java.lang.String, boolean)} with unique=false
      * 
      * @param keys
      *            fields to use for index
@@ -1116,7 +1114,7 @@ public class JacksonDBCollection<T, K> {
     @Deprecated
     public void ensureIndex(DBObject keys, String name, boolean unique)
             throws MongoException {
-        dbCollection.ensureIndex(keys, name, unique);
+        dbCollection.createIndex(keys, name, unique);
     }
 
     /**
@@ -1130,17 +1128,9 @@ public class JacksonDBCollection<T, K> {
      *             If an error occurred
      */
     @Deprecated
-    public void ensureIndex(final DBObject keys, final DBObject optionsIN)
+    public void ensureIndex(DBObject keys, DBObject optionsIN)
             throws MongoException {
-        dbCollection.ensureIndex(keys, optionsIN);
-    }
-
-    /**
-     * Clears all indices that have not yet been applied to this collection.
-     */
-    @Deprecated
-    public void resetIndexCache() {
-        dbCollection.resetIndexCache();
+        dbCollection.createIndex(keys, optionsIN);
     }
 
     /**
@@ -1209,7 +1199,7 @@ public class JacksonDBCollection<T, K> {
      *            fields to return
      * @return a cursor to iterate over results
      */
-    public final org.mongojack.DBCursor<T> find(DBObject query, DBObject keys) {
+    public org.mongojack.DBCursor<T> find(DBObject query, DBObject keys) {
         return new org.mongojack.DBCursor<T>(this, dbCollection.find(
                 serializeFields(query), keys));
     }
@@ -1230,7 +1220,7 @@ public class JacksonDBCollection<T, K> {
      *            fields to return
      * @return a cursor to iterate over results
      */
-    public final org.mongojack.DBCursor<T> find(DBQuery.Query query,
+    public org.mongojack.DBCursor<T> find(DBQuery.Query query,
             DBObject keys) {
         return new org.mongojack.DBCursor<T>(this, dbCollection.find(
                 serializeQuery(query), keys));
@@ -1243,7 +1233,7 @@ public class JacksonDBCollection<T, K> {
      * @throws MongoException
      *             If an error occurred
      */
-    public final org.mongojack.DBCursor<T> find() throws MongoException {
+    public org.mongojack.DBCursor<T> find() throws MongoException {
         return new org.mongojack.DBCursor<T>(this, dbCollection.find());
     }
 
@@ -1452,7 +1442,7 @@ public class JacksonDBCollection<T, K> {
      *            needed
      * @return The result
      */
-    public final WriteResult<T, K> save(T object) {
+    public WriteResult<T, K> save(T object) {
         return save(object, getWriteConcern());
     }
 
@@ -1837,21 +1827,6 @@ public class JacksonDBCollection<T, K> {
     }
 
     /**
-     * performs a map reduce operation
-     * 
-     * @param command
-     *            object representing the parameters
-     * @return The output
-     * @throws MongoException
-     *             If an error occurred
-     */
-    @Deprecated
-    public com.mongodb.MapReduceOutput mapReduce(DBObject command)
-            throws MongoException {
-        return dbCollection.mapReduce(command);
-    }
-
-    /**
      * Performs a map reduce operation
      * 
      * @param command
@@ -1888,6 +1863,11 @@ public class JacksonDBCollection<T, K> {
 
         return new AggregationResult<S>(this, dbCollection.aggregate(serializedOps), aggregation
                 .getResultType());
+    }
+
+    public <S> AggregationResult<S> aggregate(Aggregation.Pipeline<?> pipeline, Class<S> resultType)
+            throws MongoException {
+        return new AggregationResult<S>(this, dbCollection.aggregate(serializePipeline(pipeline)), resultType);
     }
 
     /**
@@ -2318,6 +2298,10 @@ public class JacksonDBCollection<T, K> {
     Object serializeQueryCondition(String key, QueryCondition condition) {
         return SerializationUtils.serializeQueryCondition(objectMapper, type,
                 key, condition);
+    }
+
+    public List<DBObject> serializePipeline(Aggregation.Pipeline<?> pipeline) {
+        return SerializationUtils.serializePipeline(objectMapper, type, pipeline);
     }
 
     ObjectMapper getObjectMapper() {

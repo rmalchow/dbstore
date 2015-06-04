@@ -307,25 +307,6 @@ public class DBCursor<T> extends DBQuery.AbstractBuilder<DBCursor<T>> implements
     }
 
     /**
-     * gets the number of times, so far, that the cursor retrieved a batch from
-     * the database
-     * 
-     * @return The number of get mores
-     */
-    public int numGetMores() {
-        return cursor.numGetMores();
-    }
-
-    /**
-     * gets a simpleList containing the number of items received in each batch
-     * 
-     * @return The sizes of each batch
-     */
-    public List<Integer> getSizes() {
-        return cursor.getSizes();
-    }
-
-    /**
      * Returns the number of objects through which the cursor has iterated.
      * 
      * @return the number of objects seen
@@ -583,12 +564,13 @@ public class DBCursor<T> extends DBQuery.AbstractBuilder<DBCursor<T>> implements
     @Override
     protected DBCursor<T> putGroup(String op, DBQuery.Query... expressions) {
         checkExecuted();
-        List<DBObject> conditions = new ArrayList<DBObject>();
+        List<DBObject> conditions;
         Object existing = cursor.getQuery().get(op);
         if (existing == null) {
+            conditions = new ArrayList<DBObject>();
             cursor.getQuery().put(op, conditions);
         } else if (existing instanceof List) {
-            conditions.addAll((List) existing);
+            conditions = (List<DBObject>) existing;
         } else {
             throw new IllegalStateException("Expecting collection for " + op);
         }

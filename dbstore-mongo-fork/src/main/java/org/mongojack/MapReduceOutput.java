@@ -16,12 +16,10 @@
  */
 package org.mongojack;
 
+import com.mongodb.DBObject;
+
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.mongodb.CommandResult;
-import com.mongodb.DBObject;
-import com.mongodb.ServerAddress;
 
 /**
  * Represents the result of a Map/Reduce operation
@@ -78,16 +76,44 @@ public class MapReduceOutput<T, K> {
         return outputCollection;
     }
 
-    public CommandResult getCommandResult() {
-        return output.getCommandResult();
+    /**
+     * Get the amount of time, in milliseconds, that it took to run this map reduce.
+     *
+     * @return an int representing the number of milliseconds it took to run the map reduce operation
+     */
+    public int getDuration() {
+        return output.getDuration();
+    }
+
+    /**
+     * Get the number of documents that were input into the map reduce operation
+     *
+     * @return the number of documents that read while processing this map reduce
+     */
+    public int getInputCount() {
+        return output.getInputCount();
+    }
+
+    /**
+     * Get the number of documents generated as a result of this map reduce
+     *
+     * @return the number of documents output by the map reduce
+     */
+    public int getOutputCount() {
+        return output.getOutputCount();
+    }
+
+    /**
+     * Get the number of messages emitted from the provided map function.
+     *
+     * @return the number of items emitted from the map function
+     */
+    public int getEmitCount() {
+        return output.getEmitCount();
     }
 
     public DBObject getCommand() {
         return output.getCommand();
-    }
-
-    public ServerAddress getServerUsed() {
-        return output.getServerUsed();
     }
 
     @Override

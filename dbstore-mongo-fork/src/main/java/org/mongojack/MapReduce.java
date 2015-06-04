@@ -16,10 +16,10 @@
  */
 package org.mongojack;
 
-import java.util.Map;
-
 import com.mongodb.DBObject;
 import com.mongodb.ReadPreference;
+
+import java.util.Map;
 
 /**
  * Map reduce command builder
@@ -100,7 +100,6 @@ public class MapReduce {
         private int limit;
         private Map<String, Object> scope;
         private boolean verbose = true;
-        private DBObject extra;
 
         private MapReduceCommand(String map, String reduce,
                 OutputType outputType, String collection, Class<T> resultType,
@@ -211,18 +210,6 @@ public class MapReduce {
             return this;
         }
 
-        /**
-         * Set extra arguments to the map reduce command
-         * 
-         * @param extra
-         *            The extra arguments
-         * @return this command
-         */
-        public MapReduceCommand<T, K> setExtra(DBObject extra) {
-            this.extra = extra;
-            return this;
-        }
-
         com.mongodb.MapReduceCommand build(JacksonDBCollection<?, ?> collection) {
             DBObject query = null;
             if (this.query != null) {
@@ -248,11 +235,6 @@ public class MapReduce {
                 command.setScope(scope);
             }
             command.setVerbose(verbose);
-            if (extra != null) {
-                for (String key : extra.keySet()) {
-                    command.addExtraOption(key, extra.get(key));
-                }
-            }
             return command;
         }
 
