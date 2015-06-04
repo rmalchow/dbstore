@@ -37,7 +37,7 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public abstract class AMongoDataStore implements DataStore {
 
-	private static Log log = LogFactory.getLog(MongoDataStore.class);
+	private static Log log = LogFactory.getLog(AMongoDataStore.class);
 
 	private MongoService mongoService;
 	private DBStoreCacheFactory cacheFactory;
@@ -61,7 +61,15 @@ public abstract class AMongoDataStore implements DataStore {
 	
 	private DB getDB(String db) throws UnknownHostException {
 		db = db==null?defaultDb:(dbPrefix==null?"":(dbPrefix+"_"))+db;
-		return getMongoService().getDb(db);
+		log.info("============================================================");
+		log.info("== ");
+		log.info("== ");
+		log.info("== getting DB from mongoService: "+getMongoService());
+		DB out = getMongoService().getDb(db);
+		log.info("== ... result is: "+out);
+		log.info("== ");
+		log.info("============================================================");
+		return out;
 	}
 
 	public abstract String getCollectionName(Class<?> clazz);
