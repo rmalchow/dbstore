@@ -190,7 +190,7 @@ public class SerializationUtils {
             List<Object> serializedConditions = new ArrayList<Object>();
             for (QueryCondition item : coll.getValues()) {
                 serializedConditions.add(serializeQueryCondition(
-                        serializerProvider, serializer, "$", item));
+                        serializerProvider, null, "$", item));
             }
             return serializedConditions;
         } else {
@@ -260,6 +260,7 @@ public class SerializationUtils {
         }
         BsonObjectGenerator objectGenerator = new BsonObjectGenerator();
         try {
+            //System.err.println(value+" / "+objectGenerator+" / "+serializerProvider+" / "+serializer);
             serializer.serialize(value, objectGenerator, serializerProvider);
         } catch (IOException e) {
             throw new MongoJsonMappingException("Error serializing value "
