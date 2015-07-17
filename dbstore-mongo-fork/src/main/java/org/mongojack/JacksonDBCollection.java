@@ -1922,20 +1922,18 @@ public class JacksonDBCollection<T, K> {
 
     /**
      * Finds a collection that is prefixed with this collection's name. A
-     * typical use of this might be <blockquote>
+     * typical use of this might be 
      * 
      * <pre>
 	 * DBCollection users = mongo.getCollection(&quot;wiki&quot;).getCollection(&quot;users&quot;);
 	 * </pre>
      * 
-     * </blockquote> Which is equivalent to
+     * Which is equivalent to
      * 
      * <pre>
-	 * <blockquote>
 	 *   DBCollection users = mongo.getCollection( "wiki.users" );
 	 * </pre>
      * 
-     * </blockquote>
      * 
      * @param n
      *            the name of the collection to find
@@ -2015,7 +2013,7 @@ public class JacksonDBCollection<T, K> {
 
     /**
      * Sets the read preference for this collection. Will be used as default for
-     * reads from this collection; overrides DB & Connection level settings. See
+     * reads from this collection; overrides DB + Connection level settings. See
      * the * documentation for {@link ReadPreference} for more information.
      * 
      * @param preference
