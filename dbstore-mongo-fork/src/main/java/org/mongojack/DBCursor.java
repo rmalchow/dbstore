@@ -157,7 +157,7 @@ public class DBCursor<T> extends DBQuery.AbstractBuilder<DBCursor<T>> implements
      * 
      * @param indexName
      *            the name of an index
-     * @return same JacksonDBCursor<T>t for chaining operations
+     * @return same JacksonDBCursor for chaining operations
      */
     public DBCursor<T> hint(String indexName) {
         cursor.hint(indexName);
