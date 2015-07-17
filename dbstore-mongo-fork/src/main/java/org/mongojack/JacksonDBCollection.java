@@ -1187,7 +1187,6 @@ public class JacksonDBCollection<T, K> {
      * <pre>
 	 * BasicDBObject keys = new BasicDBObject();
 	 * keys.put("x", 1);
-	 * <p>
 	 * DBCursor cursor = collection.find(new BasicDBObject(), keys);
 	 * </pre>
      * 
