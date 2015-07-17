@@ -1174,7 +1174,7 @@ public class JacksonDBCollection<T, K> {
 
     /**
      * Queries for an object in this collection.
-     * <p/>
+     * <p>
      * <p>
      * An empty DBObject will match every document in the collection. Regardless of fields specified, the _id fields are
      * always returned.
@@ -1187,7 +1187,7 @@ public class JacksonDBCollection<T, K> {
      * <pre>
 	 * BasicDBObject keys = new BasicDBObject();
 	 * keys.put("x", 1);
-	 * <p/>
+	 * <p>
 	 * DBCursor cursor = collection.find(new BasicDBObject(), keys);
 	 * </pre>
      * 
@@ -1206,7 +1206,7 @@ public class JacksonDBCollection<T, K> {
 
     /**
      * Queries for an object in this collection.
-     * <p/>
+     * <p>
      * <p>
      * An empty DBObject will match every document in the collection. Regardless of fields specified, the _id fields are
      * always returned.
