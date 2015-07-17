@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
@@ -22,6 +23,9 @@ public class MongoService {
 	private int port=27017;
 	private String dbName;
 	private String hosts;
+	private String username;
+	private String password;
+	private boolean auth;
 
 	private MongoClient client;
 	
@@ -45,7 +49,20 @@ public class MongoService {
 					log.info("##  "+server.getHost()+":"+server.getPort());
 				}
 				log.info("##  ---------------------------");
-				client = new MongoClient(servers);
+				if(auth) {
+					log.info("##  ");
+					log.info("##  WITH CREDENTIALS" );
+					log.info("##  ---------------------------");
+					MongoCredential mc = MongoCredential.createCredential(username, dbName, password.toCharArray());
+					List<MongoCredential> mcs = new ArrayList<MongoCredential>();
+					mcs.add(mc);
+					client = new MongoClient(servers,mcs);
+				} else {
+					log.info("##  ");
+					log.info("##  WITHOUT CREDENTIALS" );
+					log.info("##  ---------------------------");
+					client = new MongoClient(servers);
+				}
 			}
 			log.info("##  ");
 			log.info("##  ");
@@ -97,6 +114,30 @@ public class MongoService {
 
 	public void setHosts(String hosts) {
 		this.hosts = hosts;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public boolean isAuth() {
+		return auth;
+	}
+
+	public void setAuth(boolean auth) {
+		this.auth = auth;
 	}
 
 	
