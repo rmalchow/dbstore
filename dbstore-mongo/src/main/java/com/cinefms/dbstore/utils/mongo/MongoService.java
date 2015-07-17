@@ -40,7 +40,20 @@ public class MongoService {
 			if(servers.size()==1) {
 				log.info("##  ");
 				log.info("##  SINGLE-SERVER!");
-				client = new MongoClient(servers.get(0)); 
+				if(auth) {
+					log.info("##  ");
+					log.info("##  WITH CREDENTIALS" );
+					log.info("##  ---------------------------");
+					MongoCredential mc = MongoCredential.createCredential(username, dbName, password.toCharArray());
+					List<MongoCredential> mcs = new ArrayList<MongoCredential>();
+					mcs.add(mc);
+					client = new MongoClient(servers.get(0),mcs); 
+				} else {
+					log.info("##  ");
+					log.info("##  WITHOUT CREDENTIALS" );
+					log.info("##  ---------------------------");
+					client = new MongoClient(servers.get(0)); 
+				}
 			} else {
 				log.info("##  ");
 				log.info("##  SERVERS: "+servers.size());
