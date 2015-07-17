@@ -173,7 +173,7 @@ public class DBCursor<T> extends DBQuery.AbstractBuilder<DBCursor<T>> implements
      * always effectively snapshotted. Currently, snapshot mode may not be used
      * with sorting or explicit hints.
      * 
-     * @return same JacksonDBCursor<T> for chaining operations
+     * @return same JacksonDBCursor for chaining operations
      */
     public DBCursor<T> snapshot() {
         cursor.snapshot();
@@ -197,7 +197,7 @@ public class DBCursor<T> extends DBQuery.AbstractBuilder<DBCursor<T>> implements
     /**
      * Limits the number of elements returned. Note: parameter <tt>n</tt> should
      * be positive, although a negative value is supported for legacy reason.
-     * Passing a negative value will call {@link DBCursor <T>#batchSize(int)} which is the preferred method.
+     * Passing a negative value will call DBCursor.batchSize(int) which is the preferred method.
      * 
      * @param n
      *            the number of elements to return

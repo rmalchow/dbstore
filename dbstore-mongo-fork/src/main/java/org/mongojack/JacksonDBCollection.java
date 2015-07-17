@@ -1182,7 +1182,7 @@ public class JacksonDBCollection<T, K> {
      * <p>
      * An example that returns the "x" and "_id" fields for every document in the collection that has an "x" field:
      * </p>
-     * <blockquote>
+     * 
      * 
      * <pre>
 	 * BasicDBObject keys = new BasicDBObject();
@@ -1190,8 +1190,6 @@ public class JacksonDBCollection<T, K> {
 	 * <p>
 	 * DBCursor cursor = collection.find(new BasicDBObject(), keys);
 	 * </pre>
-     * 
-     * </blockquote>
      * 
      * @param query
      *            object for which to search
@@ -1844,7 +1842,7 @@ public class JacksonDBCollection<T, K> {
     /**
      * Performs an aggregation pipeline against this collection.
      * 
-     * @Param aggregation an Aggregation specifying the operations for the aggregation pipeline, and the return type.
+     * @param aggregation an Aggregation specifying the operations for the aggregation pipeline, and the return type.
      * @return an AggregationResult with the result objects mapped to the type specified by the Aggregation.
      * @throws MongoException
      *             If an error occurred
