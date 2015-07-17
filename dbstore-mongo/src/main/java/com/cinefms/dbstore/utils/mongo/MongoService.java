@@ -25,7 +25,7 @@ public class MongoService {
 	private String hosts;
 	private String username;
 	private String password;
-	private boolean auth;
+	private boolean auth = false;
 
 	private MongoClient client;
 	
