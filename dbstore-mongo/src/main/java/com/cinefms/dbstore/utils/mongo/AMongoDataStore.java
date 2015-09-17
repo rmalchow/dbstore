@@ -10,9 +10,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.mongojack.DBCursor;
+import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
-import org.mongojack.DBQuery.Query;
 
 import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
@@ -233,7 +233,6 @@ public abstract class AMongoDataStore implements DataStore {
 		return null;
 	}
 
-	
 	public <T extends DBStoreEntity> int countObjects(String db, Class<T> clazz, DBStoreQuery query) throws EntityNotFoundException {
 		Query q = fqtl.translate(query);
 		return getCollection(db,clazz).find(q).count();
@@ -248,8 +247,8 @@ public abstract class AMongoDataStore implements DataStore {
 		Query q = fqtl.translate(query);
 		DBObject o = fqtl.translateOrderBy(query);
 
-		int skip = query.getStart();
-		int max = query.getMax();
+		long skip = query.getStart();
+		long max = query.getMax();
 
 		log.debug(" ---> LIMIT (" + skip + ":" + max + ")");
 
@@ -259,10 +258,10 @@ public abstract class AMongoDataStore implements DataStore {
 			c = c.sort(o);
 		}
 		if (skip != 0) {
-			c = c.skip(skip);
+			c = c.skip((int)skip);
 		}
 		if (max != -1) {
-			c = c.limit(max);
+			c = c.limit((int)max);
 		}
 		List<T> x = c.toArray();
 		

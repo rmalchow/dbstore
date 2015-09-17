@@ -24,8 +24,8 @@ public interface DBStoreQuery {
 	public Object getValue();
 
 	public List<OrderBy> getOrderBy();
-	public int getStart();
-	public int getMax();
+	public long getStart();
+	public long getMax();
 	
 
 	public DBStoreQuery in(String key, Object value) throws MalformedQueryException;
@@ -53,8 +53,8 @@ public interface DBStoreQuery {
 	
 	public DBStoreQuery order(String order);
 	public DBStoreQuery order(String order, boolean asc);
-	public DBStoreQuery start(int start);
-	public DBStoreQuery max(int max);
+	public DBStoreQuery start(long start);
+	public DBStoreQuery max(long max);
 
 	
 	
