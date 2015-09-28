@@ -101,6 +101,8 @@ public abstract class AMongoDataStore implements DataStore {
 		try {
 			String collectionName = getCollectionName(clazz); 
 			String key = db+":"+collectionName;
+			log.debug(" == DB        : "+db);
+			log.debug(" == Collection: "+collectionName);
 			@SuppressWarnings("unchecked")
 			JacksonDBCollection<T, String> out = (JacksonDBCollection<T, String>) collections.get(key);
 			if (out == null) {
@@ -199,33 +201,19 @@ public abstract class AMongoDataStore implements DataStore {
 	
 	public <T extends DBStoreEntity> T findObject(String db, Class<T> clazz, DBStoreQuery query) {
 		
-		String key = query.toString();
-		List<String> ids = null;
-		DBStoreCache cache = getQueryCache(db,clazz); 
-		if(cache != null) {
-			ids = cache.getList(key, String.class);
-		}
-		if(ids!=null) {
-			log.debug(" -----> cache hit! "+ids.size()+" elements in list!");
-		} else if (ids == null) {
-			log.debug(" -----> cache miss!");
-	
-			Query q = fqtl.translate(query);
-			DBObject o = fqtl.translateOrderBy(query);
+		List<String> ids = new ArrayList<String>();
+
+		Query q = fqtl.translate(query);
+		DBObject o = fqtl.translateOrderBy(query);
+
+		List<T> ts = getCollection(db,clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
+		
+		if (ts != null) {
 			ids = new ArrayList<String>();
-			List<T> ts = getCollection(db,clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
-			
-			if (ts != null) {
-				ids = new ArrayList<String>();
-				for (T t : ts) {
-					ids.add(t.getId());
-				}
-				if(cache!=null) {
-					cache.put(key, ids);
-				}
+			for (T t : ts) {
+				ids.add(t.getId());
 			}
 		}
-		
 		
 		if (ids.size() > 0) {
 			return getObject(db, clazz, ids.get(0));
