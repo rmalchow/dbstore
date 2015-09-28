@@ -208,7 +208,9 @@ public abstract class AMongoDataStore implements DataStore {
 
 		List<T> ts = getCollection(db,clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
 		
+		
 		if (ts != null) {
+			log.debug(" --> found "+ts.size()+" elements!");
 			ids = new ArrayList<String>();
 			for (T t : ts) {
 				ids.add(t.getId());
