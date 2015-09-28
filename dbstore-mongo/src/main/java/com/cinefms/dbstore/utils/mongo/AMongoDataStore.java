@@ -201,24 +201,27 @@ public abstract class AMongoDataStore implements DataStore {
 	
 	public <T extends DBStoreEntity> T findObject(String db, Class<T> clazz, DBStoreQuery query) {
 		
-		List<String> ids = new ArrayList<String>();
 
 		Query q = fqtl.translate(query);
 		DBObject o = fqtl.translateOrderBy(query);
 
 		List<T> ts = getCollection(db,clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
 		
+		List<String> ids = new ArrayList<String>();
 		
 		if (ts != null) {
 			log.debug(" --> found "+ts.size()+" elements!");
-			ids = new ArrayList<String>();
 			for (T t : ts) {
+				log.debug(" --> found "+t.getId());
 				ids.add(t.getId());
 			}
+			log.debug(" --> added "+ids.size()+" ids!");
 		}
 		
 		if (ids.size() > 0) {
-			return getObject(db, clazz, ids.get(0));
+			T out = getObject(db, clazz, ids.get(0));
+			log.debug(" --> found "+out);
+			return out;
 		}
 		return null;
 	}
