@@ -341,22 +341,19 @@ public abstract class AMongoDataStore implements DataStore {
 		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,object.getClass());
 
 		T old = null;
-		
+		String id = null;
+
 		if (object.getId() == null) {
-			object.setId(ObjectId.get().toString());
-			log.debug(object.getClass()+" / saving, id is null, set to: "+object.getId());
+			id = ObjectId.get().toString();
+			object.setId(id);
+			coll.save(object);
+			log.debug(object.getClass()+" / saving, new id is: "+object.getId());
 		} else {
-			log.debug(object.getClass()+" / saving, id is: "+object.getId());
+			log.debug(object.getClass()+" / updating, id is:   "+object.getId());
 			old = coll.findOneById(object.getId());
+			coll.updateById(object.getId(),object);
 		}
 		
-		WriteResult<T, String> wr = null;
-		if(old!=null) {
-			wr = coll.updateById(old.getId(), object);
-		} else {
-			wr = coll.save(object);
-		}
-		String id = wr.getDbObject().get("_id").toString();
 		T out = (T) getObject(db, object.getClass(), id);
 		
 		DBStoreCache objectCache = getObjectCache(db,object.getClass());
