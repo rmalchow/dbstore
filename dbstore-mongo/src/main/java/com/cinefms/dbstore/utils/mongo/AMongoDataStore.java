@@ -334,7 +334,7 @@ public abstract class AMongoDataStore implements DataStore {
 	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> T saveObject(String db, T object) throws EntityNotFoundException {
 		
-		System.err.println("save object ... ");
+		log.debug(object.getClass()+" / saving object: "+object.getId());
 
 		
 		for(DBStoreListener l : getListeners(object.getClass())) {
@@ -352,16 +352,21 @@ public abstract class AMongoDataStore implements DataStore {
 			old = coll.findOneById(object.getId());
 		}
 
+		log.debug("old object? "+(old==null?"NULL":old.getId()));
+
 		if (old == null) {
+			log.debug(object.getClass()+" / saving, new id is: "+object.getId());
 			id = ObjectId.get().toString();
 			object.setId(id);
 			coll.save(object);
-			log.debug(object.getClass()+" / saving, new id is: "+object.getId());
+			log.debug(object.getClass()+" / saved id is:   "+id);
 		} else {
 			log.debug(object.getClass()+" / updating, id is:   "+object.getId());
 			Query q = DBQuery.empty();
 			q = q.is("_id", object.getId());
-			coll.update(q,object);
+			WriteResult<T, String> wr = coll.update(q,object);
+			id = wr.getUpsertedId().toString();
+			log.debug(object.getClass()+" / updated id is:   "+id);
 		}
 
 		T out = (T) getObject(db, object.getClass(), id);
