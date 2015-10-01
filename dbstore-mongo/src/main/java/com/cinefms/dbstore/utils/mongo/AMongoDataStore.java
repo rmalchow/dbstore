@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.mongojack.DBCursor;
+import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 import org.mongojack.WriteResult;
@@ -333,6 +334,9 @@ public abstract class AMongoDataStore implements DataStore {
 	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> T saveObject(String db, T object) throws EntityNotFoundException {
 		
+		System.err.println("save object ... ");
+
+		
 		for(DBStoreListener l : getListeners(object.getClass())) {
 			log.debug("firing 'beforeSave' for: "+object.getClass()+" / "+object.getId());
 			l.beforeSave(db, object);
@@ -340,20 +344,26 @@ public abstract class AMongoDataStore implements DataStore {
 		
 		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,object.getClass());
 
-		T old = null;
-		String id = null;
 
-		if (object.getId() == null) {
+		T old = null;
+		String id = object.getId();
+
+		if (object.getId() != null) {
+			old = coll.findOneById(object.getId());
+		}
+
+		if (old == null) {
 			id = ObjectId.get().toString();
 			object.setId(id);
 			coll.save(object);
 			log.debug(object.getClass()+" / saving, new id is: "+object.getId());
 		} else {
 			log.debug(object.getClass()+" / updating, id is:   "+object.getId());
-			old = coll.findOneById(object.getId());
-			coll.updateById(object.getId(),object);
+			Query q = DBQuery.empty();
+			q = q.is("_id", object.getId());
+			coll.update(q,object);
 		}
-		
+
 		T out = (T) getObject(db, object.getClass(), id);
 		
 		DBStoreCache objectCache = getObjectCache(db,object.getClass());

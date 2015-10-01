@@ -1,6 +1,7 @@
 package com.cinefms.dbstore.utils.mongo;
 
 import java.util.List;
+import java.util.logging.LogManager;
 
 import org.junit.After;
 import org.junit.Assert;
