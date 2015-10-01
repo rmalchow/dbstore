@@ -350,7 +350,12 @@ public abstract class AMongoDataStore implements DataStore {
 			old = coll.findOneById(object.getId());
 		}
 		
-		WriteResult<T, String> wr = coll.save(object);
+		WriteResult<T, String> wr = null;
+		if(old!=null) {
+			wr = coll.updateById(old.getId(), object);
+		} else {
+			wr = coll.save(object);
+		}
 		String id = wr.getDbObject().get("_id").toString();
 		T out = (T) getObject(db, object.getClass(), id);
 		
