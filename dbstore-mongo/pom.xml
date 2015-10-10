@@ -5,28 +5,28 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-		<version>0.6.54-SNAPSHOT</version>
+		<version>0.6.54</version>
 	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-api</artifactId>
-			<version>0.6.54-SNAPSHOT</version>
+			<version>0.6.54</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-query-mongo</artifactId>
-			<version>0.6.54-SNAPSHOT</version>
+			<version>0.6.54</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-mongo-fork</artifactId>
-			<version>0.6.54-SNAPSHOT</version>
+			<version>0.6.54</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-cache-api</artifactId>
-			<version>0.6.54-SNAPSHOT</version>
+			<version>0.6.54</version>
 		</dependency>
 		<!-- 
 		included for now		
