@@ -14,6 +14,7 @@ public class MongoServiceTest {
 		ms.setPassword("bbb");
 		ms.setHosts("localhost");
 		ms.setDbName("skjlls");
+		ms.setAuthDb("skjlls");
 		ms.getClient();
 	}
 
