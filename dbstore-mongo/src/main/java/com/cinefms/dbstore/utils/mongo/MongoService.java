@@ -25,6 +25,7 @@ public class MongoService {
 	private String hosts;
 	private String username;
 	private String password;
+	private String authDb;
 	private boolean auth = false;
 
 	private MongoClient client;
@@ -44,7 +45,8 @@ public class MongoService {
 					log.info("##  ");
 					log.info("##  WITH CREDENTIALS" );
 					log.info("##  ---------------------------");
-					MongoCredential mc = MongoCredential.createCredential(username, dbName, password.toCharArray());
+					MongoCredential mc = MongoCredential.createMongoCRCredential(username, authDb, password.toCharArray());
+					//MongoCredential mc = MongoCredential.createCredential(username, dbName, password.toCharArray());
 					List<MongoCredential> mcs = new ArrayList<MongoCredential>();
 					mcs.add(mc);
 					client = new MongoClient(servers.get(0),mcs); 
@@ -151,6 +153,14 @@ public class MongoService {
 
 	public void setAuth(boolean auth) {
 		this.auth = auth;
+	}
+
+	public String getAuthDb() {
+		return authDb;
+	}
+
+	public void setAuthDb(String authDb) {
+		this.authDb = authDb;
 	}
 
 	

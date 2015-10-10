@@ -13,7 +13,6 @@ import org.mongojack.DBCursor;
 import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
-import org.mongojack.WriteResult;
 
 import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
