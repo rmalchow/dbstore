@@ -2,6 +2,7 @@ package com.cinefms.dbstore.utils.mongo;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,10 +48,9 @@ public class MongoService {
 					log.info("##  ---------------------------");
 					MongoCredential mc = MongoCredential.createMongoCRCredential(username, authDb, password.toCharArray());
 					log.info("##  --------------------------- MECHANISM: "+mc.getMechanism());
-					//MongoCredential mc = MongoCredential.createCredential(username, dbName, password.toCharArray());
-					List<MongoCredential> mcs = new ArrayList<MongoCredential>();
-					mcs.add(mc);
-					client = new MongoClient(servers.get(0),mcs); 
+					log.info("##  --------------------------- USER:      "+username);
+					log.info("##  --------------------------- PASSWORD:  "+password);
+					client = new MongoClient(servers.get(0),Collections.singletonList(mc)); 
 				} else {
 					log.info("##  ");
 					log.info("##  WITHOUT CREDENTIALS" );
