@@ -46,6 +46,7 @@ public class MongoService {
 					log.info("##  WITH CREDENTIALS" );
 					log.info("##  ---------------------------");
 					MongoCredential mc = MongoCredential.createMongoCRCredential(username, authDb, password.toCharArray());
+					log.info("##  --------------------------- MECHANISM: "+mc.getMechanism());
 					//MongoCredential mc = MongoCredential.createCredential(username, dbName, password.toCharArray());
 					List<MongoCredential> mcs = new ArrayList<MongoCredential>();
 					mcs.add(mc);
@@ -69,6 +70,7 @@ public class MongoService {
 					log.info("##  WITH CREDENTIALS" );
 					log.info("##  ---------------------------");
 					MongoCredential mc = MongoCredential.createCredential(username, dbName, password.toCharArray());
+					log.info("##  --------------------------- MECHANISM: "+mc.getMechanism());
 					List<MongoCredential> mcs = new ArrayList<MongoCredential>();
 					mcs.add(mc);
 					client = new MongoClient(servers,mcs);
