@@ -347,7 +347,6 @@ public abstract class AMongoDataStore implements DataStore {
 		
 
 		T old = null;
-		String id = object.getId();
 
 		if(listeners.size()>0 && object.getId() != null) {
 			old = coll.findOneById(object.getId());
@@ -357,7 +356,7 @@ public abstract class AMongoDataStore implements DataStore {
 
 		coll.save(object);
 
-		T out = (T) getObject(db, object.getClass(), id);
+		T out = (T) getObject(db, object.getClass(), object.getId());
 		
 		DBStoreCache objectCache = getObjectCache(db,object.getClass());
 		if(objectCache!=null) {
