@@ -10,7 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.mongojack.DBCursor;
-import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 
@@ -333,18 +332,18 @@ public abstract class AMongoDataStore implements DataStore {
 	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> T saveObject(String db, T object) throws EntityNotFoundException {
 		
+		List<DBStoreListener> listeners = getListeners(object.getClass()); 
+
 		log.debug(object.getClass()+" / saving object: "+object.getId());
 
-		
-		for(DBStoreListener l : getListeners(object.getClass())) {
-			log.debug("firing 'beforeSave' for: "+object.getClass()+" / "+object.getId());
-			l.beforeSave(db, object);
+		if(listeners.size()>0) {
+			for(DBStoreListener l : listeners) {
+				log.debug("firing 'beforeSave' for: "+object.getClass()+" / "+object.getId());
+				l.beforeSave(db, object);
+			}
 		}
 		
 		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,object.getClass());
-
-		List<DBStoreListener> listeners = getListeners(object.getClass()); 
-		
 
 		T old = null;
 
@@ -357,22 +356,28 @@ public abstract class AMongoDataStore implements DataStore {
 		coll.save(object);
 
 		T out = (T) getObject(db, object.getClass(), object.getId());
-		
-		DBStoreCache objectCache = getObjectCache(db,object.getClass());
-		if(objectCache!=null) {
-			objectCache.remove(out.getId());
+
+		if(cacheObjects) {
+			DBStoreCache objectCache = getObjectCache(db,object.getClass());
+			if(objectCache!=null) {
+				objectCache.remove(out.getId());
+			}
 		}
 
-		DBStoreCache queryCache = getQueryCache(db,object.getClass());
-		if(queryCache!=null) {
-			queryCache.removeAll();
+		if(cacheQueries) {
+			DBStoreCache queryCache = getQueryCache(db,object.getClass());
+			if(queryCache!=null) {
+				queryCache.removeAll();
+			}
 		}
 		
-		for(DBStoreListener l : listeners) {
-			if(old!=null) {
-				l.updated(db, old, out);
-			} else {
-				l.created(db, out);
+		if(listeners.size()>0) {
+			for(DBStoreListener l : listeners) {
+				if(old!=null) {
+					l.updated(db, old, out);
+				} else {
+					l.created(db, out);
+				}
 			}
 		}
 		return out; 
