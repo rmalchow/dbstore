@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.mongojack.DBCursor;
+import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 
@@ -26,6 +27,7 @@ import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
 import com.cinefms.dbstore.cache.api.DBStoreCache;
 import com.cinefms.dbstore.cache.api.DBStoreCacheFactory;
 import com.cinefms.dbstore.query.api.DBStoreQuery;
+import com.cinefms.dbstore.query.api.impl.BasicQuery;
 import com.cinefms.dbstore.query.mongo.QueryMongojackTranslator;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -354,13 +356,17 @@ public abstract class AMongoDataStore implements DataStore {
 		
 
 		T old = null;
-		if(listeners.size()>0 && object.getId() != null) {
+		if(object.getId() != null) {
 			old = coll.findOneById(object.getId());
 		} else {
 			object.setId(ObjectId.get().toString());
 		}
 
-		coll.save(object);
+		if(old!=null) {
+			coll.update(DBQuery.is("_id", old.getId()), object);
+		} else {
+			coll.save(object);
+		}
 		
 		T out = (T) getObject(db, object.getClass(), object.getId());
 
