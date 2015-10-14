@@ -360,12 +360,7 @@ public abstract class AMongoDataStore implements DataStore {
 			object.setId(ObjectId.get().toString());
 		}
 
-		long start = System.currentTimeMillis();
-		long end = System.currentTimeMillis();
-		start = System.currentTimeMillis();
 		coll.save(object);
-		end = System.currentTimeMillis();
-		log.info("save: save to collection "+(end-start));
 		
 		T out = (T) getObject(db, object.getClass(), object.getId());
 
