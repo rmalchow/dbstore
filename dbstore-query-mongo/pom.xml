@@ -3,19 +3,19 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-		<version>0.6.56</version>
+		<version>0.6.57-SNAPSHOT</version>
 	</parent>
 	<artifactId>dbstore-query-mongo</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-query-api</artifactId>
-			<version>0.6.56</version>
+			<version>0.6.57-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-mongo-fork</artifactId>
-			<version>0.6.56</version>
+			<version>0.6.57-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
