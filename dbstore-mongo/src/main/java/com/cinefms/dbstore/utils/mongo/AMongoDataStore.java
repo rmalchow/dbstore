@@ -343,39 +343,24 @@ public abstract class AMongoDataStore implements DataStore {
 		
 		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,object.getClass());
 
+		List<DBStoreListener> listeners = getListeners(object.getClass()); 
+		
 
 		T old = null;
 		String id = object.getId();
 
-		if (object.getId() != null) {
-			log.debug("got an id, trying to find an old object by id: "+object.getId());
+		if(listeners.size()>0 && object.getId() != null) {
 			old = coll.findOneById(object.getId());
-			log.debug(" ---> found: "+old);
-			id = object.getId();
 		} else {
-			id = ObjectId.get().toString();
-			object.setId(id);
+			object.setId(ObjectId.get().toString());
 		}
-		
-		
 
-		if (old == null) {
-			log.debug(object.getClass()+" / saving, new id is: "+object.getId());
-			coll.save(object);
-			log.debug(object.getClass()+" / saved id is:   "+id);
-		} else {
-			log.debug(object.getClass()+" / updating, id is:   "+object.getId());
-			Query q = DBQuery.empty();
-			q = q.is("_id", object.getId());
-			coll.update(q,object);
-			log.debug(object.getClass()+" / updated id is:   "+id);
-		}
+		coll.save(object);
 
 		T out = (T) getObject(db, object.getClass(), id);
 		
 		DBStoreCache objectCache = getObjectCache(db,object.getClass());
 		if(objectCache!=null) {
-			log.debug("updating object cache for: "+id);
 			objectCache.remove(out.getId());
 		}
 
@@ -384,13 +369,10 @@ public abstract class AMongoDataStore implements DataStore {
 			queryCache.removeAll();
 		}
 		
-		out = (T)getObject(db, object.getClass(), object.getId());
-		for(DBStoreListener l : getListeners(object.getClass())) {
+		for(DBStoreListener l : listeners) {
 			if(old!=null) {
-				log.debug("firing 'updated' for: "+object.getClass()+" / "+out.getId());
 				l.updated(db, old, out);
 			} else {
-				log.debug("firing 'create' for: "+object.getClass()+" / "+out.getId());
 				l.created(db, out);
 			}
 		}
