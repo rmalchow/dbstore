@@ -1,4 +1,4 @@
-package com.cinefms.dbstore.cache.api.annotations;
+package com.cinefms.dbstore.api.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

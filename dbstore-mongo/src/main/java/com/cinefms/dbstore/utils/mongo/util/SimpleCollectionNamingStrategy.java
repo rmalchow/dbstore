@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.cinefms.dbstore.cache.api.annotations.CollectionName;
+import com.cinefms.dbstore.api.annotations.CollectionName;
 
 public class SimpleCollectionNamingStrategy implements CollectionNamingStrategy {
 

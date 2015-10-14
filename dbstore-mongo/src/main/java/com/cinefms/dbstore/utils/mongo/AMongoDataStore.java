@@ -19,6 +19,8 @@ import com.cinefms.dbstore.api.DBStoreListener;
 import com.cinefms.dbstore.api.DataStore;
 import com.cinefms.dbstore.api.annotations.Index;
 import com.cinefms.dbstore.api.annotations.Indexes;
+import com.cinefms.dbstore.api.annotations.Write;
+import com.cinefms.dbstore.api.annotations.WriteMode;
 import com.cinefms.dbstore.api.exceptions.DBStoreException;
 import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
 import com.cinefms.dbstore.cache.api.DBStoreCache;
@@ -30,6 +32,7 @@ import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
@@ -116,6 +119,9 @@ public abstract class AMongoDataStore implements DataStore {
 				DBCollection dbc = initializeCollection(d, clazz);
 				log.info("==    DBC IS: "+dbc);
 				out = JacksonDBCollection.wrap(dbc, clazz, String.class);
+				if(clazz.getAnnotation(Write.class)!=null && clazz.getAnnotation(Write.class).value()==WriteMode.FAST) {
+					out.setWriteConcern(WriteConcern.UNACKNOWLEDGED);
+				}
 				collections.put(key, out);
 				log.info("==");
 				log.info("============================================================");
@@ -332,6 +338,7 @@ public abstract class AMongoDataStore implements DataStore {
 	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> T saveObject(String db, T object) throws EntityNotFoundException {
 		
+		
 		List<DBStoreListener> listeners = getListeners(object.getClass()); 
 
 		log.debug(object.getClass()+" / saving object: "+object.getId());
@@ -344,17 +351,22 @@ public abstract class AMongoDataStore implements DataStore {
 		}
 		
 		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,object.getClass());
+		
 
 		T old = null;
-
 		if(listeners.size()>0 && object.getId() != null) {
 			old = coll.findOneById(object.getId());
 		} else {
 			object.setId(ObjectId.get().toString());
 		}
 
+		long start = System.currentTimeMillis();
+		long end = System.currentTimeMillis();
+		start = System.currentTimeMillis();
 		coll.save(object);
-
+		end = System.currentTimeMillis();
+		log.info("save: save to collection "+(end-start));
+		
 		T out = (T) getObject(db, object.getClass(), object.getId());
 
 		if(cacheObjects) {
