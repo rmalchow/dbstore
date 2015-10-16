@@ -20,10 +20,19 @@ public class BasicBinary implements DBStoreBinary {
 		this(id,new ByteArrayInputStream(data),data.length);
 	}
 	
+	public BasicBinary(String id, byte[] data, Map<String,Object> metaData) {
+		this(id,new ByteArrayInputStream(data),data.length,metaData);
+	}
+	
 	public BasicBinary(String id, InputStream is, long length) {
+		this(id,is,-1,null);
+	}
+	
+	public BasicBinary(String id, InputStream is, long length, Map<String,Object> metaData) {
 		this.id = id;
 		this.is = is;
 		this.length = length;
+		this.metaData = metaData;
 	}
 	
 	
