@@ -149,7 +149,12 @@ public abstract class AMongoDataStore implements DataStore {
 	
 	public List<DBStoreListener> getAllListeners() {
 		if(listeners == null) {
-			listeners = new ArrayList<DBStoreListener>(ctx.getBeansOfType(DBStoreListener.class).values());
+			if(ctx!=null) {
+				listeners = new ArrayList<DBStoreListener>(ctx.getBeansOfType(DBStoreListener.class).values());
+			} else {
+				listeners = new ArrayList<DBStoreListener>();
+			}
+			
 		}
 		return listeners;
 	}
