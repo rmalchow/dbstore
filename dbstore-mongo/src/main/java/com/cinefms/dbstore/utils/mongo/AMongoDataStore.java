@@ -30,6 +30,7 @@ import com.cinefms.dbstore.cache.api.DBStoreCache;
 import com.cinefms.dbstore.cache.api.DBStoreCacheFactory;
 import com.cinefms.dbstore.query.api.DBStoreQuery;
 import com.cinefms.dbstore.query.mongo.QueryMongojackTranslator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
@@ -50,8 +51,11 @@ public abstract class AMongoDataStore implements DataStore {
 	private String defaultDb;
 	private String dbPrefix;
 	
+	private ObjectMapper objectMapper = new ObjectMapper();
+	
 	private boolean cacheQueries = false;
 	private boolean cacheObjects = false;
+	private boolean checkUpdates = false;
 	
 	private Map<String,DBStoreCache> objectCaches = new HashMap<String, DBStoreCache>();
 	private Map<String,DBStoreCache> queryCaches = new HashMap<String, DBStoreCache>();
@@ -224,12 +228,10 @@ public abstract class AMongoDataStore implements DataStore {
 		}
 	}
 
-	
 	public <T extends DBStoreEntity> T findObject(String db, Class<T> clazz, DBStoreQuery query) {
 
 		Query q = fqtl.translate(query);
 		DBObject o = fqtl.translateOrderBy(query);
-
 		List<T> ts = getCollection(db,clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
 		
 		if (ts != null) {
@@ -379,6 +381,11 @@ public abstract class AMongoDataStore implements DataStore {
 		}
 
 		if(old!=null) {
+			if(!needsUpdate(old,object)) {
+				log.debug("no change, returning");
+				return object;
+			}
+			
 			coll.update(DBQuery.is("_id", old.getId()), object);
 		} else {
 			coll.save(object);
@@ -410,6 +417,10 @@ public abstract class AMongoDataStore implements DataStore {
 			}
 		}
 		return out; 
+	}
+
+	private <T> boolean needsUpdate(T old, T object) {
+		return true;
 	}
 
 	private DBStoreCache getObjectCache(String db, Class<? extends DBStoreEntity> clazz) {
@@ -503,6 +514,14 @@ public abstract class AMongoDataStore implements DataStore {
 
 	public void setDbPrefix(String dbPrefix) {
 		this.dbPrefix = dbPrefix;
+	}
+
+	public boolean isCheckUpdates() {
+		return checkUpdates;
+	}
+
+	public void setCheckUpdates(boolean checkUpdates) {
+		this.checkUpdates = checkUpdates;
 	}
 	
 	

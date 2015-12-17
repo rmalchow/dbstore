@@ -20,5 +20,4 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 		this.collectionNamingStrategy = collectionNamingStrategy;
 	}
 
-
 }
