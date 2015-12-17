@@ -419,7 +419,7 @@ public abstract class AMongoDataStore implements DataStore {
 		return out; 
 	}
 
-	private <T> boolean needsUpdate(T old, T object) {
+	public <T> boolean needsUpdate(T old, T object) {
 		return true;
 	}
 
