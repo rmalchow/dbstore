@@ -18,7 +18,7 @@ public abstract class DBStoreListenerAdapter<T extends DBStoreEntity> implements
 		return clazz;
 	}
 
-	public boolean supports() {
+	public boolean supports(Class<? extends DBStoreEntity> clazz) {
 		return clazz==getClazz();
 	}
 
