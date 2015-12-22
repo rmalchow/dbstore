@@ -9,10 +9,6 @@ public abstract class DBStoreListenerAdapter<T extends DBStoreEntity> implements
 	
 	private Class<T> clazz;
 	
-	protected DBStoreListenerAdapter(Class<T> clazz) {
-		this.clazz = clazz;
-	}
-
 	@SuppressWarnings("unchecked")
 	public Class<T> getClazz() {
 		if(clazz==null) {
