@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-		<version>0.6.69-SNAPSHOT</version>
+		<version>0.6.69</version>
 	</parent>
 	<artifactId>dbstore-mongo-fork</artifactId>
 	<dependencies>
