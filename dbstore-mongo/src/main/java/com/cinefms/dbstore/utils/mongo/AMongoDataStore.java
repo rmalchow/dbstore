@@ -410,8 +410,10 @@ public abstract class AMongoDataStore implements DataStore {
 		if(listeners.size()>0) {
 			for(DBStoreListener l : listeners) {
 				if(old!=null) {
+					log.debug("firing 'updated' for: "+out.getClass()+" / "+out.getId()+" / "+l.getClass());
 					l.updated(db, old, out);
 				} else {
+					log.debug("firing 'created' for: "+out.getClass()+" / "+out.getId()+" / "+l.getClass());
 					l.created(db, out);
 				}
 			}
