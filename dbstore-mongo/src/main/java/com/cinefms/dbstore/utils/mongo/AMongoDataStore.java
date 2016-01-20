@@ -26,11 +26,8 @@ import com.cinefms.dbstore.api.annotations.Write;
 import com.cinefms.dbstore.api.annotations.WriteMode;
 import com.cinefms.dbstore.api.exceptions.DBStoreException;
 import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
-import com.cinefms.dbstore.cache.api.DBStoreCache;
-import com.cinefms.dbstore.cache.api.DBStoreCacheFactory;
 import com.cinefms.dbstore.query.api.DBStoreQuery;
 import com.cinefms.dbstore.query.mongo.QueryMongojackTranslator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
@@ -46,19 +43,9 @@ public abstract class AMongoDataStore implements DataStore {
 	private static Log log = LogFactory.getLog(AMongoDataStore.class);
 
 	private MongoService mongoService;
-	private DBStoreCacheFactory cacheFactory;
-	
+
 	private String defaultDb;
 	private String dbPrefix;
-	
-	private ObjectMapper objectMapper = new ObjectMapper();
-	
-	private boolean cacheQueries = false;
-	private boolean cacheObjects = false;
-	private boolean checkUpdates = false;
-	
-	private Map<String,DBStoreCache> objectCaches = new HashMap<String, DBStoreCache>();
-	private Map<String,DBStoreCache> queryCaches = new HashMap<String, DBStoreCache>();
 	
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
 	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<String, List<DBStoreListener>>();
@@ -287,22 +274,7 @@ public abstract class AMongoDataStore implements DataStore {
 
 	
 	public <T extends DBStoreEntity> T getObject(String db, Class<T> clazz, String id) {
-		
-		DBStoreCache cache = getObjectCache(db,clazz);
-		T out = null;
-		if(cache!=null) {
-			out = cache.get(id, clazz);
-			log.debug(" result from cache: "+out);
-		}
-		if (out == null) {
-			log.debug(" result from cache [NULL], checking DB ... ");
-			out = getCollection(db,clazz).findOneById(id);
-			if (out != null && cache != null) {
-				cache.put(id,out);
-			}
-		}
-		
-		return out;
+		return getCollection(db,clazz).findOneById(id);
 	}
 	
 
@@ -338,14 +310,6 @@ public abstract class AMongoDataStore implements DataStore {
 		
 		try {
 			getCollection(db,clazz).removeById(id);
-			DBStoreCache objectCache = getObjectCache(db,clazz);
-			if(objectCache!=null) {
-				objectCache.remove(id);
-			}
-			DBStoreCache queryCache = getQueryCache(db,clazz);
-			if(queryCache!=null) {
-				queryCache.removeAll();
-			}
 			for(DBStoreListener l : getListeners(clazz)) {
 				log.debug("firing 'delete' for: "+clazz+" / "+id);
 				l.deleted(db, entity);
@@ -393,20 +357,6 @@ public abstract class AMongoDataStore implements DataStore {
 		
 		T out = (T) getObject(db, object.getClass(), object.getId());
 
-		if(cacheObjects) {
-			DBStoreCache objectCache = getObjectCache(db,object.getClass());
-			if(objectCache!=null) {
-				objectCache.remove(out.getId());
-			}
-		}
-
-		if(cacheQueries) {
-			DBStoreCache queryCache = getQueryCache(db,object.getClass());
-			if(queryCache!=null) {
-				queryCache.removeAll();
-			}
-		}
-		
 		if(listeners.size()>0) {
 			for(DBStoreListener l : listeners) {
 				if(old!=null) {
@@ -425,37 +375,6 @@ public abstract class AMongoDataStore implements DataStore {
 		return true;
 	}
 
-	private DBStoreCache getObjectCache(String db, Class<? extends DBStoreEntity> clazz) {
-		String key = db+":"+clazz.getCanonicalName()+":object";
-		DBStoreCache objectCache = objectCaches.get(key);
-		if(objectCache==null && getCacheFactory()!=null && cacheObjects) {
-			synchronized(this) {
-				if(objectCache==null) {
-					objectCache = getCacheFactory().getCache(key);
-					if(objectCache!=null) {
-						objectCaches.put(key,objectCache);
-					}
-				}
-			}
-		}
-		return objectCache;
-	}
-	
-	private DBStoreCache getQueryCache(String db, Class<? extends DBStoreEntity> clazz) {
-		String key = db+":"+clazz.getCanonicalName()+":query";
-		DBStoreCache queryCache = queryCaches.get(key);
-		if(queryCache==null && getCacheFactory()!=null && cacheQueries) {
-			synchronized(this) {
-				if(queryCache==null) {
-					queryCache = getCacheFactory().getCache(key);
-					if(queryCache!=null) {
-						queryCaches.put(key,queryCache);
-					}
-				}
-			}
-		}
-		return queryCache;
-	}
 	
 	public MongoService getMongoService() {
 		return mongoService;
@@ -465,41 +384,8 @@ public abstract class AMongoDataStore implements DataStore {
 		this.mongoService = mongoService;
 	}
 
-	public DBStoreCacheFactory getDBStoreCacheFactory() {
-		return getCacheFactory();
-	}
-
-	public void setDBStoreCacheFactory(DBStoreCacheFactory cacheFactory) {
-		this.setCacheFactory(cacheFactory);
-	}
-
-	public boolean isCacheQueries() {
-		return cacheQueries;
-	}
-
-	public void setCacheQueries(boolean cacheQueries) {
-		this.cacheQueries = cacheQueries;
-	}
-
-	public boolean isCacheObjects() {
-		return cacheObjects;
-	}
-
-	public void setCacheObjects(boolean cacheObjects) {
-		this.cacheObjects = cacheObjects;
-	}
-
-	
 	public void addListener(DBStoreListener listener) {
 		this.listeners.add(listener);
-	}
-
-	public DBStoreCacheFactory getCacheFactory() {
-		return cacheFactory;
-	}
-
-	public void setCacheFactory(DBStoreCacheFactory cacheFactory) {
-		this.cacheFactory = cacheFactory;
 	}
 
 	public String getDefaultDb() {
@@ -518,13 +404,5 @@ public abstract class AMongoDataStore implements DataStore {
 		this.dbPrefix = dbPrefix;
 	}
 
-	public boolean isCheckUpdates() {
-		return checkUpdates;
-	}
-
-	public void setCheckUpdates(boolean checkUpdates) {
-		this.checkUpdates = checkUpdates;
-	}
-	
 	
 }
