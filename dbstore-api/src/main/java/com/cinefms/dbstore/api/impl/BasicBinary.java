@@ -25,7 +25,7 @@ public class BasicBinary implements DBStoreBinary {
 	}
 	
 	public BasicBinary(String id, InputStream is, long length) {
-		this(id,is,-1,null);
+		this(id,is,length,null);
 	}
 	
 	public BasicBinary(String id, InputStream is, long length, Map<String,Object> metaData) {
