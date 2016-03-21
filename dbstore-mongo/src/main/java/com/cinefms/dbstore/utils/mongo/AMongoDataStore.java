@@ -42,6 +42,7 @@ public abstract class AMongoDataStore implements DataStore {
 
 	private static Log log = LogFactory.getLog(AMongoDataStore.class);
 
+	@Autowired
 	private MongoService mongoService;
 
 	private String defaultDb;
