@@ -32,5 +32,7 @@ public interface DataStore {
 	
 	public void addListener(DBStoreListener listener);
 
+	public <T> void saveObjects(String db, List<T> objects) throws DBStoreException;
+
 	
 }

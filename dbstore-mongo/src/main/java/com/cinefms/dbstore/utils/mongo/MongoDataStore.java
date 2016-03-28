@@ -1,8 +1,5 @@
 package com.cinefms.dbstore.utils.mongo;
 
-import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.springframework.cglib.beans.BeanMap;
-
 import com.cinefms.dbstore.api.DataStore;
 import com.cinefms.dbstore.utils.mongo.util.CollectionNamingStrategy;
 import com.cinefms.dbstore.utils.mongo.util.SimpleCollectionNamingStrategy;

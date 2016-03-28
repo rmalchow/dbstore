@@ -321,6 +321,21 @@ public abstract class AMongoDataStore implements DataStore {
 		}
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> void saveObjects(String db, List<T> objects) throws DBStoreException {
+		try {
+			if(objects.size()==0) {
+				return;
+			}
+			JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,objects.get(0).getClass());
+			coll.insert(objects);
+			
+		} catch (Exception e) {
+			throw new DBStoreException(e);
+		}
+	}
+	
 	
 	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> T saveObject(String db, T object) throws EntityNotFoundException {
