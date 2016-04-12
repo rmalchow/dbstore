@@ -1,10 +1,12 @@
 **DBSTORE**
+=================
+
 
 this is a simple abstraction layer for datastores. mostly, for mongo db. 
 
 it contains a few basic classes that might help in working with mongodb, specifically:
 
-*DbQuery*
+***DbQuery***
 
 this is an interface for a builder style class to create queries. a basic implementation called "BasicDBQuery" is provided. simple usage:
 
@@ -14,7 +16,7 @@ this is an interface for a builder style class to create queries. a basic implem
 	[...]
 	
 	
-*DataStore*
+***DataStore***
 
 an interface for a data store that can be queried with a DbQuery. an implementation for mongo (along with the necessary translator to translate DbQuery into an actual mongo query is provided in dbstore-mongo and dbstore-query-mongo). simple usage:
 
@@ -33,11 +35,11 @@ and, for saving:
 note that your objects have to extend `DBStoreEntity`. 
 	
 	
-*DbStoreListener*
+***DbStoreListener***
 
 this is an interface for anything that's interested in receiving notifications on the persistence of specific objects. in a spring context (if your data store is a bean in your spring context), these will be autowired. a basic adaptor called `"DBStoreListenerAdapter"` is provided.
 
-*in a maven project*
+***How To Use This In A Maven Project***
 
 to use this in a maven project, add our repo to your classpath:
 
