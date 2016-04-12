@@ -7,9 +7,6 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>dbstore-api</module>
-		<module>dbstore-cache-api</module>
-		<module>dbstore-cache-memcached</module>
-		<module>dbstore-redis</module>
 		<module>dbstore-mongo</module>
 		<module>dbstore-cache-ehcache</module>
 		<module>dbstore-query-api</module>

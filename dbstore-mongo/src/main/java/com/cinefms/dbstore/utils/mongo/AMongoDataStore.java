@@ -329,6 +329,7 @@ public abstract class AMongoDataStore implements DataStore {
 				return;
 			}
 			JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db,objects.get(0).getClass());
+			
 			coll.insert(objects);
 			
 		} catch (Exception e) {
