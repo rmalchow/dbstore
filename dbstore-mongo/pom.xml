@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-		<version>0.6.77</version>
+		<version>0.6.78-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -16,17 +16,17 @@
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-api</artifactId>
-			<version>0.6.77</version>
+			<version>0.6.78-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-query-mongo</artifactId>
-			<version>0.6.77</version>
+			<version>0.6.78-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-mongo-fork</artifactId>
-			<version>0.6.77</version>
+			<version>0.6.78-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
