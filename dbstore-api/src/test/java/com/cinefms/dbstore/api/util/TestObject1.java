@@ -1,9 +1,9 @@
 package com.cinefms.dbstore.api.util;
 
-import com.cinefms.dbstore.api.DBStoreEntity;
+import com.cinefms.dbstore.api.impl.BaseDBStoreEntity;
 
 
-public class TestObject1 implements DBStoreEntity {
+public class TestObject1 extends BaseDBStoreEntity {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -21,4 +21,5 @@ public class TestObject1 implements DBStoreEntity {
 		this.id = id;
 	}
 
+	
 }

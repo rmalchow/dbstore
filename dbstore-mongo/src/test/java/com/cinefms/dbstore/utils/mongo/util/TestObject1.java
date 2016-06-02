@@ -1,8 +1,8 @@
 package com.cinefms.dbstore.utils.mongo.util;
 
-import com.cinefms.dbstore.api.DBStoreEntity;
+import com.cinefms.dbstore.api.impl.BaseDBStoreEntity;
 
-public class TestObject1 implements DBStoreEntity {
+public class TestObject1 extends BaseDBStoreEntity  {
 
 	private String id;
 
@@ -16,6 +16,6 @@ public class TestObject1 implements DBStoreEntity {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 
 }

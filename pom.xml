@@ -8,7 +8,7 @@
 	<modules>
 		<module>dbstore-api</module>
 		<module>dbstore-mongo</module>
-		<module>dbstore-cache-ehcache</module>
+		
 		<module>dbstore-query-api</module>
 		<module>dbstore-query-mongo</module>
 		<module>dbstore-mongo-fork</module>
@@ -82,11 +82,6 @@
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
 		</dependency>
 	</dependencies>
 	<build>

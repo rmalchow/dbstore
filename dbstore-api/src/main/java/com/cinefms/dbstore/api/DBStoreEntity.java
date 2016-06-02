@@ -11,5 +11,7 @@ public interface DBStoreEntity {
 
 	public void setId(String id);
 	
+	public String createId();
+	
 
 }
