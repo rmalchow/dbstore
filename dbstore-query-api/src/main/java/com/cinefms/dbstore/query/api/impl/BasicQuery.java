@@ -17,14 +17,14 @@ public class BasicQuery implements DBStoreQuery {
 	private COMPARATOR comparator;
 	
 	private List<OrderBy> orderBy = new ArrayList<OrderBy>();
-	private long start=0;
-	private long max=-1;
+	private int start=0;
+	private int max=-1;
 	
 	
 	private BasicQuery() {
 	}
 	
-	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator, String key, COMPARATOR comparator, Object value, List<OrderBy> orderBy, long start, long max) {
+	private BasicQuery(List<DBStoreQuery> conditions, OPERATOR operator, String key, COMPARATOR comparator, Object value, List<OrderBy> orderBy, int start, int max) {
 		super();
 		this.conditions = conditions;
 		this.operator = operator;
@@ -191,12 +191,12 @@ public class BasicQuery implements DBStoreQuery {
 	}
 	
 	
-	public DBStoreQuery start(long start) {
+	public DBStoreQuery start(int start) {
 		return new BasicQuery(getNested(),operator,key,comparator,value,getOrderBy(),start,max);
 	}
 
 	
-	public DBStoreQuery max(long max) {
+	public DBStoreQuery max(int max) {
 		return new BasicQuery(getNested(),operator,key,comparator,value,getOrderBy(),start,max);
 	}
 
@@ -206,12 +206,12 @@ public class BasicQuery implements DBStoreQuery {
 	}
 
 	
-	public long getStart() {
+	public int getStart() {
 		return start;
 	}
 
 	
-	public long getMax() {
+	public int getMax() {
 		return max;
 	}
 
