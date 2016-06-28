@@ -45,6 +45,7 @@ public class MongoService {
 				log.info("##  SINGLE-SERVER!");
 				if(auth) {
 					MongoCredential mc = null;
+					authMethod =  authMethod == null?"":authMethod;
 					if(getAuthMethod().compareTo("CR")==0) {
 						mc = MongoCredential.createMongoCRCredential(username, authDb, password.toCharArray());
 					} else if (getAuthMethod().compareTo("SCRAM-SHA-1")==0) {
