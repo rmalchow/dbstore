@@ -27,7 +27,7 @@ public class MongoService {
 	private String username;
 	private String password;
 	private String authDb;
-	private String authMethod = "CR";
+	private String authMethod;
 	private boolean auth = false;
 
 	private MongoClient client;
@@ -50,12 +50,11 @@ public class MongoService {
 					} else if (getAuthMethod().compareTo("SCRAM-SHA-1")==0) {
 						mc = MongoCredential.createScramSha1Credential(username, authDb==null?dbName:authDb, password.toCharArray());
 					} else {
-						throw new RuntimeException("unknown auth method: "+getAuthMethod());
+						mc = MongoCredential.createCredential(username, authDb==null?dbName:authDb, password.toCharArray());
 					}
 					log.info("##  ");
 					log.info("##  WITH CREDENTIALS" );
 					log.info("##  --------------------------- MECHANISM: "+mc.getMechanism());
-					log.info("##  ---------------------------");
 					client = new MongoClient(servers.get(0),Collections.singletonList(mc));
 				} else {
 					log.info("##  ");
