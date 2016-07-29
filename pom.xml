@@ -19,7 +19,7 @@
 		<jackson.version>2.2.3</jackson.version>
 		<spymemcached.version>2.11.4</spymemcached.version>
 		<redisson.version>1.2.1</redisson.version>
-		<spring.version>4.1.1.RELEASE</spring.version>
+		<spring.version>4.2.4.RELEASE</spring.version>
 	</properties>
 	<licenses>
 		<license>
