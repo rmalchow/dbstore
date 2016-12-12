@@ -28,6 +28,8 @@ import com.cinefms.dbstore.api.exceptions.DBStoreException;
 import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
 import com.cinefms.dbstore.query.api.DBStoreQuery;
 import com.cinefms.dbstore.query.mongo.QueryMongojackTranslator;
+import com.cinefms.dbstore.utils.mongo.util.CollectionNamingStrategy;
+import com.cinefms.dbstore.utils.mongo.util.SimpleCollectionNamingStrategy;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
@@ -40,13 +42,10 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 public abstract class AMongoDataStore implements DataStore {
 
-	private static Log log = LogFactory.getLog(AMongoDataStore.class);
+	protected static Log log = LogFactory.getLog(AMongoDataStore.class);
 
-	@Autowired
-	private MongoService mongoService;
-
-	private String defaultDb;
-	private String dbPrefix;
+	protected String defaultDb;
+	protected String dbPrefix;
 	
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
 	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<String, List<DBStoreListener>>();
@@ -58,22 +57,11 @@ public abstract class AMongoDataStore implements DataStore {
 	
 	@Autowired
 	private ApplicationContext ctx;
-	
-	private DB getDB(String db) throws UnknownHostException {
-		db = db==null?defaultDb:(dbPrefix==null?"":(dbPrefix+"_"))+db;
-		log.info("============================================================");
-		log.info("== ");
-		log.info("== ");
-		log.info("== getting DB from mongoService: "+getMongoService());
-		DB out = getMongoService().getDb(db);
-		log.info("== ... result is: "+out);
-		log.info("== ");
-		log.info("============================================================");
-		return out;
-	}
 
-	public abstract String getCollectionName(Class<?> clazz);
+	private CollectionNamingStrategy collectionNamingStrategy = new SimpleCollectionNamingStrategy();
 	
+	
+	public abstract DB getDB(String db) throws UnknownHostException;
 	
 	private <T> DBCollection initializeCollection(DB db, Class<T> clazz) {
 		String collectionName = getCollectionName(clazz);
@@ -397,14 +385,6 @@ public abstract class AMongoDataStore implements DataStore {
 	}
 
 	
-	public MongoService getMongoService() {
-		return mongoService;
-	}
-
-	public void setMongoService(MongoService mongoService) {
-		this.mongoService = mongoService;
-	}
-
 	public void addListener(DBStoreListener listener) {
 		this.listeners.add(listener);
 	}
@@ -423,6 +403,18 @@ public abstract class AMongoDataStore implements DataStore {
 
 	public void setDbPrefix(String dbPrefix) {
 		this.dbPrefix = dbPrefix;
+	}
+
+	public String getCollectionName(Class<?> clazz) {
+		return collectionNamingStrategy.getCollectionName(clazz);
+	}
+
+	public CollectionNamingStrategy getCollectionNamingStrategy() {
+		return collectionNamingStrategy;
+	}
+
+	public void setCollectionNamingStrategy(CollectionNamingStrategy collectionNamingStrategy) {
+		this.collectionNamingStrategy = collectionNamingStrategy;
 	}
 
 	

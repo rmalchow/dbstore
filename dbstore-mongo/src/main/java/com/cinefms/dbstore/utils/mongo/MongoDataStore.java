@@ -1,28 +1,20 @@
 package com.cinefms.dbstore.utils.mongo;
 
+import java.net.UnknownHostException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cinefms.dbstore.api.DataStore;
-import com.cinefms.dbstore.utils.mongo.util.CollectionNamingStrategy;
-import com.cinefms.dbstore.utils.mongo.util.SimpleCollectionNamingStrategy;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DB;
 
 public class MongoDataStore extends AMongoDataStore implements DataStore {
 
-	private CollectionNamingStrategy collectionNamingStrategy = new SimpleCollectionNamingStrategy();
 	private boolean checkUpdates = false;
 	private ObjectMapper objectMapper;
+	@Autowired
+	private MongoService mongoService;
 	
-	public String getCollectionName(Class<?> clazz) {
-		return collectionNamingStrategy.getCollectionName(clazz);
-	}
-
-	public CollectionNamingStrategy getCollectionNamingStrategy() {
-		return collectionNamingStrategy;
-	}
-
-	public void setCollectionNamingStrategy(CollectionNamingStrategy collectionNamingStrategy) {
-		this.collectionNamingStrategy = collectionNamingStrategy;
-	}
-
 	public ObjectMapper getObjectMapper() {
 		if(objectMapper==null) {
 			objectMapper = new ObjectMapper();
@@ -55,6 +47,27 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 		} catch (Exception e) {
 			return true;
 		}
+	}
+
+	public DB getDB(String db) throws UnknownHostException {
+		db = db==null?defaultDb:(dbPrefix==null?"":(dbPrefix+"_"))+db;
+		log.info("============================================================");
+		log.info("== ");
+		log.info("== ");
+		log.info("== getting DB from mongoService: "+getMongoService());
+		DB out = getMongoService().getDb(db);
+		log.info("== ... result is: "+out);
+		log.info("== ");
+		log.info("============================================================");
+		return out;
+	}
+
+	public MongoService getMongoService() {
+		return mongoService;
+	}
+
+	public void setMongoService(MongoService mongoService) {
+		this.mongoService = mongoService;
 	}
 
 }
