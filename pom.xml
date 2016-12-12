@@ -44,7 +44,7 @@
 		<repository>
 			<id>skjlls-release</id>
 			<name>skjlls release repo</name>
-			<url>https://infra.skjlls.com/nexus/content/repositories/releases-oss/</url>
+			<url>file:///Users/rm/maven/</url>
 			<uniqueVersion>false</uniqueVersion>
 		</repository>
 		<snapshotRepository>
