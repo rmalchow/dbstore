@@ -15,7 +15,15 @@ public class SpringDataMongoDataStore extends AMongoDataStore {
 	@Override
 	public DB getDB(String db) throws UnknownHostException {
 		db = db==null?defaultDb:(dbPrefix==null?"":(dbPrefix+"_"))+db;
-		return mongo.getDB(db);
+		return getMongo().getDB(db);
+	}
+
+	public Mongo getMongo() {
+		return mongo;
+	}
+
+	public void setMongo(Mongo mongo) {
+		this.mongo = mongo;
 	}
 
 	
