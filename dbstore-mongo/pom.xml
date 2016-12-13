@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-		<version>0.7.7-SNAPSHOT</version>
+		<version>0.7.7</version>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -16,12 +16,12 @@
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-api</artifactId>
-			<version>0.7.7-SNAPSHOT</version>
+			<version>0.7.7</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-query-mongo</artifactId>
-			<version>0.7.7-SNAPSHOT</version>
+			<version>0.7.7</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.mongojack</groupId>
