@@ -16,7 +16,8 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 	private MongoService mongoService;
 	
 	private String defaultDb;
-	
+	private String dbPrefix;
+
 	public ObjectMapper getObjectMapper() {
 		if(objectMapper==null) {
 			objectMapper = new ObjectMapper();
@@ -73,7 +74,15 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 		this.defaultDb = defaultDb;
 	}
 
-	
+	public String getDbPrefix() {
+		return dbPrefix;
+	}
+
+	public void setDbPrefix(String dbPrefix) {
+		this.dbPrefix = dbPrefix;
+	}
+
+
 	public MongoService getMongoService() {
 		return mongoService;
 	}

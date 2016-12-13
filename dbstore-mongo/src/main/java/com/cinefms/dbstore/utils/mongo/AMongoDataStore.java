@@ -44,7 +44,6 @@ public abstract class AMongoDataStore implements DataStore {
 
 	protected static Log log = LogFactory.getLog(AMongoDataStore.class);
 
-	protected String dbPrefix;
 	
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
 	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<String, List<DBStoreListener>>();
@@ -386,14 +385,6 @@ public abstract class AMongoDataStore implements DataStore {
 	
 	public void addListener(DBStoreListener listener) {
 		this.listeners.add(listener);
-	}
-
-	public String getDbPrefix() {
-		return dbPrefix;
-	}
-
-	public void setDbPrefix(String dbPrefix) {
-		this.dbPrefix = dbPrefix;
 	}
 
 	public String getCollectionName(Class<?> clazz) {
