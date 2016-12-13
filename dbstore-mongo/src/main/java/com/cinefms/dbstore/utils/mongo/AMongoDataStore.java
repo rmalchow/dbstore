@@ -44,7 +44,6 @@ public abstract class AMongoDataStore implements DataStore {
 
 	protected static Log log = LogFactory.getLog(AMongoDataStore.class);
 
-	protected String defaultDb;
 	protected String dbPrefix;
 	
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
@@ -387,14 +386,6 @@ public abstract class AMongoDataStore implements DataStore {
 	
 	public void addListener(DBStoreListener listener) {
 		this.listeners.add(listener);
-	}
-
-	public String getDefaultDb() {
-		return defaultDb;
-	}
-
-	public void setDefaultDb(String defaultDb) {
-		this.defaultDb = defaultDb;
 	}
 
 	public String getDbPrefix() {

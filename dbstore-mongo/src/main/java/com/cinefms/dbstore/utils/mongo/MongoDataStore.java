@@ -15,6 +15,8 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 	@Autowired
 	private MongoService mongoService;
 	
+	private String defaultDb;
+	
 	public ObjectMapper getObjectMapper() {
 		if(objectMapper==null) {
 			objectMapper = new ObjectMapper();
@@ -62,6 +64,16 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 		return out;
 	}
 
+	
+	public String getDefaultDb() {
+		return defaultDb;
+	}
+
+	public void setDefaultDb(String defaultDb) {
+		this.defaultDb = defaultDb;
+	}
+
+	
 	public MongoService getMongoService() {
 		return mongoService;
 	}
