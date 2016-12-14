@@ -29,10 +29,10 @@ public class SpringDataMongoDataStore extends AMongoDataStore {
 	@Autowired
 	private Mongo mongo;
 	
-	@Value("dbstore.defaultDb")
+	@Value("${dbstore.defaultDb}")
 	private String defaultDb; 
 
-	@Value("dbstore.dbPrefix")
+	@Value("${dbstore.dbPrefix}")
 	private String dbPrefix; 
 	
 	@Override
