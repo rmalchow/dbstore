@@ -40,20 +40,14 @@
 		<developerConnection>scm:git:https://github.com/rmalchow/dbstore</developerConnection>
 		<url>https://github.com/rmalchow/spring-api-tester</url>
 	</scm>
-	<distributionManagement>
-		<repository>
-			<id>skjlls-release</id>
-			<name>skjlls release repo</name>
-			<url>file:///Users/rm/maven/</url>
-			<uniqueVersion>false</uniqueVersion>
-		</repository>
-		<snapshotRepository>
-			<id>skjlls-snapshot</id>
-			<name>skjlls snapshot repo</name>
-			<url>https://infra.skjlls.com/nexus/content/repositories/snapshots-oss/</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
-	</distributionManagement>
+        <distributionManagement>
+                <repository>
+                        <id>disk0-release</id>
+                        <name>disk0 release repo</name>
+                        <url>file:///${user.home}/maven/</url>
+                        <uniqueVersion>false</uniqueVersion>
+                </repository>
+        </distributionManagement>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
