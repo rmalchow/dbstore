@@ -10,6 +10,7 @@
 		<module>dbstore-mongo</module>
 		<module>dbstore-query-api</module>
 		<module>dbstore-query-mongo</module>
+		<module>dbstore-mongo-spring</module>
 	</modules>
 	<properties>
 		<junit.version>4.11</junit.version>

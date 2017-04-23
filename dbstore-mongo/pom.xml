@@ -10,6 +10,7 @@
 	</parent>
 	<properties>
 		<skipTests>true</skipTests>
+		<mongodb-driver-version>3.4.2</mongodb-driver-version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -35,7 +36,12 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
-			<version>3.4.2</version>
+			<version>${mongodb-driver-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-core</artifactId>
+			<version>${mongodb-driver-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
