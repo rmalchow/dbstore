@@ -3,11 +3,7 @@
   <parent>
     <groupId>com.cinefms.dbstore</groupId>
     <artifactId>dbstore</artifactId>
-<<<<<<< HEAD
-    <version>0.7.16-SNAPSHOT</version>
-=======
-    <version>0.8.1-SNAPSHOT</version>
->>>>>>> master
+	<version>0.8.1-SNAPSHOT</version>
   </parent>
   <artifactId>dbstore-query-api</artifactId>
 </project>

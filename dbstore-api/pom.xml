@@ -4,11 +4,7 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-<<<<<<< HEAD
-		<version>0.7.16-SNAPSHOT</version>
-=======
 		<version>0.8.1-SNAPSHOT</version>
->>>>>>> master
 	</parent>
 	<dependencies>
 		<dependency>
@@ -19,11 +15,7 @@
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-query-api</artifactId>
-<<<<<<< HEAD
-			<version>0.7.16-SNAPSHOT</version>
-=======
 			<version>0.8.1-SNAPSHOT</version>
->>>>>>> master
 		</dependency>
 	</dependencies>
 </project>

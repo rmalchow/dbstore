@@ -3,22 +3,14 @@
 	<parent>
 		<groupId>com.cinefms.dbstore</groupId>
 		<artifactId>dbstore</artifactId>
-<<<<<<< HEAD
-		<version>0.7.16-SNAPSHOT</version>
-=======
 		<version>0.8.1-SNAPSHOT</version>
->>>>>>> master
 	</parent>
 	<artifactId>dbstore-query-mongo</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.cinefms.dbstore</groupId>
 			<artifactId>dbstore-query-api</artifactId>
-<<<<<<< HEAD
-			<version>0.7.16-SNAPSHOT</version>
-=======
 			<version>0.8.1-SNAPSHOT</version>
->>>>>>> master
 		</dependency>
 		<dependency>
 		    <groupId>org.mongojack</groupId>
