@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -17,6 +19,7 @@ import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 
+@Service
 public class MongoService {
 
 	private static Log log = LogFactory.getLog(MongoService.class);
@@ -30,6 +33,7 @@ public class MongoService {
 	private String authMethod;
 	private boolean auth = false;
 
+	@Autowired
 	private MongoClient client;
 	
 	private Map<String,DB> dbs = new HashMap<String, DB>();
@@ -43,6 +47,7 @@ public class MongoService {
 			if(servers.size()==1) {
 				log.info("##  ");
 				log.info("##  SINGLE-SERVER!");
+				log.info("##  ---------------------------");
 				if(auth) {
 					MongoCredential mc = null;
 					authMethod =  authMethod == null?"":authMethod;

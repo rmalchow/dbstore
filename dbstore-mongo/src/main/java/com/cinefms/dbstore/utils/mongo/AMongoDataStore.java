@@ -14,7 +14,6 @@ import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
@@ -51,13 +50,10 @@ public abstract class AMongoDataStore implements DataStore {
 
 	private QueryMongojackTranslator fqtl = new QueryMongojackTranslator();
 
-	private List<DBStoreListener> listeners = null; 
-	
-	@Autowired
-	private ApplicationContext ctx;
+	@Autowired(required=false)
+	private List<DBStoreListener> listeners = new ArrayList<DBStoreListener>(); 
 
 	private CollectionNamingStrategy collectionNamingStrategy = new SimpleCollectionNamingStrategy();
-	
 	
 	public abstract DB getDB(String db) throws UnknownHostException;
 	
@@ -125,26 +121,16 @@ public abstract class AMongoDataStore implements DataStore {
 		return out;
 	}
 	
-	public List<DBStoreListener> getAllListeners() {
-		if(listeners == null) {
-			if(ctx!=null) {
-				listeners = new ArrayList<DBStoreListener>(ctx.getBeansOfType(DBStoreListener.class).values());
-			} else {
-				listeners = new ArrayList<DBStoreListener>();
-			}
-			
-		}
-		return listeners;
-	}
-	
-
 	private List<DBStoreListener> getListeners(Class<? extends DBStoreEntity> clazz) {
 		List<DBStoreListener> out = listenerMap.get(clazz.getCanonicalName());
-		if(out == null) {
+		if(out!=null) {
+			// nothing
+		} else if(listeners==null) {
 			List<DBStoreListener> lx = new ArrayList<DBStoreListener>();
-			List<DBStoreListener> cl = getAllListeners();
-			log.debug("listeners total: "+cl.size());
-			for(DBStoreListener l : cl) {
+		} else if(out == null) {
+			
+			List<DBStoreListener> lx = new ArrayList<DBStoreListener>();
+			for(DBStoreListener l : listeners) {
 				if(l.supports(clazz)) {
 					log.debug("listeners on "+clazz+": "+l.getClass()+" supports");
 					lx.add(l);
