@@ -81,6 +81,7 @@ function next_snapshot() {
 cd `dirname $0`
 
 set -e
+set +x
 
 num_args=${#@}
 if [ $num_args -gt 0 ]; then
