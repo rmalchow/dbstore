@@ -1,0 +1,7 @@
+org/mongojack/Aggregation$1.class
+org/mongojack/internal/object/BsonObjectGenerator$1.class
+org/mongojack/internal/object/BsonObjectTraversingParser$1.class
+org/mongojack/MapReduce$1.class
+org/mongojack/DBSort$1.class
+org/mongojack/DBQuery$1.class
+org/mongojack/DBProjection$1.class

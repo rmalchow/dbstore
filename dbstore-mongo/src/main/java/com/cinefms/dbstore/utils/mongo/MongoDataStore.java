@@ -12,6 +12,7 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 
 	private boolean checkUpdates = false;
 	private ObjectMapper objectMapper;
+	
 	@Autowired
 	private MongoService mongoService;
 	

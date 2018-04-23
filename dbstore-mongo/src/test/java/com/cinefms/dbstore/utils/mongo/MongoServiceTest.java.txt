@@ -14,8 +14,8 @@ public class MongoServiceTest {
 	public void connect() throws UnknownHostException {
 		MongoService ms = new MongoService();
 		ms.setAuth(true);
-		ms.setUsername("skjlls");
-		ms.setPassword("skjlls");
+		ms.setUsername("admin");
+		ms.setPassword("admin");
 		ms.setHosts("127.0.0.1:27017");
 		ms.setDbName("skjlls");
 		ms.setAuthDb("admin");
