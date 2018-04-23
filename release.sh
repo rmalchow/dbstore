@@ -44,11 +44,11 @@ fi
 
 
 function current_version() {
-	mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]"
+	mvn -B org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version |grep "^[0-9]"
 }
 
 function current_project() {
-	mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.name |grep -v "^\[" |grep -v "^Download"
+	mvn -B org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.name |grep -v "^\[" |grep -v "^Download"
 }
 
 
@@ -96,9 +96,9 @@ fi
 echo "trying to determine versions ... "
 
 project=$(current_project)
-curr=$(current_version)
-
 echo "   project: ${project}"
+
+curr=$(current_version)
 echo "   curr_v : ${curr}"
 
 rel=$(to_release $curr)
