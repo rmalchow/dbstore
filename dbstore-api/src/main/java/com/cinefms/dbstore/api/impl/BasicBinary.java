@@ -1,61 +1,55 @@
 package com.cinefms.dbstore.api.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.cinefms.dbstore.api.DBStoreBinary;
+
+import java.io.*;
+import java.util.Map;
 
 public class BasicBinary implements DBStoreBinary {
 
 	private String id;
-	private long length = -1;
-	private InputStream is;
-	private Map<String,Object> metaData = new HashMap<String, Object>();
-	
+	private byte[] data;
+	private Map<String, Object> metaData;
+
 	public BasicBinary(String id, byte[] data) {
-		this(id,new ByteArrayInputStream(data),data.length);
+		this(id, data, null);
 	}
-	
-	public BasicBinary(String id, byte[] data, Map<String,Object> metaData) {
-		this(id,new ByteArrayInputStream(data),data.length,metaData);
-	}
-	
-	public BasicBinary(String id, InputStream is, long length) {
-		this(id,is,length,null);
-	}
-	
-	public BasicBinary(String id, InputStream is, long length, Map<String,Object> metaData) {
+
+	public BasicBinary(String id, byte[] data, Map<String, Object> metaData) {
 		this.id = id;
-		this.is = is;
-		this.length = length;
+		this.data = data;
 		this.metaData = metaData;
 	}
-	
-	
+
+	public BasicBinary(String id, InputStream is) throws IOException {
+		this(id, is, null);
+	}
+
+	public BasicBinary(String id, InputStream is, Map<String, Object> metaData) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		IOUtils.copy(is, baos);
+
+		this.id = id;
+		this.data = baos.toByteArray();
+		this.metaData = metaData;
+	}
+
 	public String getId() {
 		return id;
 	}
 
-	
 	public long getLength() {
-		return length;
+		return data.length;
 	}
 
-	
 	public InputStream getInputStream() {
-		return is;
+		return new ByteArrayInputStream(data);
 	}
 
-	
 	public Map<String, Object> getMetaData() {
 		return metaData;
 	}
-	
-	
+
 	public void writeTo(OutputStream os) throws IOException {
 		IOUtils.copy(getInputStream(), os);
 	}
