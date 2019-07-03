@@ -407,7 +407,7 @@ public class Aggregation<T> {
      * Type parameter S is the type of value that can be passed to set(String, S), given current latest stage.
      */
     public static class Pipeline<S> {
-        public static interface Stage<S> {
+        public interface Stage<S> {
             Stage<S> set(String field, S value);
             Stage<S> set(Map<String, S> fields);
         }

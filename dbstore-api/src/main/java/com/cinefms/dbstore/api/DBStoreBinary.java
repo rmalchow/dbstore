@@ -7,11 +7,14 @@ import java.util.Map;
 
 public interface DBStoreBinary {
 
-	public String getId();
-	public long getLength();
-	public InputStream getInputStream();
-	public Map<String,Object> getMetaData();
+	String getId();
 
-	public void writeTo(OutputStream os) throws IOException;
-	
+	long getLength();
+
+	InputStream getInputStream();
+
+	Map<String, Object> getMetaData();
+
+	void writeTo(OutputStream os) throws IOException;
+
 }

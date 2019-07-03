@@ -1,29 +1,30 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.cinefms.dbstore</groupId>
-		<artifactId>dbstore</artifactId>
-		<version>0.8.1-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>com.cinefms.dbstore</groupId>
+        <artifactId>dbstore</artifactId>
+        <version>0.8.1-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>dbstore-mongo-fork</artifactId>
+    <artifactId>dbstore-mongo-fork</artifactId>
 
-	<dependencies>
-		<dependency>
-			<groupId>de.undercouch</groupId>
-			<artifactId>bson4jackson</artifactId>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>de.undercouch</groupId>
+            <artifactId>bson4jackson</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>persistence-api</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.mongojack</groupId>
+            <artifactId>mongojack</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

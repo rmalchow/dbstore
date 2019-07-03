@@ -20,6 +20,7 @@ package org.mongojack.internal.update;
  * A DB update operation
  */
 public interface UpdateOperationValue {
+
     /**
      * Whether the target field for these values is a collection.
      * 
@@ -40,4 +41,5 @@ public interface UpdateOperationValue {
      * @return The value
      */
     Object getValue();
+
 }
