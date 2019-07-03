@@ -9,7 +9,6 @@ import com.cinefms.dbstore.api.annotations.Indexes;
 import com.cinefms.dbstore.api.annotations.Write;
 import com.cinefms.dbstore.api.annotations.WriteMode;
 import com.cinefms.dbstore.api.exceptions.DBStoreException;
-import com.cinefms.dbstore.api.exceptions.EntityNotFoundException;
 import com.cinefms.dbstore.query.api.DBStoreQuery;
 import com.cinefms.dbstore.query.mongo.QueryMongojackTranslator;
 import com.cinefms.dbstore.utils.mongo.util.CollectionNamingStrategy;
@@ -305,7 +304,7 @@ public abstract class AMongoDataStore implements DataStore {
 
 
 	@SuppressWarnings("unchecked")
-	public <T extends DBStoreEntity> T saveObject(String db, T object) throws EntityNotFoundException {
+	public <T extends DBStoreEntity> T saveObject(String db, T object) {
 
 
 		List<DBStoreListener> listeners = getListeners(object.getClass());
