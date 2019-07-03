@@ -1,24 +1,23 @@
 package com.cinefms.dbstore.query.api.impl;
 
 public class OrderBy {
-	
-	private boolean asc = true;
+
+	private boolean asc;
 	private String field;
 
 	public OrderBy(String field, boolean asc) {
-		super();
 		this.asc = asc;
 		this.field = field;
 	}
 
 	public OrderBy(String field) {
-		this(field,true);
+		this(field, true);
 	}
 
 	public OrderBy() {
-		this(null,true);
+		this(null, true);
 	}
-	
+
 	public boolean isAsc() {
 		return asc;
 	}

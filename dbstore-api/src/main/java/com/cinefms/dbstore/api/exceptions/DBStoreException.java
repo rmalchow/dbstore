@@ -20,5 +20,5 @@ public class DBStoreException extends RuntimeException {
 		super(message, ex);
 	}
 
-	
+
 }

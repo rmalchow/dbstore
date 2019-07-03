@@ -37,14 +37,14 @@ public abstract class AMongoDataStore implements DataStore {
 	protected static Log log = LogFactory.getLog(AMongoDataStore.class);
 
 
-	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<String, JacksonDBCollection<?, String>>();
-	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<String, List<DBStoreListener>>();
-	private Map<String, GridFS> buckets = new HashMap<String, GridFS>();
+	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<>();
+	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<>();
+	private Map<String, GridFS> buckets = new HashMap<>();
 
 	private QueryMongojackTranslator fqtl = new QueryMongojackTranslator();
 
 	@Autowired(required = false)
-	private List<DBStoreListener> listeners = new ArrayList<DBStoreListener>();
+	private List<DBStoreListener> listeners = new ArrayList<>();
 
 	private CollectionNamingStrategy collectionNamingStrategy = new SimpleCollectionNamingStrategy();
 
@@ -119,10 +119,10 @@ public abstract class AMongoDataStore implements DataStore {
 		if (out != null) {
 			// nothing
 		} else if (listeners == null) {
-			List<DBStoreListener> lx = new ArrayList<DBStoreListener>();
+			List<DBStoreListener> lx = new ArrayList<>();
 		} else if (out == null) {
 
-			List<DBStoreListener> lx = new ArrayList<DBStoreListener>();
+			List<DBStoreListener> lx = new ArrayList<>();
 			for (DBStoreListener l : listeners) {
 				if (l.supports(clazz)) {
 					log.debug("listeners on " + clazz + ": " + l.getClass() + " supports");
@@ -131,7 +131,7 @@ public abstract class AMongoDataStore implements DataStore {
 					log.debug("listeners on " + clazz + ": " + l.getClass() + " does not support");
 				}
 			}
-			out = new ArrayList<DBStoreListener>(lx);
+			out = new ArrayList<>(lx);
 		}
 		log.debug("listeners on " + clazz + ": " + out.size());
 		return out;
@@ -204,8 +204,7 @@ public abstract class AMongoDataStore implements DataStore {
 
 	public <T extends DBStoreEntity> List<T> findObjects(String db, Class<T> clazz, DBStoreQuery query) {
 
-		List<T> out = new ArrayList<T>();
-
+		List<T> out = new ArrayList<>();
 		log.debug(" -----> cache miss!");
 		log.debug("getting from datastore (not in cache ...)");
 		Query q = fqtl.translate(query);

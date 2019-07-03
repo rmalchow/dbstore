@@ -1,5 +1,6 @@
 package com.cinefms.dbstore.redis;
 
+import com.cinefms.dbstore.redis.util.LenientJsonCodec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.redisson.Config;
@@ -8,22 +9,24 @@ import org.redisson.SingleServerConfig;
 import org.redisson.codec.RedissonCodec;
 import org.springframework.beans.factory.FactoryBean;
 
-import com.cinefms.dbstore.redis.util.LenientJsonCodec;
-
 public class RedissonFactory implements FactoryBean<Redisson> {
 
 	private static Log log = LogFactory.getLog(RedissonFactory.class);
-	
+
 	private boolean singleton = false;
 	private String singleServer;
 	private String auth;
-	private RedissonCodec codec = new LenientJsonCodec(); 
+	private RedissonCodec codec = new LenientJsonCodec();
+
+	public static void main(String[] args) {
+
+	}
 
 	public Redisson getObject() throws Exception {
 		log.info("### REDISSON FACTORY - CREATING ... ");
 		Config config = new Config();
 		SingleServerConfig ssc = config.useSingleServer().setAddress(singleServer).setRetryAttempts(3);
-		if(auth!=null) {
+		if (auth != null) {
 			ssc.setPassword(auth);
 		}
 		config.setCodec(codec);
@@ -57,10 +60,6 @@ public class RedissonFactory implements FactoryBean<Redisson> {
 
 	public void setAuth(String auth) {
 		this.auth = auth;
-	}
-
-	public static void main(String[] args) {
-
 	}
 
 	public RedissonCodec getCodec() {

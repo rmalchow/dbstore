@@ -1,69 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<beans xmlns="http://www.springframework.org/schema/beans" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx" 
-	xmlns:aop="http://www.springframework.org/schema/aop" 
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:task="http://www.springframework.org/schema/task" 
-	xsi:schemaLocation="
-       http://www.springframework.org/schema/beans
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
        http://www.springframework.org/schema/context
 	   http://www.springframework.org/schema/context/spring-context-3.2.xsd
-       http://www.springframework.org/schema/tx
-       http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
-       http://www.springframework.org/schema/aop
-       http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
-       http://www.springframework.org/schema/mvc
-       http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+
+
+
+
+
+
        http://www.springframework.org/schema/task
        http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-	<context:annotation-config/>
-	
-	<bean name="testProducer" class="com.skjlls.utils.redis.TestProducer">
-	</bean>
+    <context:annotation-config/>
 
-	<bean name="testConsumer1" class="com.skjlls.utils.redis.TestConsumer">
-		<property name="name" value="consumer 1"/>
-	</bean>
+    <bean name="testProducer" class="com.skjlls.utils.redis.TestProducer">
+    </bean>
 
-	<bean name="testConsumer2" class="com.skjlls.utils.redis.TestConsumer">
-		<property name="name" value="consumer 2"/>
-	</bean>
+    <bean name="testConsumer1" class="com.skjlls.utils.redis.TestConsumer">
+        <property name="name" value="consumer 1"/>
+    </bean>
 
-	<bean name="testConsumer3" class="com.skjlls.utils.redis.TestConsumer">
-		<property name="name" value="consumer 3"/>
-	</bean>
+    <bean name="testConsumer2" class="com.skjlls.utils.redis.TestConsumer">
+        <property name="name" value="consumer 2"/>
+    </bean>
 
-	<bean name="testConsumer4" class="com.skjlls.utils.redis.TestConsumer">
-		<property name="name" value="consumer 4"/>
-	</bean>
+    <bean name="testConsumer3" class="com.skjlls.utils.redis.TestConsumer">
+        <property name="name" value="consumer 3"/>
+    </bean>
 
-	<bean name="testConsumer5" class="com.skjlls.utils.redis.TestConsumer">
-		<property name="name" value="consumer 5"/>
-	</bean>
+    <bean name="testConsumer4" class="com.skjlls.utils.redis.TestConsumer">
+        <property name="name" value="consumer 4"/>
+    </bean>
 
-	<task:scheduled-tasks scheduler="myScheduler">
-    	<task:scheduled ref="testProducer" method="send" cron="*/10 * * * * ?"/>
-    	<!-- 
-    	<task:scheduled ref="testProducer" method="send" cron="*/10 * * * * ?"/>
-    	<task:scheduled ref="testProducer" method="send" cron="*/10 * * * * ?"/>
-    	 -->
-    	<task:scheduled ref="testConsumer1" method="poll" cron="*/5 * * * * ?"/>
-    	<task:scheduled ref="testConsumer2" method="poll" cron="*/5 * * * * ?"/>
-    	<task:scheduled ref="testConsumer3" method="poll" cron="*/5 * * * * ?"/>
-    	<task:scheduled ref="testConsumer4" method="poll" cron="*/5 * * * * ?"/>
-    	<task:scheduled ref="testConsumer5" method="poll" cron="*/5 * * * * ?"/>
+    <bean name="testConsumer5" class="com.skjlls.utils.redis.TestConsumer">
+        <property name="name" value="consumer 5"/>
+    </bean>
+
+    <task:scheduled-tasks scheduler="myScheduler">
+        <task:scheduled ref="testProducer" method="send" cron="*/10 * * * * ?"/>
+        <!--
+        <task:scheduled ref="testProducer" method="send" cron="*/10 * * * * ?"/>
+        <task:scheduled ref="testProducer" method="send" cron="*/10 * * * * ?"/>
+         -->
+        <task:scheduled ref="testConsumer1" method="poll" cron="*/5 * * * * ?"/>
+        <task:scheduled ref="testConsumer2" method="poll" cron="*/5 * * * * ?"/>
+        <task:scheduled ref="testConsumer3" method="poll" cron="*/5 * * * * ?"/>
+        <task:scheduled ref="testConsumer4" method="poll" cron="*/5 * * * * ?"/>
+        <task:scheduled ref="testConsumer5" method="poll" cron="*/5 * * * * ?"/>
     </task:scheduled-tasks>
-	
-	<task:scheduler id="myScheduler" pool-size="50"/>
 
-	<bean id="redisson" class="com.cinefms.dbstore.redis.RedissonFactory">
-		<property name="singleServer" value="redis:6379"/>
-	</bean>
+    <task:scheduler id="myScheduler" pool-size="50"/>
+
+    <bean id="redisson" class="com.cinefms.dbstore.redis.RedissonFactory">
+        <property name="singleServer" value="redis:6379"/>
+    </bean>
 
 
 </beans>

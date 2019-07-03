@@ -7,12 +7,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RedissonCacheImplTest {
-	
-	
+
+
 	@Test
 	public void testCacheDefaultSettings() {
-		
+
 	}
-	
+
 
 }

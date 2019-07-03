@@ -7,14 +7,6 @@ import java.util.List;
 
 public interface DBStoreQuery {
 
-	enum OPERATOR {
-		AND, OR, NONE
-	}
-
-	enum COMPARATOR {
-		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN, ALL, ELEM_MATCH
-	}
-
 	OPERATOR getOperator();
 
 	List<DBStoreQuery> getNested();
@@ -72,5 +64,13 @@ public interface DBStoreQuery {
 	DBStoreQuery start(int start);
 
 	DBStoreQuery max(int max);
+
+	enum OPERATOR {
+		AND, OR, NONE
+	}
+
+	enum COMPARATOR {
+		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN, ALL, ELEM_MATCH
+	}
 
 }

@@ -1,25 +1,25 @@
 package com.cinefms.dbstore.api.impl;
 
-import java.lang.reflect.ParameterizedType;
-
 import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
 
+import java.lang.reflect.ParameterizedType;
+
 public abstract class DBStoreListenerAdapter<T extends DBStoreEntity> implements DBStoreListener<T> {
-	
+
 	private Class<T> clazz;
-	
+
 	@SuppressWarnings("unchecked")
 	public Class<T> getClazz() {
-		if(clazz==null) {
-			ParameterizedType superclass = (ParameterizedType)getClass().getGenericSuperclass();
+		if (clazz == null) {
+			ParameterizedType superclass = (ParameterizedType) getClass().getGenericSuperclass();
 			clazz = (Class<T>) superclass.getActualTypeArguments()[0];
 		}
 		return clazz;
 	}
 
 	public boolean supports(Class<? extends DBStoreEntity> clazz) {
-		return clazz==getClazz();
+		return clazz == getClazz();
 	}
 
 	public void beforeSave(String db, T o) {
@@ -36,6 +36,5 @@ public abstract class DBStoreListenerAdapter<T extends DBStoreEntity> implements
 
 	public void created(String db, T o) {
 	}
-	
 
 }

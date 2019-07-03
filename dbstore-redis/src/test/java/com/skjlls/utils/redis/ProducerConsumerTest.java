@@ -8,13 +8,13 @@ public class ProducerConsumerTest {
 	public static void main(String[] args) {
 		try {
 			ApplicationContext context = new ClassPathXmlApplicationContext("config_messaging.xml");
-			while(true) {
+			while (true) {
 				Thread.currentThread().sleep(2000);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 }
