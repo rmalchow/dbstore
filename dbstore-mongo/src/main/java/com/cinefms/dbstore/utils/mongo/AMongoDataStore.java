@@ -26,7 +26,6 @@ import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +47,7 @@ public abstract class AMongoDataStore implements DataStore {
 
 	private CollectionNamingStrategy collectionNamingStrategy = new SimpleCollectionNamingStrategy();
 
-	public abstract DB getDB(String db) throws UnknownHostException;
+	public abstract DB getDB(String db);
 
 	private <T> DBCollection initializeCollection(DB db, Class<T> clazz) {
 		String collectionName = getCollectionName(clazz);
@@ -65,7 +64,7 @@ public abstract class AMongoDataStore implements DataStore {
 				if (i.unique()) {
 					options.add("unique", true);
 				}
-				log.info(" === CREATING INDEX: " + idx.get() + " ==== ");
+				log.debug(" === CREATING INDEX: " + idx.get() + " ==== ");
 				dbc.createIndex(idx.get(), options.get());
 			}
 		}
@@ -81,23 +80,23 @@ public abstract class AMongoDataStore implements DataStore {
 			@SuppressWarnings("unchecked")
 			JacksonDBCollection<T, String> out = (JacksonDBCollection<T, String>) collections.get(key);
 			if (out == null) {
-				log.info("============================================================");
-				log.info("==");
-				log.info("== DB COLLECTION NOT CREATED .... (creating...) ");
-				log.info("==");
-				log.info("==  CLAZZ IS: " + clazz.getCanonicalName());
-				log.info("== DBNAME IS: " + db);
+				log.debug("============================================================");
+				log.debug("==");
+				log.debug("== DB COLLECTION NOT CREATED .... (creating...) ");
+				log.debug("==");
+				log.debug("==  CLAZZ IS: " + clazz.getCanonicalName());
+				log.debug("== DBNAME IS: " + db);
 				DB d = getDB(db);
-				log.info("==     DB IS: " + d);
+				log.debug("==     DB IS: " + d);
 				DBCollection dbc = initializeCollection(d, clazz);
-				log.info("==    DBC IS: " + dbc);
+				log.debug("==    DBC IS: " + dbc);
 				out = JacksonDBCollection.wrap(dbc, clazz, String.class);
 				if (clazz.getAnnotation(Write.class) != null && clazz.getAnnotation(Write.class).value() == WriteMode.FAST) {
 					out.setWriteConcern(WriteConcern.UNACKNOWLEDGED);
 				}
 				collections.put(key, out);
-				log.info("==");
-				log.info("============================================================");
+				log.debug("==");
+				log.debug("============================================================");
 			}
 			return out;
 		} catch (Exception e) {
@@ -105,7 +104,7 @@ public abstract class AMongoDataStore implements DataStore {
 		}
 	}
 
-	private GridFS getBucket(String db, String bucket) throws UnknownHostException {
+	private GridFS getBucket(String db, String bucket) {
 		GridFS out = buckets.get(bucket);
 		if (out == null) {
 			out = new GridFS(getDB(db), bucket);

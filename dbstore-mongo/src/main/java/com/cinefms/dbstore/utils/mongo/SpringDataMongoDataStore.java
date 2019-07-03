@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,10 +34,8 @@ public class SpringDataMongoDataStore extends AMongoDataStore {
 	private String dbPrefix;
 
 	@Override
-	public DB getDB(String db) throws UnknownHostException {
-		db = db == null ? defaultDb : (getDbPrefix() == null ? "" : (getDbPrefix() + "_")) + db;
-		log.info(" = DB NAME: " + db);
-		return getMongo().getDB(db);
+	public DB getDB(String db) {
+		return getMongo().getDB(db == null ? defaultDb : (getDbPrefix() == null ? "" : (getDbPrefix() + "_")) + db);
 	}
 
 	public Mongo getMongo() {

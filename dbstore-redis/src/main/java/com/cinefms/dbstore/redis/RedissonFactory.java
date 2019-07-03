@@ -22,7 +22,7 @@ public class RedissonFactory implements FactoryBean<Redisson> {
 
 	}
 
-	public Redisson getObject() throws Exception {
+	public Redisson getObject() {
 		log.info("### REDISSON FACTORY - CREATING ... ");
 		Config config = new Config();
 		SingleServerConfig ssc = config.useSingleServer().setAddress(singleServer).setRetryAttempts(3);

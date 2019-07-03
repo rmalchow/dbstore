@@ -23,15 +23,15 @@
     </modules>
 
     <properties>
-        <junit.version>4.11</junit.version>
-        <mockito.version>1.9.5</mockito.version>
-
         <commons-beanutils.version>1.8.3</commons-beanutils.version>
+        <commons-logging.version>1.2</commons-logging.version>
         <javax.persistence.version>1.0.2</javax.persistence.version>
         <bson4jackson.version>2.7.0</bson4jackson.version>
         <mongojack.version>2.8.2</mongojack.version>
         <redisson.version>1.2.1</redisson.version>
-        <commons-logging.version>1.2</commons-logging.version>
+
+        <junit.version>4.11</junit.version>
+        <mockito.version>1.9.5</mockito.version>
     </properties>
 
     <licenses>
@@ -82,11 +82,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>javax.persistence</groupId>
-                <artifactId>persistence-api</artifactId>
-                <version>${javax.persistence.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils-core</artifactId>
                 <version>${commons-beanutils.version}</version>
@@ -96,16 +91,25 @@
                 <artifactId>commons-logging</artifactId>
                 <version>${commons-logging.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>javax.persistence</groupId>
+                <artifactId>persistence-api</artifactId>
+                <version>${javax.persistence.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>de.undercouch</groupId>
                 <artifactId>bson4jackson</artifactId>
                 <version>${bson4jackson.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.mongojack</groupId>
                 <artifactId>mongojack</artifactId>
                 <version>${mongojack.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
@@ -120,6 +124,7 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DB;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.net.UnknownHostException;
-
 public class MongoDataStore extends AMongoDataStore implements DataStore {
 
 	private boolean checkUpdates = false;
@@ -52,16 +50,17 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 		}
 	}
 
-	public DB getDB(String db) throws UnknownHostException {
+	public DB getDB(String db) {
 		db = db == null ? defaultDb : (dbPrefix == null ? "" : (dbPrefix + "_")) + db;
-		log.info("============================================================");
-		log.info("== ");
-		log.info("== ");
-		log.info("== getting DB from mongoService: " + getMongoService());
-		DB out = getMongoService().getDb(db);
-		log.info("== ... result is: " + out);
-		log.info("== ");
-		log.info("============================================================");
+		MongoService mongoService = getMongoService();
+		log.debug("============================================================");
+		log.debug("== ");
+		log.debug("== ");
+		log.debug("== getting DB from mongoService: " + mongoService);
+		DB out = mongoService.getDb(db);
+		log.debug("== ... result is: " + out);
+		log.debug("== ");
+		log.debug("============================================================");
 		return out;
 	}
 
