@@ -17,7 +17,6 @@
 package org.mongojack.internal;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -36,8 +35,7 @@ import java.io.IOException;
 public class ObjectIdSerializer extends JsonSerializer {
 	@Override
 	public void serialize(Object value, JsonGenerator jgen,
-						  SerializerProvider provider) throws IOException,
-			JsonProcessingException {
+						  SerializerProvider provider) throws IOException {
 		if (value instanceof Iterable) {
 			jgen.writeStartArray();
 			for (Object item : (Iterable) value) {

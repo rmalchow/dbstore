@@ -136,7 +136,7 @@ public abstract class AMongoDataStore implements DataStore {
 		return out;
 	}
 
-	public void storeBinary(String db, String bucket, DBStoreBinary binary) throws DBStoreException {
+	public void storeBinary(String db, String bucket, DBStoreBinary binary) {
 		try {
 			GridFS gfs = getBucket(db, bucket);
 			gfs.remove(binary.getId());
@@ -157,7 +157,7 @@ public abstract class AMongoDataStore implements DataStore {
 	}
 
 
-	public DBStoreBinary getBinary(String db, String bucket, String filename) throws DBStoreException {
+	public DBStoreBinary getBinary(String db, String bucket, String filename) {
 		try {
 			GridFS gfs = getBucket(db, bucket);
 			GridFSDBFile f = gfs.findOne(filename);
@@ -171,7 +171,7 @@ public abstract class AMongoDataStore implements DataStore {
 	}
 
 
-	public void deleteBinary(String db, String bucket, String id) throws DBStoreException {
+	public void deleteBinary(String db, String bucket, String id) {
 		try {
 			GridFS gfs = getBucket(db, bucket);
 			gfs.remove(id);
@@ -242,7 +242,7 @@ public abstract class AMongoDataStore implements DataStore {
 	}
 
 
-	public <T extends DBStoreEntity> boolean deleteObject(String db, T object) throws DBStoreException {
+	public <T extends DBStoreEntity> boolean deleteObject(String db, T object) {
 		if (object != null && object.getId() != null) {
 			return deleteObject(db, object.getClass(), object.getId());
 		}
@@ -250,13 +250,13 @@ public abstract class AMongoDataStore implements DataStore {
 	}
 
 	@Override
-	public <T extends DBStoreEntity> void deleteObjects(String db, Class<T> clazz, DBStoreQuery query) throws DBStoreException {
+	public <T extends DBStoreEntity> void deleteObjects(String db, Class<T> clazz, DBStoreQuery query) {
 		Query q = fqtl.translate(query);
 		getCollection(db, clazz).remove(q);
 	}
 
 
-	public <T extends DBStoreEntity> boolean deleteObject(String db, Class<T> clazz, String id) throws DBStoreException {
+	public <T extends DBStoreEntity> boolean deleteObject(String db, Class<T> clazz, String id) {
 
 		if (id == null) {
 			return false;
@@ -286,7 +286,7 @@ public abstract class AMongoDataStore implements DataStore {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> void saveObjects(String db, List<T> objects) throws DBStoreException {
+	public <T> void saveObjects(String db, List<T> objects) {
 		try {
 			if (objects.size() == 0) {
 				return;

@@ -16,7 +16,6 @@
  */
 package org.mongojack.internal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.mongojack.DBRef;
 import org.mongojack.internal.object.BsonObjectGenerator;
@@ -34,8 +33,7 @@ public class DBRefSerializer extends MongoSerializer<DBRef> {
 
 	@Override
 	public void serialize(DBRef value, DBEncoderBsonGenerator bgen,
-						  SerializerProvider provider) throws IOException,
-			JsonProcessingException {
+						  SerializerProvider provider) throws IOException {
 		if (value == null) {
 			bgen.writeNull();
 		} else {
@@ -50,8 +48,7 @@ public class DBRefSerializer extends MongoSerializer<DBRef> {
 
 	@Override
 	protected void serialize(DBRef value, BsonObjectGenerator bgen,
-							 SerializerProvider provider) throws IOException,
-			JsonProcessingException {
+							 SerializerProvider provider) {
 		if (value == null) {
 			bgen.writeNull();
 		} else {

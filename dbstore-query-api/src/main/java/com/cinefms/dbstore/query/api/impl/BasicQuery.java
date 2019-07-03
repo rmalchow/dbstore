@@ -71,7 +71,7 @@ public class BasicQuery implements DBStoreQuery {
 		return value;
 	}
 
-	private DBStoreQuery add(String key, COMPARATOR c, Object value) throws MalformedQueryException {
+	private DBStoreQuery add(String key, COMPARATOR c, Object value) {
 		if (key == null) {
 			throw new MalformedQueryException(MalformedQueryException.ERROR_CODE.KEY_MUST_NOT_BE_NULL);
 		}
@@ -80,15 +80,15 @@ public class BasicQuery implements DBStoreQuery {
 		return new BasicQuery(q, OPERATOR.AND);
 	}
 
-	public DBStoreQuery in(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery in(String key, Object value) {
 		return in(key, new Object[]{value});
 	}
 
-	public DBStoreQuery in(String key, List<?> values) throws MalformedQueryException {
+	public DBStoreQuery in(String key, List<?> values) {
 		return add(key, COMPARATOR.IN, values);
 	}
 
-	public DBStoreQuery in(String key, Object[] values) throws MalformedQueryException {
+	public DBStoreQuery in(String key, Object[] values) {
 		List<Object> os = new ArrayList<>();
 		for (Object o : values) {
 			os.add(o);
@@ -96,11 +96,11 @@ public class BasicQuery implements DBStoreQuery {
 		return in(key, os);
 	}
 
-	public DBStoreQuery all(String key, List<?> values) throws MalformedQueryException {
+	public DBStoreQuery all(String key, List<?> values) {
 		return add(key, COMPARATOR.ALL, values);
 	}
 
-	public DBStoreQuery all(String key, Object[] values) throws MalformedQueryException {
+	public DBStoreQuery all(String key, Object[] values) {
 		List<Object> os = new ArrayList<>();
 		for (Object o : values) {
 			os.add(o);
@@ -108,31 +108,31 @@ public class BasicQuery implements DBStoreQuery {
 		return in(key, os);
 	}
 
-	public DBStoreQuery contains(String key, String value) throws MalformedQueryException {
+	public DBStoreQuery contains(String key, String value) {
 		return add(key, COMPARATOR.CONTAINS, value);
 	}
 
-	public DBStoreQuery eq(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery eq(String key, Object value) {
 		return add(key, COMPARATOR.EQ, value);
 	}
 
-	public DBStoreQuery lte(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery lte(String key, Object value) {
 		return add(key, COMPARATOR.LTE, value);
 	}
 
-	public DBStoreQuery lt(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery lt(String key, Object value) {
 		return add(key, COMPARATOR.LT, value);
 	}
 
-	public DBStoreQuery gte(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery gte(String key, Object value) {
 		return add(key, COMPARATOR.GTE, value);
 	}
 
-	public DBStoreQuery gt(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery gt(String key, Object value) {
 		return add(key, COMPARATOR.GT, value);
 	}
 
-	public DBStoreQuery ne(String key, Object value) throws MalformedQueryException {
+	public DBStoreQuery ne(String key, Object value) {
 		return add(key, COMPARATOR.NE, value);
 	}
 

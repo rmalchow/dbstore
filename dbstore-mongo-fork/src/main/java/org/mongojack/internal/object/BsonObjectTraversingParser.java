@@ -192,7 +192,7 @@ public class BsonObjectTraversingParser extends ParserMinimalBase implements
 	}
 
 	@Override
-	public JsonParser skipChildren() throws IOException {
+	public JsonParser skipChildren() {
 		if (_currToken == JsonToken.START_OBJECT) {
 			startContainer = false;
 			_currToken = JsonToken.END_OBJECT;
@@ -260,17 +260,17 @@ public class BsonObjectTraversingParser extends ParserMinimalBase implements
 	}
 
 	@Override
-	public char[] getTextCharacters() throws IOException {
+	public char[] getTextCharacters() {
 		return getText().toCharArray();
 	}
 
 	@Override
-	public int getTextLength() throws IOException {
+	public int getTextLength() {
 		return getText().length();
 	}
 
 	@Override
-	public int getTextOffset() throws IOException {
+	public int getTextOffset() {
 		return 0;
 	}
 
@@ -286,7 +286,7 @@ public class BsonObjectTraversingParser extends ParserMinimalBase implements
 	 * /**********************************************************
 	 */
 
-	// public byte getByteValue() throws IOException
+	// public byte getByteValue()
 
 	@Override
 	public NumberType getNumberType() throws IOException {
@@ -370,7 +370,7 @@ public class BsonObjectTraversingParser extends ParserMinimalBase implements
 	 */
 
 	@Override
-	public byte[] getBinaryValue(Base64Variant b64variant) throws IOException {
+	public byte[] getBinaryValue(Base64Variant b64variant) {
 		Object n = currentNode();
 		if (n instanceof byte[]) {
 			return (byte[]) n;
@@ -381,12 +381,12 @@ public class BsonObjectTraversingParser extends ParserMinimalBase implements
 	}
 
 	@Override
-	public Object getEmbeddedObject() throws IOException {
+	public Object getEmbeddedObject() {
 		return currentNode();
 	}
 
 	@Override
-	protected void _handleEOF() throws JsonParseException {
+	protected void _handleEOF() {
 		// There is no EOF?
 	}
 

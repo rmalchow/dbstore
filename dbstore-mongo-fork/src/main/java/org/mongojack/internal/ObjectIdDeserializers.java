@@ -17,7 +17,6 @@
 package org.mongojack.internal;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.mongodb.DBRef;
@@ -36,7 +35,7 @@ public class ObjectIdDeserializers {
 	public static class ToStringDeserializer extends JsonDeserializer<String> {
 		@Override
 		public String deserialize(JsonParser jp, DeserializationContext ctxt)
-				throws IOException, JsonProcessingException {
+				throws IOException {
 			Object object = jp.getEmbeddedObject();
 			if (object == null) {
 				return null;
@@ -62,7 +61,7 @@ public class ObjectIdDeserializers {
 			JsonDeserializer<byte[]> {
 		@Override
 		public byte[] deserialize(JsonParser jp, DeserializationContext ctxt)
-				throws IOException, JsonProcessingException {
+				throws IOException {
 			Object object = jp.getEmbeddedObject();
 			if (object == null) {
 				return null;
@@ -88,7 +87,7 @@ public class ObjectIdDeserializers {
 			JsonDeserializer<ObjectId> {
 		@Override
 		public ObjectId deserialize(JsonParser jp, DeserializationContext ctxt)
-				throws IOException, JsonProcessingException {
+				throws IOException {
 			Object object = jp.getEmbeddedObject();
 			if (object == null) {
 				return null;

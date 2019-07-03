@@ -17,7 +17,6 @@
 package org.mongojack.internal;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.mongojack.internal.object.BsonObjectGenerator;
@@ -32,8 +31,7 @@ import java.io.IOException;
 public abstract class MongoSerializer<T> extends JsonSerializer<T> {
 	@Override
 	public final void serialize(T value, JsonGenerator jgen,
-								SerializerProvider provider) throws IOException,
-			JsonProcessingException {
+								SerializerProvider provider) throws IOException {
 		if (jgen instanceof DBEncoderBsonGenerator) {
 			serialize(value, (DBEncoderBsonGenerator) jgen, provider);
 		} else if (jgen instanceof BsonObjectGenerator) {
@@ -45,10 +43,8 @@ public abstract class MongoSerializer<T> extends JsonSerializer<T> {
 	}
 
 	protected abstract void serialize(T value, DBEncoderBsonGenerator bgen,
-									  SerializerProvider provider) throws IOException,
-			JsonProcessingException;
+									  SerializerProvider provider) throws IOException;
 
 	protected abstract void serialize(T value, BsonObjectGenerator bgen,
-									  SerializerProvider provider) throws IOException,
-			JsonProcessingException;
+									  SerializerProvider provider) throws IOException;
 }

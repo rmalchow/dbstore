@@ -17,7 +17,6 @@
 package org.mongojack.internal;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
@@ -52,7 +51,7 @@ public class DBRefDeserializer<T, K> extends JsonDeserializer<DBRef> {
 
 	@Override
 	public DBRef deserialize(JsonParser jp, DeserializationContext ctxt)
-			throws IOException, JsonProcessingException {
+			throws IOException {
 		// First of all, make sure that we can get a copy of the DBCollection
 		if (jp instanceof JacksonDBCollectionProvider) {
 			K id = null;

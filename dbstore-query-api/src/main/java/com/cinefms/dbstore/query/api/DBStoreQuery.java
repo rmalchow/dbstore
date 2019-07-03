@@ -1,6 +1,5 @@
 package com.cinefms.dbstore.query.api;
 
-import com.cinefms.dbstore.query.api.exceptions.MalformedQueryException;
 import com.cinefms.dbstore.query.api.impl.OrderBy;
 
 import java.util.List;
@@ -23,29 +22,29 @@ public interface DBStoreQuery {
 
 	int getMax();
 
-	DBStoreQuery in(String key, Object value) throws MalformedQueryException;
+	DBStoreQuery in(String key, Object value);
 
-	DBStoreQuery in(String key, List<?> values) throws MalformedQueryException;
+	DBStoreQuery in(String key, List<?> values);
 
-	DBStoreQuery in(String key, Object[] values) throws MalformedQueryException;
+	DBStoreQuery in(String key, Object[] values);
 
-	DBStoreQuery all(String key, List<?> values) throws MalformedQueryException;
+	DBStoreQuery all(String key, List<?> values);
 
-	DBStoreQuery all(String key, Object[] values) throws MalformedQueryException;
+	DBStoreQuery all(String key, Object[] values);
 
-	DBStoreQuery contains(String key, String value) throws MalformedQueryException;
+	DBStoreQuery contains(String key, String value);
 
-	DBStoreQuery eq(String key, Object value) throws MalformedQueryException;
+	DBStoreQuery eq(String key, Object value);
 
-	DBStoreQuery lte(String key, Object value) throws MalformedQueryException;
+	DBStoreQuery lte(String key, Object value);
 
-	DBStoreQuery lt(String key, Object value) throws MalformedQueryException;
+	DBStoreQuery lt(String key, Object value);
 
-	DBStoreQuery gte(String key, Object value) throws MalformedQueryException;
+	DBStoreQuery gte(String key, Object value);
 
-	DBStoreQuery gt(String key, Object value) throws MalformedQueryException;
+	DBStoreQuery gt(String key, Object value);
 
-	DBStoreQuery ne(String key, Object value) throws MalformedQueryException;
+	DBStoreQuery ne(String key, Object value);
 
 	DBStoreQuery elemMatch(String key, DBStoreQuery q);
 

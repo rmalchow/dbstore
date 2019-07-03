@@ -16,7 +16,6 @@
  */
 package org.mongojack.internal.stream;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.mongodb.DBRef;
 import de.undercouch.bson4jackson.BsonGenerator;
 import org.bson.types.ObjectId;
@@ -36,8 +35,7 @@ public class DBEncoderBsonGenerator extends BsonGenerator {
 	}
 
 	@Override
-	protected void _writeSimpleObject(Object value) throws IOException,
-			JsonGenerationException {
+	protected void _writeSimpleObject(Object value) throws IOException {
 		if (value instanceof Date) {
 			writeDateTime((Date) value);
 		} else if (value instanceof Calendar) {

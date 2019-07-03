@@ -17,7 +17,6 @@
 package org.mongojack.internal.stream;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
@@ -34,8 +33,7 @@ public class ServerErrorProblemHandler extends DeserializationProblemHandler {
 	@Override
 	public boolean handleUnknownProperty(DeserializationContext ctxt,
 										 JsonParser jsonParser, JsonDeserializer<?> deserializer,
-										 Object beanOrClass, String propertyName) throws IOException,
-			JsonProcessingException {
+										 Object beanOrClass, String propertyName) throws IOException {
 		if (jsonParser instanceof DBDecoderBsonParser) {
 			return ((DBDecoderBsonParser) jsonParser).handleUnknownProperty(
 					ctxt, deserializer, beanOrClass, propertyName);

@@ -23,7 +23,7 @@ public class MongoDataStoreTest {
 
 
 	@Before
-	public void createDataStore() throws Exception {
+	public void createDataStore() {
 		dataStoreName = ("__junit_test_" + Math.random()).replaceAll("\\.", "_");
 		MongoService ms = new MongoService();
 		ms.setDbName(dataStoreName);
@@ -51,14 +51,14 @@ public class MongoDataStoreTest {
 	}
 
 	@Test
-	public void testSimpleDBCreationExpectSuccess() throws Exception {
+	public void testSimpleDBCreationExpectSuccess() {
 		TestObject1 to1 = new TestObject1();
 		to1 = mds.saveObject("hello", to1);
 		Assert.assertNotNull(to1.getId());
 	}
 
 	@Test
-	public void testSimplePolymorphicExpectSuccess() throws Exception {
+	public void testSimplePolymorphicExpectSuccess() {
 		TestObject1A to1a = new TestObject1A();
 		to1a = mds.saveObject("hello", to1a);
 		TestObject1B to1b = new TestObject1B();
@@ -68,7 +68,7 @@ public class MongoDataStoreTest {
 	}
 
 	@Test
-	public void testSimpleCRUDCreationExpectSuccess() throws Exception {
+	public void testSimpleCRUDCreationExpectSuccess() {
 		TestObject1 to1 = new TestObject1();
 		to1 = mds.saveObject("hello", to1);
 		to1 = mds.findObject("hello", TestObject1.class, BasicQuery.createQuery().eq("_id", to1.getId()));

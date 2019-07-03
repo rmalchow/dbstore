@@ -107,7 +107,7 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public void writeStartArray() throws IOException {
+	public void writeStartArray() {
 		if (rootNode == null) {
 			rootNode = new ArrayNode(null);
 			currentNode = rootNode;
@@ -117,7 +117,7 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public void writeEndArray() throws IOException {
+	public void writeEndArray() {
 		Object array = currentNode.get();
 		currentNode = currentNode.getParent();
 		if (currentNode != null) {
@@ -126,7 +126,7 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public void writeStartObject() throws IOException {
+	public void writeStartObject() {
 		if (rootNode == null) {
 			rootNode = new ObjectNode(null);
 			currentNode = rootNode;
@@ -136,7 +136,7 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public void writeEndObject() throws IOException {
+	public void writeEndObject() {
 		Object object = currentNode.get();
 		currentNode = currentNode.getParent();
 		if (currentNode != null) {
@@ -145,18 +145,17 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public void writeFieldName(String name) throws IOException {
+	public void writeFieldName(String name) {
 		currentNode.setName(name);
 	}
 
 	@Override
-	public void writeString(String text) throws IOException {
+	public void writeString(String text) {
 		setValue(text);
 	}
 
 	@Override
-	public void writeString(char[] text, int offset, int len)
-			throws IOException {
+	public void writeString(char[] text, int offset, int len) {
 		setValue(new String(text, offset, len));
 	}
 
@@ -173,45 +172,43 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public void writeRaw(String text) throws IOException {
+	public void writeRaw(String text) {
 		throw new UnsupportedOperationException("Writing raw not supported");
 	}
 
 	@Override
-	public void writeRaw(String text, int offset, int len) throws IOException {
+	public void writeRaw(String text, int offset, int len) {
 		throw new UnsupportedOperationException("Writing raw not supported");
 	}
 
 	@Override
-	public void writeRaw(char[] text, int offset, int len) throws IOException {
+	public void writeRaw(char[] text, int offset, int len) {
 		throw new UnsupportedOperationException("Writing raw not supported");
 	}
 
 	@Override
-	public void writeRaw(char c) throws IOException {
+	public void writeRaw(char c) {
 		throw new UnsupportedOperationException("Writing raw not supported");
 	}
 
 	@Override
-	public void writeRawValue(String text) throws IOException {
+	public void writeRawValue(String text) {
 		setValue(text);
 	}
 
 	@Override
-	public void writeRawValue(String text, int offset, int len)
-			throws IOException {
+	public void writeRawValue(String text, int offset, int len) {
 		setValue(text.substring(offset, offset + len));
 	}
 
 	@Override
-	public void writeRawValue(char[] text, int offset, int len)
-			throws IOException {
+	public void writeRawValue(char[] text, int offset, int len) {
 		setValue(new String(text, offset, len));
 	}
 
 	@Override
 	public void writeBinary(Base64Variant b64variant, byte[] data, int offset,
-							int len) throws IOException {
+							int len) {
 		if (offset != 0 || len != data.length) {
 			byte[] subset = new byte[len];
 			System.arraycopy(data, offset, subset, 0, len);
@@ -221,77 +218,72 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public int writeBinary(Base64Variant b64variant, InputStream data,
-						   int dataLength) throws IOException, JsonGenerationException {
+	public int writeBinary(Base64Variant b64variant, InputStream data, int dataLength) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeNumber(int v) throws IOException {
+	public void writeNumber(int v) {
 		setValue(v);
 	}
 
 	@Override
-	public void writeNumber(long v) throws IOException {
+	public void writeNumber(long v) {
 		setValue(v);
 	}
 
 	@Override
-	public void writeNumber(BigInteger v) throws IOException {
+	public void writeNumber(BigInteger v) {
 		setValue(v);
 	}
 
 	@Override
-	public void writeNumber(double d) throws IOException {
+	public void writeNumber(double d) {
 		setValue(d);
 	}
 
 	@Override
-	public void writeNumber(float f) throws IOException {
+	public void writeNumber(float f) {
 		setValue(f);
 	}
 
 	@Override
-	public void writeNumber(BigDecimal dec) throws IOException {
+	public void writeNumber(BigDecimal dec) {
 		setValue(dec);
 	}
 
 	@Override
-	public void writeNumber(String encodedValue) throws IOException,
-			UnsupportedOperationException {
+	public void writeNumber(String encodedValue) throws UnsupportedOperationException {
 		setValue(encodedValue);
 	}
 
 	@Override
-	public void writeBoolean(boolean state) throws IOException {
+	public void writeBoolean(boolean state) {
 		setValue(state);
 	}
 
 	@Override
-	public void writeNull() throws IOException {
+	public void writeNull() {
 		setValue(null);
 	}
 
 	@Override
-	public void writeObject(Object pojo) throws IOException {
+	public void writeObject(Object pojo) {
 		setValue(pojo);
 	}
 
 	@Override
-	public void writeFieldName(SerializableString name) throws IOException,
-			JsonGenerationException {
+	public void writeFieldName(SerializableString name) {
 		writeFieldName(name.getValue());
 	}
 
 	@Override
-	public void writeString(SerializableString text) throws IOException,
-			JsonGenerationException {
+	public void writeString(SerializableString text) {
 		setValue(text.getValue());
 	}
 
 	@Override
-	public void writeTree(TreeNode rootNode) throws IOException,
-			JsonProcessingException {
+	public void writeTree(TreeNode rootNode) {
 		throw new UnsupportedClassVersionError(
 				"Writing JSON nodes not supported");
 	}
@@ -399,7 +391,7 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public void flush() throws IOException {
+	public void flush() {
 	}
 
 	@Override
@@ -408,7 +400,7 @@ public class BsonObjectGenerator extends JsonGenerator {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		closed = true;
 	}
 

@@ -16,7 +16,7 @@ import static com.cinefms.dbstore.query.api.impl.BasicQuery.createQuery;
 public class BasicQueryTest {
 
 	@Test
-	public void testSimpleQuery() throws MalformedQueryException {
+	public void testSimpleQuery() {
 		DBStoreQuery DBStoreQuery = BasicQuery.createQuery().eq("A", "B");
 		Assert.assertEquals("(A == B)", DBStoreQuery.toString());
 		Assert.assertEquals(1, DBStoreQuery.getNested().size());
@@ -24,7 +24,7 @@ public class BasicQueryTest {
 	}
 
 	@Test
-	public void testSimpleAndQuery() throws MalformedQueryException {
+	public void testSimpleAndQuery() {
 		DBStoreQuery DBStoreQuery = BasicQuery.createQuery().eq("A", "B").eq("X", "Z");
 		Assert.assertEquals("(A == B AND X == Z)", DBStoreQuery.toString());
 		Assert.assertEquals(OPERATOR.AND, DBStoreQuery.getOperator());
@@ -38,7 +38,7 @@ public class BasicQueryTest {
 
 
 	@Test
-	public void testNestedQuery() throws MalformedQueryException {
+	public void testNestedQuery() {
 		DBStoreQuery DBStoreQuery = BasicQuery.createQuery().
 				eq("A", "CCC").
 				or(createQuery().eq("C", "XXX"), createQuery().eq("A", "XXX"));
@@ -47,7 +47,7 @@ public class BasicQueryTest {
 	}
 
 	@Test
-	public void testIllegalKeyQuery() throws MalformedQueryException {
+	public void testIllegalKeyQuery() {
 		MalformedQueryException e = null;
 		try {
 			createQuery().eq(null, "C");
@@ -58,37 +58,37 @@ public class BasicQueryTest {
 	}
 
 	@Test
-	public void testSimpleQueryNE() throws MalformedQueryException {
+	public void testSimpleQueryNE() {
 		DBStoreQuery DBStoreQuery = createQuery().ne("A", "B");
 		Assert.assertEquals("(A != B)", DBStoreQuery.toString());
 	}
 
 	@Test
-	public void testSimpleQueryLTE() throws MalformedQueryException {
+	public void testSimpleQueryLTE() {
 		DBStoreQuery DBStoreQuery = createQuery().lte("A", "B");
 		Assert.assertEquals("(A <= B)", DBStoreQuery.toString());
 	}
 
 	@Test
-	public void testSimpleQueryLE() throws MalformedQueryException {
+	public void testSimpleQueryLE() {
 		DBStoreQuery DBStoreQuery = BasicQuery.createQuery().lt("A", "B");
 		Assert.assertEquals("(A < B)", DBStoreQuery.toString());
 	}
 
 	@Test
-	public void testSimpleQueryGTE() throws MalformedQueryException {
+	public void testSimpleQueryGTE() {
 		DBStoreQuery DBStoreQuery = BasicQuery.createQuery().gte("A", "B");
 		Assert.assertEquals("(A >= B)", DBStoreQuery.toString());
 	}
 
 	@Test
-	public void testSimpleQueryGT() throws MalformedQueryException {
+	public void testSimpleQueryGT() {
 		DBStoreQuery DBStoreQuery = BasicQuery.createQuery().gt("A", "B");
 		Assert.assertEquals("(A > B)", DBStoreQuery.toString());
 	}
 
 	@Test
-	public void testElemMatchDatabase() throws MalformedQueryException {
+	public void testElemMatchDatabase() {
 		DBStoreQuery q1 = BasicQuery.createQuery().eq("A", "B");
 		DBStoreQuery q2 = BasicQuery.createQuery().eq("X", "Z");
 		q1 = q1.elemMatch("M", q2);

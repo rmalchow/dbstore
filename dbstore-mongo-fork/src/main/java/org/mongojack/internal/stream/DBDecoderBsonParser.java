@@ -16,7 +16,6 @@
  */
 package org.mongojack.internal.stream;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -54,7 +53,7 @@ public class DBDecoderBsonParser extends BsonParser implements
 	}
 
 	@Override
-	public String getText() throws IOException, JsonParseException {
+	public String getText() throws IOException {
 		if (JsonToken.VALUE_EMBEDDED_OBJECT == getCurrentToken()) {
 			return null;
 		}
@@ -62,7 +61,7 @@ public class DBDecoderBsonParser extends BsonParser implements
 	}
 
 	@Override
-	public Object getEmbeddedObject() throws IOException, JsonParseException {
+	public Object getEmbeddedObject() throws IOException {
 		Object object = super.getEmbeddedObject();
 		if (object instanceof ObjectId) {
 			return ObjectIdConvertor.convert((ObjectId) object);
