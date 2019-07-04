@@ -6,7 +6,7 @@ import com.cinefms.dbstore.api.impl.BaseDBStoreEntity;
 public class TestObject1 extends BaseDBStoreEntity {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private String id;
 
 	public TestObject1(String id) {
@@ -21,5 +21,5 @@ public class TestObject1 extends BaseDBStoreEntity {
 		this.id = id;
 	}
 
-	
+
 }

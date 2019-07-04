@@ -14,7 +14,7 @@ public class BaseDBStoreEntity implements DBStoreEntity {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	@Override
 	public String createId() {
 		return null;

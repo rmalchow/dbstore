@@ -1,14 +1,13 @@
 package org.mongojack.internal.util.helpers;
 
-import java.util.List;
-
 import javax.persistence.Id;
+import java.util.List;
 
 public class TestEntityOne {
 
 	@Id
 	private String id;
-	
+
 	private List<String> strings;
 
 	public List<String> getStrings() {
@@ -26,6 +25,6 @@ public class TestEntityOne {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
-	
+
+
 }

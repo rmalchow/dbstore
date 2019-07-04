@@ -1,8 +1,10 @@
 package com.cinefms.dbstore.utils.mongo;
 
-import java.util.List;
-import java.util.logging.LogManager;
-
+import com.cinefms.dbstore.query.api.impl.BasicQuery;
+import com.cinefms.dbstore.utils.mongo.util.TestObject1;
+import com.cinefms.dbstore.utils.mongo.util.TestObject1A;
+import com.cinefms.dbstore.utils.mongo.util.TestObject1B;
+import com.mongodb.MongoClient;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,39 +12,35 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.cinefms.dbstore.query.api.impl.BasicQuery;
-import com.cinefms.dbstore.utils.mongo.util.TestObject1;
-import com.cinefms.dbstore.utils.mongo.util.TestObject1A;
-import com.cinefms.dbstore.utils.mongo.util.TestObject1B;
-import com.mongodb.MongoClient;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MongoDataStoreTest {
-	
-	
+
+
 	private String dataStoreName;
 	private MongoDataStore mds;
-	
-	
+
+
 	@Before
-	public void createDataStore() throws Exception {
-		dataStoreName = ("__junit_test_"+Math.random()).replaceAll("\\.", "_");
+	public void createDataStore() {
+		dataStoreName = ("__junit_test_" + Math.random()).replaceAll("\\.", "_");
 		MongoService ms = new MongoService();
 		ms.setDbName(dataStoreName);
 		ms.setHosts("127.0.0.1:27017");
 		mds = new MongoDataStore();
 		mds.setMongoService(ms);
-		mds.setDbPrefix(dataStoreName+"_prefix");
+		mds.setDbPrefix(dataStoreName + "_prefix");
 		mds.setDefaultDb(dataStoreName);
 	}
-	
+
 	@After
 	public void deleteDataStore() {
-		if(dataStoreName!=null) {
+		if (dataStoreName != null) {
 			try {
-				MongoClient client = new MongoClient("127.0.0.1",27017);
-				for(String s : client.getDatabaseNames()) {
-					if(s.startsWith(dataStoreName)) {
+				MongoClient client = new MongoClient("127.0.0.1", 27017);
+				for (String s : client.getDatabaseNames()) {
+					if (s.startsWith(dataStoreName)) {
 						client.dropDatabase(s);
 					}
 				}
@@ -51,16 +49,16 @@ public class MongoDataStoreTest {
 			}
 		}
 	}
-	
+
 	@Test
-	public void testSimpleDBCreationExpectSuccess() throws Exception {
+	public void testSimpleDBCreationExpectSuccess() {
 		TestObject1 to1 = new TestObject1();
 		to1 = mds.saveObject("hello", to1);
 		Assert.assertNotNull(to1.getId());
 	}
 
 	@Test
-	public void testSimplePolymorphicExpectSuccess() throws Exception {
+	public void testSimplePolymorphicExpectSuccess() {
 		TestObject1A to1a = new TestObject1A();
 		to1a = mds.saveObject("hello", to1a);
 		TestObject1B to1b = new TestObject1B();
@@ -70,28 +68,28 @@ public class MongoDataStoreTest {
 	}
 
 	@Test
-	public void testSimpleCRUDCreationExpectSuccess() throws Exception {
+	public void testSimpleCRUDCreationExpectSuccess() {
 		TestObject1 to1 = new TestObject1();
 		to1 = mds.saveObject("hello", to1);
 		to1 = mds.findObject("hello", TestObject1.class, BasicQuery.createQuery().eq("_id", to1.getId()));
 		Assert.assertNotNull(to1);
 		List<TestObject1> os = mds.findObjects("hello", TestObject1.class, BasicQuery.createQuery().eq("_id", to1.getId()));
 		Assert.assertNotNull(os);
-		Assert.assertEquals(1,os.size());
+		Assert.assertEquals(1, os.size());
 
 		// delete
 		boolean b1 = mds.deleteObject("hello", to1);
-		Assert.assertEquals(true,b1);
+		Assert.assertEquals(true, b1);
 
 		// delete again
 		boolean b2 = mds.deleteObject("hello", TestObject1.class, to1.getId());
-		Assert.assertEquals(false,b2);
+		Assert.assertEquals(false, b2);
 
 		// save and delete again
 		to1 = mds.saveObject("hello", to1);
 		boolean b3 = mds.deleteObject("hello", TestObject1.class, to1.getId());
-		Assert.assertEquals(true,b3);
+		Assert.assertEquals(true, b3);
 	}
 
-	
+
 }

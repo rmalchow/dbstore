@@ -1,9 +1,10 @@
 package com.cinefms.dbstore.utils.mongo;
 
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.mongodb.DB;
+import com.mongodb.Mongo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,33 +14,28 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.mongodb.DB;
-import com.mongodb.Mongo;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @ConditionalOnBean(MongoAutoConfiguration.class)
 @PropertySource("datastore.properties")
 public class SpringDataMongoDataStore extends AMongoDataStore {
-	
+
 	protected static Log log = LogFactory.getLog(SpringDataMongoDataStore.class);
-	
+
 	@Autowired
 	private Mongo mongo;
-	
+
 	@Value("${dbstore.defaultDb}")
-	private String defaultDb; 
+	private String defaultDb;
 
 	@Value("${dbstore.dbPrefix}")
-	private String dbPrefix; 
-	
+	private String dbPrefix;
+
 	@Override
-	public DB getDB(String db) throws UnknownHostException {
-		db = db==null?defaultDb:(getDbPrefix()==null?"":(getDbPrefix()+"_"))+db;
-		log.info(" = DB NAME: "+db);
-		return getMongo().getDB(db);
+	public DB getDB(String db) {
+		return getMongo().getDB(db == null ? defaultDb : (getDbPrefix() == null ? "" : (getDbPrefix() + "_")) + db);
 	}
 
 	public Mongo getMongo() {
@@ -49,7 +45,7 @@ public class SpringDataMongoDataStore extends AMongoDataStore {
 	public void setMongo(Mongo mongo) {
 		this.mongo = mongo;
 	}
-	
+
 	public String getDefaultDb() {
 		return defaultDb;
 	}
@@ -60,7 +56,7 @@ public class SpringDataMongoDataStore extends AMongoDataStore {
 
 	@Override
 	public String toString() {
-		Map<String,Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("class", this.getClass().getCanonicalName());
 		map.put("dbPrefix", getDbPrefix());
 		map.put("defaultDb", getDefaultDb());
@@ -79,6 +75,6 @@ public class SpringDataMongoDataStore extends AMongoDataStore {
 	public void setDbPrefix(String dbPrefix) {
 		this.dbPrefix = dbPrefix.trim();
 	}
-	
-	
+
+
 }
