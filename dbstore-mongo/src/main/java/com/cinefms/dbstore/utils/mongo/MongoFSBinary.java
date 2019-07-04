@@ -1,15 +1,14 @@
 package com.cinefms.dbstore.utils.mongo;
 
+import com.cinefms.dbstore.api.DBStoreBinary;
+import com.mongodb.gridfs.GridFSDBFile;
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-
-import com.cinefms.dbstore.api.DBStoreBinary;
-import com.mongodb.gridfs.GridFSDBFile;
 
 public class MongoFSBinary implements DBStoreBinary {
 
@@ -29,7 +28,7 @@ public class MongoFSBinary implements DBStoreBinary {
 	}
 
 	public Map<String, Object> getMetaData() {
-		Map<String, Object> md = new HashMap<String, Object>();
+		Map<String, Object> md = new HashMap<>();
 		for (String s : f.getMetaData().keySet()) {
 			md.put(s, f.getMetaData().get(s));
 		}
