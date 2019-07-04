@@ -9,32 +9,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
-<<<<<<< HEAD
 import java.util.HashMap;
 import java.util.Map;
-=======
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.mongodb.DB;
-import com.mongodb.MongoClient;
->>>>>>> develop
 
 @Component
+@ConditionalOnBean(MongoAutoConfiguration.class)
+@PropertySource("datastore.properties")
 public class SpringDataMongoDataStore extends AMongoDataStore {
 
 	protected static Log log = LogFactory.getLog(SpringDataMongoDataStore.class);
 
 	@Autowired
-<<<<<<< HEAD
 	private Mongo mongo;
 
-=======
-	private MongoClient mongo;
-	
->>>>>>> develop
 	@Value("${dbstore.defaultDb}")
 	private String defaultDb;
 
@@ -42,7 +34,6 @@ public class SpringDataMongoDataStore extends AMongoDataStore {
 	private String dbPrefix;
 
 	@Override
-<<<<<<< HEAD
 	public DB getDB(String db) {
 		return getMongo().getDB(db == null ? defaultDb : (getDbPrefix() == null ? "" : (getDbPrefix() + "_")) + db);
 	}
@@ -55,14 +46,6 @@ public class SpringDataMongoDataStore extends AMongoDataStore {
 		this.mongo = mongo;
 	}
 
-=======
-	public DB getDB(String db) throws UnknownHostException {
-		db = db==null?defaultDb:(getDbPrefix()==null?"":(getDbPrefix()+"_"))+db;
-		log.info(" = DB NAME: "+db);
-		return mongo.getDB(db);
-	}
-
->>>>>>> develop
 	public String getDefaultDb() {
 		return defaultDb;
 	}
