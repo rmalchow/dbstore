@@ -34,4 +34,16 @@ public class OrderBy {
 		this.field = field;
 	}
 
+	public static OrderBy asc(String field) {
+		return of(field,true);
+	}
+
+	public static OrderBy desc(String field) {
+		return of(field,false);
+	}
+
+	public static OrderBy of(String field, boolean asc) {
+		return new OrderBy(field,asc);
+	}
+
 }

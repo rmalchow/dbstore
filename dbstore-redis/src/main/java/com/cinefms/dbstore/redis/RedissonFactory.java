@@ -18,10 +18,6 @@ public class RedissonFactory implements FactoryBean<Redisson> {
 	private String auth;
 	private RedissonCodec codec = new LenientJsonCodec();
 
-	public static void main(String[] args) {
-
-	}
-
 	public Redisson getObject() {
 		log.info("### REDISSON FACTORY - CREATING ... ");
 		Config config = new Config();

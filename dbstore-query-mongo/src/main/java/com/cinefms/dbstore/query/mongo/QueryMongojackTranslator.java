@@ -57,6 +57,18 @@ public class QueryMongojackTranslator {
 					log.debug(" ##### " + in.getField() + " --- " + in.getValue().getClass());
 					q = q.in(in.getField(), (Collection<?>) in.getValue());
 					break;
+				case NIN:
+					log.debug(" ##### " + in.getField() + " --- " + in.getValue().getClass());
+					Collection values = in.getValue() != null && in.getValue() instanceof Collection ? (List) in.getValue() : null;
+					if (values != null && !values.isEmpty()) {
+						q = q.notIn(in.getField(), values);
+					} else {
+						q = q.notExists(in.getField());
+					}
+					break;
+				case EXISTS:
+					q = q.exists(in.getField());
+					break;
 				case ALL:
 					q = q.all(in.getField(), (Collection<?>) in.getValue());
 					break;
@@ -65,15 +77,17 @@ public class QueryMongojackTranslator {
 			}
 		} else {
 			List<DBStoreQuery> n = in.getNested();
-			Query[] mq = new Query[n.size()];
-			for (DBStoreQuery fq : n) {
-				mq[n.indexOf(fq)] = translate(fq);
-			}
-			if (in.getOperator() == OPERATOR.AND) {
-				q = q.and(mq);
-			}
-			if (in.getOperator() == OPERATOR.OR) {
-				q = q.or(mq);
+			if (n != null && !n.isEmpty()) {
+				Query[] mq = new Query[n.size()];
+				for (DBStoreQuery fq : n) {
+					mq[n.indexOf(fq)] = translate(fq);
+				}
+				if (in.getOperator() == OPERATOR.AND) {
+					q = q.and(mq);
+				}
+				if (in.getOperator() == OPERATOR.OR) {
+					q = q.or(mq);
+				}
 			}
 		}
 		return q;
