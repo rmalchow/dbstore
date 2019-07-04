@@ -22,15 +22,19 @@ public interface DBStoreQuery {
 
 	int getMax();
 
-	DBStoreQuery in(String key, Object value);
+	DBStoreQuery in(String key, Object... values);
 
 	DBStoreQuery in(String key, List<?> values);
 
-	DBStoreQuery in(String key, Object[] values);
+	DBStoreQuery nin(String key, Object... values);
+
+	DBStoreQuery nin(String key, List<?> values);
+
+	DBStoreQuery exists(String key);
+
+	DBStoreQuery all(String key, Object... values);
 
 	DBStoreQuery all(String key, List<?> values);
-
-	DBStoreQuery all(String key, Object[] values);
 
 	DBStoreQuery contains(String key, String value);
 
@@ -60,6 +64,8 @@ public interface DBStoreQuery {
 
 	DBStoreQuery order(String order, boolean asc);
 
+	DBStoreQuery order(OrderBy... orders);
+
 	DBStoreQuery start(int start);
 
 	DBStoreQuery max(int max);
@@ -69,7 +75,7 @@ public interface DBStoreQuery {
 	}
 
 	enum COMPARATOR {
-		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN, ALL, ELEM_MATCH
+		CONTAINS, EQ, LTE, LT, GTE, GT, NE, NONE, IN, NIN, EXISTS, ALL, ELEM_MATCH
 	}
 
 }
