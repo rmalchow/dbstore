@@ -16,17 +16,10 @@
             <artifactId>dbstore-query-api</artifactId>
             <version>0.8.5-SNAPSHOT</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.cinefms.dbstore</groupId>
-            <artifactId>dbstore-mongo-fork</artifactId>
-            <version>0.8.1-SNAPSHOT</version>
-        </dependency>
-         -->
 
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jcl</artifactId>
         </dependency>
 
         <dependency>
