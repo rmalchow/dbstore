@@ -8,15 +8,12 @@ import com.cinefms.dbstore.query.api.impl.BasicQuery;
 import com.cinefms.dbstore.query.api.impl.OrderBy;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static com.cinefms.dbstore.query.api.impl.BasicQuery.createQuery;
 
-@RunWith(MockitoJUnitRunner.class)
 public class BasicQueryTest {
 
 	@Test
