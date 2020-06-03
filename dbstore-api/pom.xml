@@ -16,11 +16,6 @@
             <artifactId>dbstore-query-api</artifactId>
             <version>0.8.5-SNAPSHOT</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.1-api</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
