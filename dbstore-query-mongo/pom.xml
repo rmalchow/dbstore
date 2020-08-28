@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.cinefms.dbstore</groupId>
         <artifactId>dbstore</artifactId>
-        <version>0.8.6-SNAPSHOT</version>
+        <version>0.8.7-SNAPSHOT</version>
     </parent>
 
     <artifactId>dbstore-query-mongo</artifactId>
@@ -14,7 +14,7 @@
         <dependency>
             <groupId>com.cinefms.dbstore</groupId>
             <artifactId>dbstore-query-api</artifactId>
-            <version>0.8.6-SNAPSHOT</version>
+            <version>0.8.7-SNAPSHOT</version>
         </dependency>
         <!--
         <dependency>
