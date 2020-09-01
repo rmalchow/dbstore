@@ -5,15 +5,14 @@ import com.cinefms.dbstore.utils.mongo.util.TestObject1;
 import com.cinefms.dbstore.utils.mongo.util.TestObject1A;
 import com.cinefms.dbstore.utils.mongo.util.TestObject1B;
 import com.mongodb.MongoClient;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.util.List;
 
 public class MongoDataStoreTest {
 
+	@ClassRule
+	public static final TestMongoDBContainer mariaDBContainer = TestMongoDBContainer.getInstance();
 
 	private String dataStoreName;
 	private MongoDataStore mds;
@@ -24,7 +23,7 @@ public class MongoDataStoreTest {
 		dataStoreName = ("__junit_test_" + Math.random()).replaceAll("\\.", "_");
 		MongoService ms = new MongoService();
 		ms.setDbName(dataStoreName);
-		ms.setHosts("127.0.0.1:27017");
+		ms.setHosts(mariaDBContainer.getHost() + ":" + mariaDBContainer.getPort());
 		mds = new MongoDataStore();
 		mds.setMongoService(ms);
 		mds.setDbPrefix(dataStoreName + "_prefix");
@@ -35,7 +34,7 @@ public class MongoDataStoreTest {
 	public void deleteDataStore() {
 		if (dataStoreName != null) {
 			try {
-				MongoClient client = new MongoClient("127.0.0.1", 27017);
+				MongoClient client = new MongoClient(mariaDBContainer.getHost(), mariaDBContainer.getPort());
 				for (String s : client.getDatabaseNames()) {
 					if (s.startsWith(dataStoreName)) {
 						client.dropDatabase(s);
@@ -87,6 +86,5 @@ public class MongoDataStoreTest {
 		boolean b3 = mds.deleteObject("hello", TestObject1.class, to1.getId());
 		Assert.assertEquals(true, b3);
 	}
-
 
 }
