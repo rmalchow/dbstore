@@ -19,9 +19,9 @@ public class SimpleCollectionNamingStrategy implements CollectionNamingStrategy 
 		if (out == null) {
 			if (clazz.getAnnotation(CollectionName.class) != null) {
 				CollectionName cn = clazz.getAnnotation(CollectionName.class);
-				if (cn.value() == CollectionName.USE_CLASS_NAME) {
-					out = clazz.getName();
-				} else if (cn.value() == CollectionName.USE_PACKAGE_AND_CLASS_NAME) {
+				if (cn.value().equals(CollectionName.USE_CLASS_NAME)) {
+					out = clazz.getSimpleName();
+				} else if (cn.value().equals(CollectionName.USE_PACKAGE_AND_CLASS_NAME)) {
 					out = clazz.getCanonicalName();
 				} else {
 					out = cn.value();

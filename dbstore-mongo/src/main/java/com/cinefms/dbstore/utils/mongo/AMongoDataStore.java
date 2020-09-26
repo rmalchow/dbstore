@@ -4,6 +4,7 @@ import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
 import com.cinefms.dbstore.api.DataStore;
+import com.cinefms.dbstore.api.annotations.CollectionName;
 import com.cinefms.dbstore.api.annotations.Index;
 import com.cinefms.dbstore.api.annotations.Indexes;
 import com.cinefms.dbstore.api.annotations.Write;
@@ -26,6 +27,7 @@ import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,6 @@ import java.util.Map;
 public abstract class AMongoDataStore implements DataStore {
 
 	protected static Log log = LogFactory.getLog(AMongoDataStore.class);
-
 
 	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<>();
 	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<>();
