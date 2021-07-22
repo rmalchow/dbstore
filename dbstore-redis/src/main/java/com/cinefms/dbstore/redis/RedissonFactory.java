@@ -26,14 +26,14 @@ public class RedissonFactory implements FactoryBean<Redisson> {
 			ssc.setPassword(auth);
 		}
 		config.setCodec(codec);
-		Redisson redisson = Redisson.create(config);
-		return redisson;
+		return Redisson.create(config);
 	}
 
 	public Class<?> getObjectType() {
 		return Redisson.class;
 	}
 
+	@Override
 	public boolean isSingleton() {
 		return this.singleton;
 	}

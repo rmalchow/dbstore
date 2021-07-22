@@ -2,7 +2,7 @@ package com.cinefms.dbstore.utils.mongo;
 
 import com.cinefms.dbstore.utils.mongo.entities.Address;
 import com.cinefms.dbstore.utils.mongo.entities.UserEntity;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,9 +40,10 @@ public class MongoStoreJacksonAnnotationsTest extends MongoDataStoreTest {
 		Assert.assertNotNull(user.getId());
 
 		// Check stored data
-		DBObject record = mds.getDB("testdb")
+		Document record = mds.getDB("testdb")
 				.getCollection(UserEntity.class.getName())
 				.find()
+				.cursor()
 				.next();
 
 		Assert.assertNotNull(record);
@@ -58,14 +59,11 @@ public class MongoStoreJacksonAnnotationsTest extends MongoDataStoreTest {
 		);    // property is renamed using Jackson annotation
 		Assert.assertNull(record.get("encryptedPassword"));
 
-		Object addressesObject = record.get("addresses");
-		Assert.assertNotNull(addressesObject);
-		Assert.assertTrue(addressesObject instanceof List);
-
-		List<DBObject> addresses = (List<DBObject>) addressesObject;
+		List<Document> addresses = record.getList("addresses", Document.class);
+		Assert.assertNotNull(addresses);
 		Assert.assertEquals(2, addresses.size());
 
-		DBObject firstAddressRecord = addresses.get(0);
+		Document firstAddressRecord = addresses.get(0);
 		Assert.assertEquals("Armstrong st.", firstAddressRecord.get("street"));
 		Assert.assertEquals(123, firstAddressRecord.get("buildingNo"));
 		Assert.assertEquals("New York", firstAddressRecord.get("city"));

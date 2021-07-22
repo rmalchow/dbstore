@@ -6,6 +6,10 @@ import java.io.OutputStream;
 
 public class IOUtils {
 
+	private IOUtils() {
+		throw new IllegalStateException("Utility class");
+	}
+
 	public static long copy(InputStream is, OutputStream os) throws IOException {
 		byte[] buff = new byte[1024 * 1024];
 		int avail;

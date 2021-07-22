@@ -4,7 +4,7 @@ import com.cinefms.dbstore.utils.mongo.entities.ClassNameEntity;
 import com.cinefms.dbstore.utils.mongo.entities.EntityWithIndexes;
 import com.cinefms.dbstore.utils.mongo.entities.SimpleClassNameEntity;
 import com.cinefms.dbstore.utils.mongo.utils.AssertCollection;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,9 +22,10 @@ public class MongoStoreAnnotationsTest extends MongoDataStoreTest {
 		Assert.assertNotNull(entity.getId());
 
 		// Check stored data
-		DBObject record = mds.getDB("testdb")
+		Document record = mds.getDB("testdb")
 				.getCollection(SimpleClassNameEntity.class.getSimpleName())
 				.find()
+				.cursor()
 				.next();
 
 		// Assert entity was saved to correct collection
@@ -42,9 +43,10 @@ public class MongoStoreAnnotationsTest extends MongoDataStoreTest {
 		Assert.assertNotNull(entity.getId());
 
 		// Check stored data
-		DBObject record = mds.getDB("testdb")
+		Document record = mds.getDB("testdb")
 				.getCollection(ClassNameEntity.class.getName())
 				.find()
+				.cursor()
 				.next();
 
 		// Assert entity was saved to correct collection
@@ -62,30 +64,30 @@ public class MongoStoreAnnotationsTest extends MongoDataStoreTest {
 		Assert.assertNotNull(entity.getId());
 
 		// Check collection indexes
-		List<DBObject> indexes = mds.getDB("testdb")
+		List<Document> indexes = loadAll(mds.getDB("testdb")
 				.getCollection(EntityWithIndexes.class.getSimpleName())
-				.getIndexInfo();
+				.listIndexes());
 
-		Assert.assertEquals(indexes.size(), 4);
+		Assert.assertEquals(4, indexes.size());
 		AssertCollection.assertContains(indexes, index -> {
 			Assert.assertEquals("_id_", index.get("name"));
-			Assert.assertEquals(1, ((DBObject) index.get("key")).get("_id"));
+			Assert.assertEquals(1, index.get("key", Document.class).get("_id"));
 		});
 		AssertCollection.assertContains(indexes, index -> {
 			Assert.assertEquals("firstName_1", index.get("name"));
 			Assert.assertNotEquals(true, index.get("unique"));
-			Assert.assertEquals(1, ((DBObject) index.get("key")).get("firstName"));
+			Assert.assertEquals(1, index.get("key", Document.class).get("firstName"));
 		});
 		AssertCollection.assertContains(indexes, index -> {
 			Assert.assertEquals("lastName_1", index.get("name"));
 			Assert.assertNotEquals(true, index.get("unique"));
-			Assert.assertEquals(1, ((DBObject) index.get("key")).get("lastName"));
+			Assert.assertEquals(1, index.get("key", Document.class).get("lastName"));
 		});
 		AssertCollection.assertContains(indexes, index -> {
 			Assert.assertEquals("firstName_1_lastName_1", index.get("name"));
 			Assert.assertEquals(true, index.get("unique"));
-			Assert.assertEquals(1, ((DBObject) index.get("key")).get("firstName"));
-			Assert.assertEquals(1, ((DBObject) index.get("key")).get("lastName"));
+			Assert.assertEquals(1, index.get("key", Document.class).get("firstName"));
+			Assert.assertEquals(1, index.get("key", Document.class).get("lastName"));
 		});
 	}
 

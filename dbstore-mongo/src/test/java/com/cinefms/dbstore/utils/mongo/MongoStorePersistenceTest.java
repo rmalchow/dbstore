@@ -3,12 +3,10 @@ package com.cinefms.dbstore.utils.mongo;
 import com.cinefms.dbstore.query.api.impl.BasicQuery;
 import com.cinefms.dbstore.utils.mongo.entities.SimpleEntity;
 import com.cinefms.dbstore.utils.mongo.utils.AssertCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import org.bson.Document;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,9 +23,10 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 		Assert.assertEquals(savedEntity.getValue(), entity.getValue());
 
 		// Check stored data
-		DBObject record = mds.getDB(null)
+		Document record = mds.getDB(null)
 				.getCollection(SimpleEntity.class.getName())
 				.find()
+				.cursor()
 				.next();
 
 		Assert.assertNotNull(record);
@@ -50,11 +49,9 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 		Assert.assertEquals(savedEntity.getId(), editedEntity.getId());
 		Assert.assertEquals(savedEntity.getValue(), editedEntity.getValue());
 
-		List<DBObject> records = new ArrayList<>();
-		mds.getDB(null)
+		List<Document> records = loadAll(mds.getDB(null)
 				.getCollection(SimpleEntity.class.getName())
-				.find()
-				.forEach(records::add);
+				.find());
 
 		Assert.assertEquals(2, records.size());
 		AssertCollection.assertContains(records, record -> {
@@ -85,8 +82,7 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 				2,
 				mds.getDB(null)
 						.getCollection(SimpleEntity.class.getName())
-						.find()
-						.count()
+						.countDocuments()
 		);
 
 		// Update existing & insert new entities
@@ -113,11 +109,9 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 		});
 
 		// Check stored data
-		List<DBObject> records = new ArrayList<>();
-		mds.getDB(null)
+		List<Document> records = loadAll(mds.getDB(null)
 				.getCollection(SimpleEntity.class.getName())
-				.find()
-				.forEach(records::add);
+				.find());
 
 		Assert.assertEquals(4, records.size());
 		AssertCollection.assertContains(records, record -> {
@@ -147,11 +141,7 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 		Assert.assertTrue(result);
 
 		// Check stored data
-		DBCursor cursor = mds.getDB(null)
-				.getCollection(SimpleEntity.class.getName())
-				.find();
-
-		Assert.assertEquals(0, cursor.count());
+		Assert.assertEquals(0, mds.getDB(null).getCollection(SimpleEntity.class.getName()).countDocuments());
 	}
 
 	@Test
@@ -164,11 +154,7 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 		Assert.assertFalse(result);
 
 		// Check stored data
-		DBCursor cursor = mds.getDB(null)
-				.getCollection(SimpleEntity.class.getName())
-				.find();
-
-		Assert.assertEquals(0, cursor.count());
+		Assert.assertEquals(0, mds.getDB(null).getCollection(SimpleEntity.class.getName()).countDocuments());
 	}
 
 	@Test
@@ -180,11 +166,7 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 		Assert.assertTrue(result);
 
 		// Check stored data
-		DBCursor cursor = mds.getDB(null)
-				.getCollection(SimpleEntity.class.getName())
-				.find();
-
-		Assert.assertEquals(0, cursor.count());
+		Assert.assertEquals(0, mds.getDB(null).getCollection(SimpleEntity.class.getName()).countDocuments());
 	}
 
 	@Test
@@ -197,11 +179,7 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 		Assert.assertFalse(result);
 
 		// Check stored data
-		DBCursor cursor = mds.getDB(null)
-				.getCollection(SimpleEntity.class.getName())
-				.find();
-
-		Assert.assertEquals(0, cursor.count());
+		Assert.assertEquals(0, mds.getDB(null).getCollection(SimpleEntity.class.getName()).countDocuments());
 	}
 
 	@Test
@@ -212,18 +190,17 @@ public class MongoStorePersistenceTest extends MongoDataStoreTest {
 		SimpleEntity fourthEntity = new SimpleEntity("fourth-entity");
 		mds.saveObjects(null, Arrays.asList(firstEntity, secondEntity, thirdEntity, fourthEntity));
 
-		mds.deleteObjects(
+		boolean result = mds.deleteObjects(
 				null,
 				SimpleEntity.class,
 				BasicQuery.createQuery().in("_id", firstEntity.getId(), thirdEntity.getId())
 		);
+		Assert.assertTrue(result);
 
 		// Check stored data
-		List<DBObject> records = new ArrayList<>();
-		mds.getDB(null)
+		List<Document> records = loadAll(mds.getDB(null)
 				.getCollection(SimpleEntity.class.getName())
-				.find()
-				.forEach(records::add);
+				.find());
 
 		Assert.assertEquals(2, records.size());
 		AssertCollection.assertContains(records, record -> {
