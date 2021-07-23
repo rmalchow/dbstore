@@ -67,11 +67,17 @@ public class MongoService {
 
 	private MongoCredential getCredentials() {
 		if (!StringUtils.isEmpty(authMethod)) {
-			if (getAuthMethod().compareTo("CR") == 0) {
-				return MongoCredential.createMongoCRCredential(username, authDb, password.toCharArray());
+			if ("CR".equalsIgnoreCase(authMethod)) {
+				return MongoCredential.createMongoCRCredential(username, authDb == null ? dbName : authDb, password.toCharArray());
 			}
-			if (getAuthMethod().compareTo("SCRAM-SHA-1") == 0) {
+			if ("SCRAM-SHA-1".equalsIgnoreCase(authMethod)) {
 				return MongoCredential.createScramSha1Credential(username, authDb == null ? dbName : authDb, password.toCharArray());
+			}
+			if ("SCRAM-SHA-256".equalsIgnoreCase(authMethod)) {
+				return MongoCredential.createScramSha256Credential(username, authDb == null ? dbName : authDb, password.toCharArray());
+			}
+			if ("PLAIN".equalsIgnoreCase(authMethod)) {
+				return MongoCredential.createPlainCredential(username, authDb == null ? dbName : authDb, password.toCharArray());
 			}
 		}
 		return MongoCredential.createCredential(username, authDb == null ? dbName : authDb, password.toCharArray());
