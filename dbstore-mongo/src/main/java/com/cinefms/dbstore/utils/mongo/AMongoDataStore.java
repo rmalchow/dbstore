@@ -4,7 +4,6 @@ import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
 import com.cinefms.dbstore.api.DataStore;
-import com.cinefms.dbstore.api.annotations.CollectionName;
 import com.cinefms.dbstore.api.annotations.Index;
 import com.cinefms.dbstore.api.annotations.Indexes;
 import com.cinefms.dbstore.api.annotations.Write;
@@ -27,11 +26,7 @@ import org.mongojack.DBQuery.Query;
 import org.mongojack.JacksonDBCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.text.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AMongoDataStore implements DataStore {
 
@@ -244,116 +239,126 @@ public abstract class AMongoDataStore implements DataStore {
 
 
 	public <T extends DBStoreEntity> boolean deleteObject(String db, T object) {
-		if (object != null && object.getId() != null) {
-			return deleteObject(db, object.getClass(), object.getId());
-		}
-		return false;
+		return object != null && deleteObject(db, object.getClass(), object.getId());
 	}
 
 	@Override
 	public <T extends DBStoreEntity> void deleteObjects(String db, Class<T> clazz, DBStoreQuery query) {
-		Query q = fqtl.translate(query);
-		getCollection(db, clazz).remove(q);
+		deleteObjectsInternal(db, clazz, getCollection(db, clazz).find(fqtl.translate(query)));
 	}
 
-
 	public <T extends DBStoreEntity> boolean deleteObject(String db, Class<T> clazz, String id) {
-
 		if (id == null) {
 			return false;
 		}
 
-		DBStoreEntity entity = getObject(db, clazz, id);
+		T entity = getObject(db, clazz, id);
 		if (entity == null) {
 			return false;
 		}
 
-		for (DBStoreListener l : getListeners(clazz)) {
-			log.debug("firing 'beforeDelete' for: " + clazz + " / " + id);
-			l.beforeDelete(db, entity);
+		return deleteObjectsInternal(db, clazz, Collections.singletonList(entity));
+	}
+
+	private <T extends DBStoreEntity> boolean deleteObjectsInternal(String db, Class<T> clazz, Iterable<T> objects) {
+		List<DBStoreListener> listeners = getListeners(clazz);
+
+		boolean anyDeleted = false;
+
+		for (T object : objects) {
+			if (object == null || object.getId() == null) {
+				continue;
+			}
+
+			for (DBStoreListener l : listeners) {
+				log.debug("firing 'beforeDelete' for: " + clazz + " / " + object.getId());
+				l.beforeDelete(db, object);
+			}
+
+			try {
+				getCollection(db, clazz).removeById(object.getId());
+				for (DBStoreListener l : listeners) {
+					log.debug("firing 'delete' for: " + clazz + " / " + object.getId());
+					l.deleted(db, object);
+				}
+
+				anyDeleted = true;
+
+			} catch (Exception e) {
+				throw new DBStoreException(e);
+			}
 		}
 
-		try {
-			getCollection(db, clazz).removeById(id);
-			for (DBStoreListener l : getListeners(clazz)) {
-				log.debug("firing 'delete' for: " + clazz + " / " + id);
-				l.deleted(db, entity);
-			}
-			return true;
-		} catch (Exception e) {
-			throw new DBStoreException(e);
-		}
+		return anyDeleted;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> void saveObjects(String db, List<T> objects) {
-		try {
-			if (objects.size() == 0) {
-				return;
+	public <T extends DBStoreEntity> List<T> saveObjects(String db, List<T> objects) {
+		if (objects.isEmpty()) return objects;
+
+		Class<T> clazz = (Class<T>) objects.stream().findFirst().map(Object::getClass).orElse(null);
+
+		List<DBStoreListener> listeners = getListeners(clazz);
+		List<T> out = new ArrayList<>(objects.size());
+
+		for (T object : objects) {
+			log.debug(clazz + " / saving object: " + object.getId() + ", notifying " + listeners.size() + " listeners");
+
+			for (DBStoreListener l : listeners) {
+				log.debug("firing 'beforeSave' for: " + clazz + " / " + object.getId());
+				l.beforeSave(db, object);
 			}
-			JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db, objects.get(0).getClass());
 
-			coll.insert(objects);
+			JacksonDBCollection<T, String> coll = getCollection(db, clazz);
 
-		} catch (Exception e) {
-			throw new DBStoreException(e);
+			T old = null;
+			if (object.getId() != null) {
+				old = coll.findOneById(object.getId());
+			} else {
+				String id = object.createId();
+				if (id == null) {
+					id = ObjectId.get().toString();
+				}
+				object.setId(id);
+			}
+
+			if (old != null) {
+				if (!needsUpdate(old, object)) {
+					log.debug("no change, returning");
+					out.add(object);
+					continue;
+				}
+
+				coll.update(DBQuery.is("_id", old.getId()), object);
+			} else {
+				coll.save(object);
+			}
+
+			object = getObject(db, clazz, object.getId());
+
+			for (DBStoreListener l : listeners) {
+				if (old != null) {
+					log.debug("firing 'updated' for: " + out.getClass() + " / " + object.getId() + " / " + l.getClass());
+					l.updated(db, old, object);
+				} else {
+					log.debug("firing 'created' for: " + out.getClass() + " / " + object.getId() + " / " + l.getClass());
+					l.created(db, object);
+				}
+			}
+
+			out.add(object);
 		}
-	}
 
+		return out;
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> T saveObject(String db, T object) {
-
-
-		List<DBStoreListener> listeners = getListeners(object.getClass());
-
-		log.debug(object.getClass() + " / saving object: " + object.getId() + ", notifying " + listeners.size() + " listeners");
-
-		for (DBStoreListener l : listeners) {
-			log.debug("firing 'beforeSave' for: " + object.getClass() + " / " + object.getId());
-			l.beforeSave(db, object);
-		}
-
-		JacksonDBCollection<T, String> coll = (JacksonDBCollection<T, String>) getCollection(db, object.getClass());
-
-
-		T old = null;
-		if (object.getId() != null) {
-			old = coll.findOneById(object.getId());
-		} else {
-			String id = object.createId();
-			if (id == null) {
-				id = ObjectId.get().toString();
-			}
-			object.setId(id);
-		}
-
-		if (old != null) {
-			if (!needsUpdate(old, object)) {
-				log.debug("no change, returning");
-				return object;
-			}
-
-			coll.update(DBQuery.is("_id", old.getId()), object);
-		} else {
-			coll.save(object);
-		}
-
-		T out = (T) getObject(db, object.getClass(), object.getId());
-
-		if (listeners.size() > 0) {
-			for (DBStoreListener l : listeners) {
-				if (old != null) {
-					log.debug("firing 'updated' for: " + out.getClass() + " / " + out.getId() + " / " + l.getClass());
-					l.updated(db, old, out);
-				} else {
-					log.debug("firing 'created' for: " + out.getClass() + " / " + out.getId() + " / " + l.getClass());
-					l.created(db, out);
-				}
-			}
-		}
-		return out;
+		return saveObjects(db, Collections.singletonList(object))
+				.stream()
+				.findFirst()
+				.orElse(null);
 	}
 
 	public <T> boolean needsUpdate(T old, T object) {
