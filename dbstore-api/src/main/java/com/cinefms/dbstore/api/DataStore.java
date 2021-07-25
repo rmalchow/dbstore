@@ -30,6 +30,6 @@ public interface DataStore {
 
 	void addListener(DBStoreListener listener);
 
-	<T> void saveObjects(String db, List<T> objects);
+	<T extends DBStoreEntity> List<T> saveObjects(String db, List<T> objects);
 
 }
