@@ -2,19 +2,21 @@ package com.cinefms.dbstore.utils.mongo;
 
 import com.cinefms.dbstore.api.DataStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.DB;
+import com.mongodb.client.MongoDatabase;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class MongoDataStore extends AMongoDataStore implements DataStore {
+import java.util.Arrays;
 
-	private boolean checkUpdates = false;
-	private ObjectMapper objectMapper;
+public class MongoDataStore extends AMongoDataStore implements DataStore {
 
 	@Autowired
 	private MongoService mongoService;
 
+	private boolean checkUpdates = false;
 	private String defaultDb;
 	private String dbPrefix;
+
+	private ObjectMapper objectMapper;
 
 	public ObjectMapper getObjectMapper() {
 		if (objectMapper == null) {
@@ -28,66 +30,76 @@ public class MongoDataStore extends AMongoDataStore implements DataStore {
 		if (!checkUpdates) {
 			return true;
 		}
+
 		if (old == null || object == null) {
 			return true;
 		}
+
 		try {
 			ObjectMapper om = getObjectMapper();
 			byte[] o1 = om.writeValueAsBytes(old);
 			byte[] o2 = om.writeValueAsBytes(object);
 
-			if (o1.length != o2.length) {
-				return true;
-			}
-			for (int i = 0; i < o1.length; i++) {
-				if (o1[i] != o2[i]) {
-					return true;
-				}
-			}
-			return false;
+			return !Arrays.equals(o1, o2);
+
 		} catch (Exception e) {
 			return true;
 		}
 	}
 
-	public DB getDB(String db) {
-		db = db == null ? defaultDb : (dbPrefix == null ? "" : (dbPrefix + "_")) + db;
-		MongoService mongoService = getMongoService();
+	@Override
+	public MongoDatabase getDB(String db) {
+		if (db == null) {
+			db = defaultDb;
+		} else {
+			db = (dbPrefix == null ? "" : (dbPrefix + "_")) + db;
+		}
+		MongoService ms = getMongoService();
 		log.debug("============================================================");
 		log.debug("== ");
 		log.debug("== ");
-		log.debug("== getting DB from mongoService: " + mongoService);
-		DB out = mongoService.getDb(db);
+		log.debug("== getting DB from mongoService: " + ms);
+		MongoDatabase out = ms.getDb(db);
 		log.debug("== ... result is: " + out);
 		log.debug("== ");
 		log.debug("============================================================");
 		return out;
 	}
 
+	public boolean isCheckUpdates() {
+		return checkUpdates;
+	}
+
+	public MongoDataStore setCheckUpdates(boolean checkUpdates) {
+		this.checkUpdates = checkUpdates;
+		return this;
+	}
 
 	public String getDefaultDb() {
 		return defaultDb;
 	}
 
-	public void setDefaultDb(String defaultDb) {
+	public MongoDataStore setDefaultDb(String defaultDb) {
 		this.defaultDb = defaultDb;
+		return this;
 	}
 
 	public String getDbPrefix() {
 		return dbPrefix;
 	}
 
-	public void setDbPrefix(String dbPrefix) {
+	public MongoDataStore setDbPrefix(String dbPrefix) {
 		this.dbPrefix = dbPrefix;
+		return this;
 	}
-
 
 	public MongoService getMongoService() {
 		return mongoService;
 	}
 
-	public void setMongoService(MongoService mongoService) {
+	public MongoDataStore setMongoService(MongoService mongoService) {
 		this.mongoService = mongoService;
+		return this;
 	}
 
 }

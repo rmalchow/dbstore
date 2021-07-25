@@ -1,6 +1,5 @@
 package com.cinefms.dbstore.utils.mongo;
 
-import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
 import com.cinefms.dbstore.api.DataStore;
@@ -10,71 +9,69 @@ import com.cinefms.dbstore.api.annotations.Write;
 import com.cinefms.dbstore.api.annotations.WriteMode;
 import com.cinefms.dbstore.api.exceptions.DBStoreException;
 import com.cinefms.dbstore.query.api.DBStoreQuery;
+import com.cinefms.dbstore.query.api.impl.BasicQuery;
 import com.cinefms.dbstore.query.mongo.QueryMongojackTranslator;
 import com.cinefms.dbstore.utils.mongo.util.CollectionNamingStrategy;
 import com.cinefms.dbstore.utils.mongo.util.SimpleCollectionNamingStrategy;
-import com.mongodb.*;
-import com.mongodb.gridfs.GridFS;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSInputFile;
+import com.mongodb.WriteConcern;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.IndexOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.UuidRepresentation;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.mongojack.DBCursor;
-import org.mongojack.DBQuery;
-import org.mongojack.DBQuery.Query;
-import org.mongojack.JacksonDBCollection;
+import org.mongojack.JacksonMongoCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
 public abstract class AMongoDataStore implements DataStore {
 
-	protected static Log log = LogFactory.getLog(AMongoDataStore.class);
-
-	private Map<String, JacksonDBCollection<?, String>> collections = new HashMap<>();
-	private Map<String, List<DBStoreListener>> listenerMap = new HashMap<>();
-	private Map<String, GridFS> buckets = new HashMap<>();
-
-	private QueryMongojackTranslator fqtl = new QueryMongojackTranslator();
+	protected static final Log log = LogFactory.getLog(AMongoDataStore.class);
+	private final Map<String, JacksonMongoCollection<?>> collections = new HashMap<>();
+	private final Map<String, List<DBStoreListener<?>>> listenerMap = new HashMap<>();
+	private final QueryMongojackTranslator fqtl = new QueryMongojackTranslator();
 
 	@Autowired(required = false)
-	private List<DBStoreListener> listeners = new ArrayList<>();
-
+	private List<DBStoreListener<?>> listeners = new ArrayList<>();
 	private CollectionNamingStrategy collectionNamingStrategy = new SimpleCollectionNamingStrategy();
 
-	public abstract DB getDB(String db);
+	public abstract MongoDatabase getDB(String db);
 
-	private <T> DBCollection initializeCollection(DB db, Class<T> clazz) {
+	private <T> MongoCollection<T> initializeCollection(MongoDatabase db, Class<T> clazz) {
 		String collectionName = getCollectionName(clazz);
-		DBCollection dbc = db.getCollection(collectionName);
+		MongoCollection<T> dbc = db.getCollection(collectionName, clazz);
+
 		if (clazz.getAnnotation(Indexes.class) != null) {
 			for (Index i : clazz.getAnnotation(Indexes.class).value()) {
 
-				BasicDBObjectBuilder idx = BasicDBObjectBuilder.start();
-				for (String f : i.fields()) {
-					idx = idx.add(f, 1);
-				}
+				Bson idx = com.mongodb.client.model.Indexes.ascending(i.fields());
 
-				BasicDBObjectBuilder options = BasicDBObjectBuilder.start();
-				if (i.unique()) {
-					options.add("unique", true);
-				}
-				log.debug(" === CREATING INDEX: " + idx.get() + " ==== ");
-				dbc.createIndex(idx.get(), options.get());
+				IndexOptions options = new IndexOptions();
+				options.unique(i.unique());
+
+				log.debug(" === CREATING INDEX: " + idx + " ==== ");
+				dbc.createIndex(idx, options);
 			}
 		}
+
 		return dbc;
 	}
 
-	private <T> JacksonDBCollection<T, String> getCollection(String db, Class<T> clazz) {
+	@SuppressWarnings("unchecked")
+	private <T> JacksonMongoCollection<T> getCollection(String db, Class<T> clazz) {
+		String collectionName = getCollectionName(clazz);
+		String key = db + ":" + collectionName;
+		log.debug(" == DB        : " + db);
+		log.debug(" == Collection: " + collectionName);
+
 		try {
-			String collectionName = getCollectionName(clazz);
-			String key = db + ":" + collectionName;
-			log.debug(" == DB        : " + db);
-			log.debug(" == Collection: " + collectionName);
-			@SuppressWarnings("unchecked")
-			JacksonDBCollection<T, String> out = (JacksonDBCollection<T, String>) collections.get(key);
+			JacksonMongoCollection<T> out = (JacksonMongoCollection<T>) collections.get(key);
+
 			if (out == null) {
 				log.debug("============================================================");
 				log.debug("==");
@@ -82,205 +79,131 @@ public abstract class AMongoDataStore implements DataStore {
 				log.debug("==");
 				log.debug("==  CLAZZ IS: " + clazz.getCanonicalName());
 				log.debug("== DBNAME IS: " + db);
-				DB d = getDB(db);
+				MongoDatabase d = getDB(db);
 				log.debug("==     DB IS: " + d);
-				DBCollection dbc = initializeCollection(d, clazz);
+				MongoCollection<T> dbc = initializeCollection(d, clazz);
 				log.debug("==    DBC IS: " + dbc);
-				out = JacksonDBCollection.wrap(dbc, clazz, String.class);
+				out = JacksonMongoCollection.builder().build(dbc, clazz, UuidRepresentation.JAVA_LEGACY);
 				if (clazz.getAnnotation(Write.class) != null && clazz.getAnnotation(Write.class).value() == WriteMode.FAST) {
-					out.setWriteConcern(WriteConcern.UNACKNOWLEDGED);
+					out.withWriteConcern(WriteConcern.UNACKNOWLEDGED);
 				}
 				collections.put(key, out);
 				log.debug("==");
 				log.debug("============================================================");
 			}
+
 			return out;
+
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Unable to obtain collection '" + collectionName + "'", e);
 		}
 	}
 
-	private GridFS getBucket(String db, String bucket) {
-		GridFS out = buckets.get(bucket);
+	private List<DBStoreListener<?>> getListeners(Class<? extends DBStoreEntity> clazz) {
+		List<DBStoreListener<?>> out = listenerMap.get(clazz.getCanonicalName());
+
 		if (out == null) {
-			out = new GridFS(getDB(db), bucket);
-			buckets.put(bucket, out);
-		}
-		return out;
-	}
+			out = new ArrayList<>();
 
-	private List<DBStoreListener> getListeners(Class<? extends DBStoreEntity> clazz) {
-		List<DBStoreListener> out = listenerMap.get(clazz.getCanonicalName());
-		if (out != null) {
-			// nothing
-		} else if (listeners == null) {
-			List<DBStoreListener> lx = new ArrayList<>();
-		} else if (out == null) {
+			if (listeners != null) {
+				for (DBStoreListener<?> l : listeners) {
+					if (l.supports(clazz)) {
+						log.debug("listeners on " + clazz + ": " + l.getClass() + " supports");
+						out.add(l);
 
-			List<DBStoreListener> lx = new ArrayList<>();
-			for (DBStoreListener l : listeners) {
-				if (l.supports(clazz)) {
-					log.debug("listeners on " + clazz + ": " + l.getClass() + " supports");
-					lx.add(l);
-				} else {
-					log.debug("listeners on " + clazz + ": " + l.getClass() + " does not support");
+					} else {
+						log.debug("listeners on " + clazz + ": " + l.getClass() + " does not support");
+					}
 				}
 			}
-			out = new ArrayList<>(lx);
+
+			listenerMap.put(clazz.getCanonicalName(), out);
 		}
+
 		log.debug("listeners on " + clazz + ": " + out.size());
 		return out;
 	}
 
-	public void storeBinary(String db, String bucket, DBStoreBinary binary) {
-		try {
-			GridFS gfs = getBucket(db, bucket);
-			gfs.remove(binary.getId());
-			GridFSInputFile f = gfs.createFile(binary.getInputStream());
-			DBObject md = new BasicDBObject();
-			if (binary.getMetaData() != null) {
-				for (Map.Entry<String, Object> e : binary.getMetaData().entrySet()) {
-					md.put(e.getKey(), e.getValue());
-				}
-			}
-			f.setMetaData(md);
-			f.setId(binary.getId());
-			f.setFilename(binary.getId());
-			f.save();
-		} catch (Exception e) {
-			throw new DBStoreException(e);
-		}
-	}
-
-
-	public DBStoreBinary getBinary(String db, String bucket, String filename) {
-		try {
-			GridFS gfs = getBucket(db, bucket);
-			GridFSDBFile f = gfs.findOne(filename);
-			if (f == null) {
-				return null;
-			}
-			return new MongoFSBinary(f);
-		} catch (Exception e) {
-			throw new DBStoreException(e);
-		}
-	}
-
-
-	public void deleteBinary(String db, String bucket, String id) {
-		try {
-			GridFS gfs = getBucket(db, bucket);
-			gfs.remove(id);
-		} catch (Exception e) {
-			throw new DBStoreException(e);
-		}
-	}
-
+	@Override
 	public <T extends DBStoreEntity> T findObject(String db, Class<T> clazz, DBStoreQuery query) {
+		return getCollection(db, clazz)
+				.find(fqtl.translate(query))
+				.sort(fqtl.translateOrderBy(query))
+				.limit(1)
+				.first();
+	}
 
-		Query q = fqtl.translate(query);
-		DBObject o = fqtl.translateOrderBy(query);
-		List<T> ts = getCollection(db, clazz).find(q, new BasicDBObject("id", null)).sort(o).limit(1).toArray();
+	@Override
+	public <T extends DBStoreEntity> long countObjects(String db, Class<T> clazz, DBStoreQuery query) {
+		return getCollection(db, clazz).countDocuments(fqtl.translate(query));
+	}
 
-		if (ts != null) {
-			log.debug(" --> found " + ts.size() + " elements!");
-			for (T t : ts) {
-				return t;
-			}
+	@Override
+	public <T extends DBStoreEntity> List<T> findObjects(String db, Class<T> clazz, DBStoreQuery query) {
+		FindIterable<T> f = getCollection(db, clazz)
+				.find(fqtl.translate(query))
+				.sort(fqtl.translateOrderBy(query));
+
+		int skip = query.getStart();
+		if (skip > 0) {
+			f = f.skip(skip);
 		}
 
-		return null;
-	}
-
-	public <T extends DBStoreEntity> int countObjects(String db, Class<T> clazz, DBStoreQuery query) {
-		Query q = fqtl.translate(query);
-		return getCollection(db, clazz).find(q).count();
-	}
-
-	public <T extends DBStoreEntity> List<T> findObjects(String db, Class<T> clazz, DBStoreQuery query) {
-
-		List<T> out = new ArrayList<>();
-		log.debug(" -----> cache miss!");
-		log.debug("getting from datastore (not in cache ...)");
-		Query q = fqtl.translate(query);
-		DBObject o = fqtl.translateOrderBy(query);
-
-		long skip = query.getStart();
-		long max = query.getMax();
+		int max = query.getMax();
+		if (max > 0 && max < Integer.MAX_VALUE) {
+			f = f.limit(max);
+		}
 
 		log.debug(" ---> LIMIT (" + skip + ":" + max + ")");
 
-		DBCursor<T> c = getCollection(db, clazz).find(q);
+		List<T> out = new LinkedList<>();
+		f.forEach(out::add);
 
-		if (o != null) {
-			c = c.sort(o);
-		}
-		if (skip != 0) {
-			c = c.skip((int) skip);
-		}
-		if (max != -1) {
-			c = c.limit((int) max);
-		}
-		List<T> x = c.toArray();
+		log.debug("-- db query: found " + out.size() + " matches for query (" + clazz.getCanonicalName() + ":" + query + ")");
 
-		log.debug("-- db query: found " + x.size() + " matches for query (" + clazz.getCanonicalName() + ":" + query.toString() + ")");
-		for (T t : x) {
-			out.add(t);
-		}
-
-		log.debug("returning " + out.size() + " matches for query (" + clazz.getCanonicalName() + ":" + query.toString() + ")");
 		return out;
 	}
 
-
+	@Override
 	public <T extends DBStoreEntity> T getObject(String db, Class<T> clazz, String id) {
 		return getCollection(db, clazz).findOneById(id);
 	}
 
-
+	@Override
+	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> boolean deleteObject(String db, T object) {
 		return object != null && deleteObject(db, object.getClass(), object.getId());
 	}
 
 	@Override
-	public <T extends DBStoreEntity> void deleteObjects(String db, Class<T> clazz, DBStoreQuery query) {
-		deleteObjectsInternal(db, clazz, getCollection(db, clazz).find(fqtl.translate(query)));
-	}
-
 	public <T extends DBStoreEntity> boolean deleteObject(String db, Class<T> clazz, String id) {
-		if (id == null) {
-			return false;
-		}
-
-		T entity = getObject(db, clazz, id);
-		if (entity == null) {
-			return false;
-		}
-
-		return deleteObjectsInternal(db, clazz, Collections.singletonList(entity));
+		return id != null && deleteObjects(db, clazz, BasicQuery.createQuery().eq("_id", id));
 	}
 
-	private <T extends DBStoreEntity> boolean deleteObjectsInternal(String db, Class<T> clazz, Iterable<T> objects) {
-		List<DBStoreListener> listeners = getListeners(clazz);
+	@Override
+	public <T extends DBStoreEntity> boolean deleteObjects(String db, Class<T> clazz, DBStoreQuery query) {
+		List<DBStoreListener<?>> entityListeners = getListeners(clazz);
 
 		boolean anyDeleted = false;
 
-		for (T object : objects) {
+		for (T object : getCollection(db, clazz).find(fqtl.translate(query))) {
 			if (object == null || object.getId() == null) {
 				continue;
 			}
 
-			for (DBStoreListener l : listeners) {
+			for (DBStoreListener listener : entityListeners) {
 				log.debug("firing 'beforeDelete' for: " + clazz + " / " + object.getId());
-				l.beforeDelete(db, object);
+				listener.beforeDelete(db, object);
 			}
 
 			try {
 				getCollection(db, clazz).removeById(object.getId());
-				for (DBStoreListener l : listeners) {
+
+				for (DBStoreListener listener : entityListeners) {
 					log.debug("firing 'delete' for: " + clazz + " / " + object.getId());
-					l.deleted(db, object);
+					listener.deleted(db, object);
 				}
+
 
 				anyDeleted = true;
 
@@ -299,18 +222,18 @@ public abstract class AMongoDataStore implements DataStore {
 
 		Class<T> clazz = (Class<T>) objects.stream().findFirst().map(Object::getClass).orElse(null);
 
-		List<DBStoreListener> listeners = getListeners(clazz);
+		List<DBStoreListener<?>> entityListeners = getListeners(clazz);
 		List<T> out = new ArrayList<>(objects.size());
 
 		for (T object : objects) {
-			log.debug(clazz + " / saving object: " + object.getId() + ", notifying " + listeners.size() + " listeners");
+			log.debug(clazz + " / saving object: " + object.getId() + ", notifying " + entityListeners.size() + " listeners");
 
-			for (DBStoreListener l : listeners) {
+			for (DBStoreListener listener : entityListeners) {
 				log.debug("firing 'beforeSave' for: " + clazz + " / " + object.getId());
-				l.beforeSave(db, object);
+				listener.beforeSave(db, object);
 			}
 
-			JacksonDBCollection<T, String> coll = getCollection(db, clazz);
+			JacksonMongoCollection<T> coll = (JacksonMongoCollection<T>) getCollection(db, object.getClass());
 
 			T old = null;
 			if (object.getId() != null) {
@@ -330,20 +253,21 @@ public abstract class AMongoDataStore implements DataStore {
 					continue;
 				}
 
-				coll.update(DBQuery.is("_id", old.getId()), object);
+				coll.replaceOne(Filters.eq("_id", old.getId()), object);
 			} else {
 				coll.save(object);
 			}
 
 			object = getObject(db, clazz, object.getId());
 
-			for (DBStoreListener l : listeners) {
+			for (DBStoreListener listener : entityListeners) {
 				if (old != null) {
-					log.debug("firing 'updated' for: " + out.getClass() + " / " + object.getId() + " / " + l.getClass());
-					l.updated(db, old, object);
+					log.debug("firing 'updated' for: " + out.getClass() + " / " + object.getId() + " / " + listener.getClass());
+					listener.updated(db, old, object);
+
 				} else {
-					log.debug("firing 'created' for: " + out.getClass() + " / " + object.getId() + " / " + l.getClass());
-					l.created(db, object);
+					log.debug("firing 'created' for: " + out.getClass() + " / " + object.getId() + " / " + listener.getClass());
+					listener.created(db, object);
 				}
 			}
 
@@ -353,7 +277,6 @@ public abstract class AMongoDataStore implements DataStore {
 		return out;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T extends DBStoreEntity> T saveObject(String db, T object) {
 		return saveObjects(db, Collections.singletonList(object))
 				.stream()
@@ -365,8 +288,8 @@ public abstract class AMongoDataStore implements DataStore {
 		return true;
 	}
 
-
-	public void addListener(DBStoreListener listener) {
+	@Override
+	public void addListener(DBStoreListener<?> listener) {
 		this.listeners.add(listener);
 	}
 
@@ -381,6 +304,5 @@ public abstract class AMongoDataStore implements DataStore {
 	public void setCollectionNamingStrategy(CollectionNamingStrategy collectionNamingStrategy) {
 		this.collectionNamingStrategy = collectionNamingStrategy;
 	}
-
 
 }

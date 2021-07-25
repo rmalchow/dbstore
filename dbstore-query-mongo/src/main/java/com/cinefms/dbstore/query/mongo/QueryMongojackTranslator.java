@@ -3,21 +3,22 @@ package com.cinefms.dbstore.query.mongo;
 import com.cinefms.dbstore.query.api.DBStoreQuery;
 import com.cinefms.dbstore.query.api.DBStoreQuery.OPERATOR;
 import com.cinefms.dbstore.query.api.impl.OrderBy;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.mongodb.client.model.Sorts;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.conversions.Bson;
 import org.mongojack.DBQuery;
 import org.mongojack.DBQuery.Query;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-
+// TODO: Rewrite to use com.mongodb.client.model.Filters instead of deprecated org.mongojack.DBQuery.Query
 public class QueryMongojackTranslator {
 
-	private static Log log = LogFactory.getLog(QueryMongojackTranslator.class);
+	private static final Log LOGGER = LogFactory.getLog(QueryMongojackTranslator.class);
 
 	public Query translate(DBStoreQuery in) {
 		Query q = DBQuery.empty();
@@ -48,17 +49,17 @@ public class QueryMongojackTranslator {
 					try {
 						q = q.regex(in.getField(), Pattern.compile((String) in.getValue(), Pattern.CASE_INSENSITIVE));
 					} catch (Exception ex) {
-						log.warn("broken regex '" + in.getValue() + "' ....", ex);
+						LOGGER.warn("broken regex '" + in.getValue() + "' ....", ex);
 						String x = ((String) in.getValue()).replaceAll("[^\\w\\s]", "");
 						q = q.regex(in.getField(), Pattern.compile(x, Pattern.CASE_INSENSITIVE));
 					}
 					break;
 				case IN:
-					log.debug(" ##### " + in.getField() + " --- " + in.getValue().getClass());
+					LOGGER.debug(" ##### " + in.getField() + " --- " + in.getValue().getClass());
 					q = q.in(in.getField(), (Collection<?>) in.getValue());
 					break;
 				case NIN:
-					log.debug(" ##### " + in.getField() + " --- " + in.getValue().getClass());
+					LOGGER.debug(" ##### " + in.getField() + " --- " + in.getValue().getClass());
 					Collection values = in.getValue() != null && in.getValue() instanceof Collection ? (List) in.getValue() : null;
 					if (values != null && !values.isEmpty()) {
 						q = q.notIn(in.getField(), values);
@@ -93,16 +94,18 @@ public class QueryMongojackTranslator {
 		return q;
 	}
 
-	public DBObject translateOrderBy(DBStoreQuery query) {
-		if (query.getOrderBy() == null) {
+	public Bson translateOrderBy(DBStoreQuery query) {
+		List<OrderBy> orderBy = query.getOrderBy();
+
+		if (orderBy == null || orderBy.isEmpty()) {
 			return null;
 		}
-		BasicDBObject out = new BasicDBObject();
-		for (OrderBy ob : query.getOrderBy()) {
-			out.append(ob.getField(), ob.isAsc() ? 1 : -1);
-		}
-		return out;
-	}
 
+		return Sorts.orderBy(
+				orderBy.stream()
+						.map(it -> it.isAsc() ? Sorts.ascending(it.getField()) : Sorts.descending(it.getField()))
+						.collect(Collectors.toList())
+		);
+	}
 
 }

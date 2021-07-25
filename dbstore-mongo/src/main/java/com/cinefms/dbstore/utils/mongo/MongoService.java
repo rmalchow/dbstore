@@ -1,8 +1,12 @@
 package com.cinefms.dbstore.utils.mongo;
 
 import com.mongodb.*;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.UuidRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -13,9 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class MongoService {
 
-	private static Log log = LogFactory.getLog(MongoService.class);
-
-	public static final int DEFAULT_PORT = 27017;
+	private static final Log log = LogFactory.getLog(MongoService.class);
 
 	private String dbName;
 	private String hosts;
@@ -28,80 +30,88 @@ public class MongoService {
 	@Autowired
 	private MongoClient client;
 
-	private Map<String, DB> dbs = new HashMap<>();
+	private Map<String, MongoDatabase> dbs = new HashMap<>();
 
 	public MongoClient getClient() {
 		if (client != null) return client;
 
 		List<ServerAddress> servers = getServers();
+		String strServers = servers.stream().map(Objects::toString).collect(Collectors.joining(","));
 
-		if (servers.size() == 1) {
-			ServerAddress server = servers.get(0);
+		MongoClientSettings.Builder builder = MongoClientSettings.builder()
+				.uuidRepresentation(UuidRepresentation.JAVA_LEGACY)
+				.applyToClusterSettings(it -> it.hosts(servers));
 
-			if (auth) {
-				MongoCredential mc = getCredentials();
-				log.info("Connecting to mongo server " + server + " with credentials. Using mechanism: " + mc.getMechanism());
-				client = new MongoClient(server, mc, MongoClientOptions.builder().build());
-
-			} else {
-				log.info("Connecting to mongo server " + server + " without credentials.");
-				client = new MongoClient(server);
-			}
+		if (auth) {
+			MongoCredential mc = getCredentials();
+			builder.credential(mc);
+			log.info("Connecting to mongo servers " + strServers + " with credentials. Using mechanism: " + mc.getMechanism());
 
 		} else {
-			String strServers = servers.stream().map(Objects::toString).collect(Collectors.joining(","));
-
-			if (auth) {
-				MongoCredential mc = getCredentials();
-				log.info("Connecting to mongo servers " + strServers + " with credentials. Using mechanism: " + mc.getMechanism());
-				client = new MongoClient(servers, mc, MongoClientOptions.builder().build());
-
-			} else {
-				log.info("Connecting to mongo servers " + strServers + " without credentials.");
-				client = new MongoClient(servers);
-			}
+			log.info("Connecting to mongo servers " + strServers + " without credentials.");
 		}
+
+		client = MongoClients.create(builder.build());
 
 		return client;
 	}
 
 	private MongoCredential getCredentials() {
-		if (!StringUtils.isEmpty(authMethod)) {
+		String authDatabase = authDb == null ? dbName : authDb;
+
+		if (!StringUtils.hasText(authMethod)) {
 			if ("CR".equalsIgnoreCase(authMethod)) {
-				return MongoCredential.createMongoCRCredential(username, authDb == null ? dbName : authDb, password.toCharArray());
+				return MongoCredential.createCredential(
+						username,
+						authDatabase,
+						password.toCharArray()
+				);
 			}
 			if ("SCRAM-SHA-1".equalsIgnoreCase(authMethod)) {
-				return MongoCredential.createScramSha1Credential(username, authDb == null ? dbName : authDb, password.toCharArray());
+				return MongoCredential.createScramSha1Credential(
+						username,
+						authDatabase,
+						password.toCharArray()
+				);
 			}
 			if ("SCRAM-SHA-256".equalsIgnoreCase(authMethod)) {
-				return MongoCredential.createScramSha256Credential(username, authDb == null ? dbName : authDb, password.toCharArray());
+				return MongoCredential.createScramSha256Credential(
+						username,
+						authDatabase,
+						password.toCharArray()
+				);
 			}
 			if ("PLAIN".equalsIgnoreCase(authMethod)) {
-				return MongoCredential.createPlainCredential(username, authDb == null ? dbName : authDb, password.toCharArray());
+				return MongoCredential.createPlainCredential(
+						username,
+						authDatabase,
+						password.toCharArray()
+				);
 			}
 		}
-		return MongoCredential.createCredential(username, authDb == null ? dbName : authDb, password.toCharArray());
+
+		return MongoCredential.createCredential(username, authDatabase, password.toCharArray());
 	}
 
 	private List<ServerAddress> getServers() {
 		List<ServerAddress> out = new ArrayList<>();
 		for (String uri : getHosts().split(",")) {
 			String[] h = uri.split(":");
-			out.add(new ServerAddress(h[0], h.length > 1 ? Integer.parseInt(h[1]) : this.DEFAULT_PORT));
+			out.add(new ServerAddress(h[0], h.length > 1 ? Integer.parseInt(h[1]) : ServerAddress.defaultPort()));
 		}
 		return out;
 	}
 
-	public DB getDb() {
+	public MongoDatabase getDb() {
 		return getDb(getDbName());
 	}
 
-	public DB getDb(String db) {
-		DB out = dbs.get(db);
+	public MongoDatabase getDb(String db) {
+		MongoDatabase out = dbs.get(db);
 		if (out == null) {
-			out = getClient().getDB(db);
-			out.setReadPreference(ReadPreference.secondaryPreferred());
-			out.setWriteConcern(WriteConcern.JOURNALED);
+			out = getClient().getDatabase(db);
+			out.withReadPreference(ReadPreference.secondaryPreferred());
+			out.withWriteConcern(WriteConcern.JOURNALED);
 			dbs.put(db, out);
 		}
 		return out;
