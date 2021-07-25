@@ -72,7 +72,7 @@ public class MongoStoreQueryTest extends MongoDataStoreTest {
 
 	@Test
 	public void itShouldReturnNumberOfAllMatchingEntities() {
-		int results = mds.countObjects(
+		long results = mds.countObjects(
 				null,
 				SimpleEntity.class,
 				BasicQuery.createQuery().contains("value", "d-entity")
@@ -83,7 +83,7 @@ public class MongoStoreQueryTest extends MongoDataStoreTest {
 
 	@Test
 	public void itShouldReturnZeroIfNoMatchingEntities() {
-		int results = mds.countObjects(
+		long results = mds.countObjects(
 				null,
 				SimpleEntity.class,
 				BasicQuery.createQuery().contains("value", "not-matching")
