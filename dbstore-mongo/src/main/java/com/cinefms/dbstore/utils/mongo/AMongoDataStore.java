@@ -1,5 +1,25 @@
 package com.cinefms.dbstore.utils.mongo;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bson.Document;
+import org.bson.UuidRepresentation;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
+import org.mongojack.JacksonMongoCollection;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cinefms.dbstore.api.DBStoreBinary;
 import com.cinefms.dbstore.api.DBStoreEntity;
 import com.cinefms.dbstore.api.DBStoreListener;
 import com.cinefms.dbstore.api.DataStore;
@@ -8,6 +28,8 @@ import com.cinefms.dbstore.api.annotations.Indexes;
 import com.cinefms.dbstore.api.annotations.Write;
 import com.cinefms.dbstore.api.annotations.WriteMode;
 import com.cinefms.dbstore.api.exceptions.DBStoreException;
+import com.cinefms.dbstore.api.impl.BasicBinary;
+import com.cinefms.dbstore.api.impl.IOUtils;
 import com.cinefms.dbstore.query.api.DBStoreQuery;
 import com.cinefms.dbstore.query.api.impl.BasicQuery;
 import com.cinefms.dbstore.query.mongo.QueryMongojackTranslator;
@@ -17,17 +39,12 @@ import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSBuckets;
+import com.mongodb.client.gridfs.model.GridFSFile;
+import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bson.UuidRepresentation;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-import org.mongojack.JacksonMongoCollection;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.*;
 
 public abstract class AMongoDataStore implements DataStore {
 
@@ -40,6 +57,9 @@ public abstract class AMongoDataStore implements DataStore {
 	private List<DBStoreListener<?>> listeners = new ArrayList<>();
 	private CollectionNamingStrategy collectionNamingStrategy = new SimpleCollectionNamingStrategy();
 
+	
+	private Map<String, GridFSBucket> buckets = new HashMap<String, GridFSBucket>();
+	
 	public abstract MongoDatabase getDB(String db);
 
 	private <T> MongoCollection<T> initializeCollection(MongoDatabase db, Class<T> clazz) {
@@ -304,5 +324,58 @@ public abstract class AMongoDataStore implements DataStore {
 	public void setCollectionNamingStrategy(CollectionNamingStrategy collectionNamingStrategy) {
 		this.collectionNamingStrategy = collectionNamingStrategy;
 	}
+	
+	private GridFSBucket getBucket(String db, String bucket) {
+		GridFSBucket out = buckets.get(bucket);
+		if (out == null) {
+			out = GridFSBuckets.create(getDB(db), bucket);
+			buckets.put(bucket, out);
+		}
+		return out;
+	}	
 
+	@Override
+	public DBStoreBinary getBinary(String dbName, String bucket, String id) throws DBStoreException {
+		GridFSBucket b = getBucket(dbName,bucket);
+		try {
+
+			GridFSFile f   = b.find(Filters.eq("ID", id)).first();
+			
+			if (f == null) {
+				return null;
+			}
+			
+			InputStream is = b.openDownloadStream(f.getObjectId());
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			IOUtils.copy(is, baos);
+			baos.flush();
+			
+			HashMap<String, Object> md = new HashMap<String, Object>();
+			Document metadata = f.getMetadata();
+			for(String s : metadata.keySet()) {
+				md.put(s, metadata.get(s));
+			}
+			
+			BasicBinary bb = new BasicBinary(id, baos.toByteArray(),md);
+			
+			return bb;
+			
+		} catch (Exception e) {
+			throw new DBStoreException("error loading binary", e);
+		}
+		
+	}
+	
+	@Override
+	public void saveBinary(String dbName, String bucket, DBStoreBinary binary) throws DBStoreException {
+		GridFSBucket b = getBucket(dbName,bucket);
+		Document md = new Document();
+		for (Map.Entry<String, Object> e : binary.getMetaData().entrySet()) {
+			md.put(e.getKey(), e.getValue());
+		}
+		md.put("ID", binary.getId());		
+		GridFSUploadOptions o = new GridFSUploadOptions().chunkSizeBytes(1024).metadata(md);
+        b.uploadFromStream(binary.getId(),binary.getInputStream(),o);
+	}
+	
 }

@@ -1,8 +1,9 @@
 package com.cinefms.dbstore.api;
 
-import com.cinefms.dbstore.query.api.DBStoreQuery;
-
 import java.util.List;
+
+import com.cinefms.dbstore.api.exceptions.DBStoreException;
+import com.cinefms.dbstore.query.api.DBStoreQuery;
 
 public interface DataStore {
 
@@ -23,6 +24,10 @@ public interface DataStore {
 	<T extends DBStoreEntity> T findObject(String db, Class<T> clazz, DBStoreQuery query);
 
 	void addListener(DBStoreListener<?> listener);
+	
+	public void saveBinary(String dbName, String bucket, DBStoreBinary binary) throws DBStoreException;
+	
+	public DBStoreBinary getBinary(String dbName, String bucket, String id) throws DBStoreException;
 
 	<T extends DBStoreEntity> List<T> saveObjects(String db, List<T> objects);
 
