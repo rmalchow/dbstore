@@ -1,7 +1,6 @@
 package com.cinefms.dbstore.api;
 
-import javax.persistence.Id;
-
+import org.mongojack.Id;
 
 public interface DBStoreEntity {
 
