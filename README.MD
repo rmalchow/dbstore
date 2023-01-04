@@ -3,10 +3,12 @@
 
 this is a simple abstraction / utility layer on top of mongo db.  from version 0.9, these are the minimum requirements:
 
-- Spring Boot 2.5
-- Java Mongo 4.2
+- Spring Framework 5.3 (Spring Boot 2.5)
+- MongoDB Driver 4.2
 - Mongojack 4.2
 - MongoDB 4.4
+
+from version 0.10 added compatibility for Spring Framework 6.0 (Spring Boot 3.0).
 
 it contains a few basic classes that might help, specifically:
 
@@ -20,7 +22,7 @@ this is an interface for a builder style class to create queries. a basic implem
 	[...]
 
 
-​	
+​
 ***DataStore***
 
 an interface for a data store that can be queried with a DbQuery. an implementation for mongo (along with the necessary translator to translate DbQuery into an actual mongo query is provided in dbstore-mongo and dbstore-query-mongo). simple usage:
@@ -33,11 +35,11 @@ an interface for a data store that can be queried with a DbQuery. an implementat
 	DataStore ds = getDataStore();
 	return ds.findObjects(MyClass.class,q);
 
-and, for saving: 
+and, for saving:
 
 	ds.saveObject("my_db",object);
 
-note that your objects have to extend `DBStoreEntity`. 
+note that your objects have to extend `DBStoreEntity`.
 
 
 ***DbStoreListener***
